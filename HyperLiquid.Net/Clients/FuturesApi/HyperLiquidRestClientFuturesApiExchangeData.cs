@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Exchange Info
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<HyperLiquidFuturesSymbol>>> GetExchangeInfoAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
@@ -35,12 +35,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo>(request, parameters, ct).ConfigureAwait(false);
             if (!result)
-                return result.As<IEnumerable<HyperLiquidFuturesSymbol>>(default);
+                return result.As<HyperLiquidFuturesSymbol[]>(default);
 
             for (var i = 0; i < result.Data.Symbols.Count(); i++)
                 result.Data.Symbols.ElementAt(i).Index = i;
 
-            return result.As<IEnumerable<HyperLiquidFuturesSymbol>>(result.Data?.Symbols);
+            return result.As<HyperLiquidFuturesSymbol[]>(result.Data?.Symbols);
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Funding Rate History
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<HyperLiquidFundingRate>>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
         {
             var innerParameters = new ParameterCollection();
             var parameters = new ParameterCollection()
@@ -85,7 +85,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             parameters.AddOptionalMilliseconds("endTime", endTime);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<IEnumerable<HyperLiquidFundingRate>>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -93,7 +93,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Symbols At Max Open Interest
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<string>>> GetSymbolsAtMaxOpenInterestAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(CancellationToken ct = default)
         {
             var innerParameters = new ParameterCollection();
 
@@ -103,7 +103,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<IEnumerable<string>>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.SendAsync<string[]>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

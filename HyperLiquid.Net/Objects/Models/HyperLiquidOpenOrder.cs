@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System;
 using System.Text.Json.Serialization;
 
@@ -7,6 +8,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Open order info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidOpenOrder
     {
         /// <summary>

@@ -18,7 +18,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<IEnumerable<HyperLiquidFuturesSymbol>>> GetExchangeInfoAsync(CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange and ticker info
@@ -35,12 +35,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="startTime">Filter by start time</param>
         /// <param name="endTime">Filter by end time</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<IEnumerable<HyperLiquidFundingRate>>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get futures symbols at max open interest
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<IEnumerable<string>>> GetSymbolsAtMaxOpenInterestAsync(CancellationToken ct = default);
+        Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(CancellationToken ct = default);
     }
 }

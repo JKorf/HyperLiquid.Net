@@ -1,13 +1,15 @@
-﻿using HyperLiquid.Net.Objects.Models;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Objects.Models;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Internal
 {
+    [SerializationModel]
     internal record HyperLiquidTwapOrderUpdate
     {
         [JsonPropertyName("history")]
-        public IEnumerable<HyperLiquidTwapOrderStatus> History { get; set; } = [];
+        public HyperLiquidTwapOrderStatus[] History { get; set; } = [];
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         [JsonPropertyName("isSnapshot")]

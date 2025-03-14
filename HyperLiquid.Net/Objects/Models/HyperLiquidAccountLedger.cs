@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Converters;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Converters;
 using HyperLiquid.Net.Enums;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -9,33 +10,35 @@ namespace HyperLiquid.Net.Objects.Models
     /// Account ledger
     /// </summary>
     [JsonConverter(typeof(AccountLedgerConverter))]
+    [SerializationModel]
     public record HyperLiquidAccountLedger
     {
         /// <summary>
         /// Deposits
         /// </summary>
-        public IEnumerable<HyperLiquidUserLedger<HyperLiquidDeposit>> Deposits { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidDeposit[]> Deposits { get; set; } = [];
         /// <summary>
         /// Withdrawals
         /// </summary>
-        public IEnumerable<HyperLiquidUserLedger<HyperLiquidWithdrawal>> Withdrawals { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidWithdrawal[]> Withdrawals { get; set; } = [];
         /// <summary>
         /// Internal transfers
         /// </summary>
-        public IEnumerable<HyperLiquidUserLedger<HyperLiquidInternalTransfer>> InternalTransfer { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidInternalTransfer[]> InternalTransfer { get; set; } = [];
         /// <summary>
         /// Liquidations
         /// </summary>
-        public IEnumerable<HyperLiquidUserLedger<HyperLiquidLiquidation>> Liquidations { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidLiquidation[]> Liquidations { get; set; } = [];
         /// <summary>
         /// Spot transfers
         /// </summary>
-        public IEnumerable<HyperLiquidUserLedger<HyperLiquidSpotTransfer>> SpotTransfers { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidSpotTransfer[]> SpotTransfers { get; set; } = [];
     }
 
     /// <summary>
     /// Deposit info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidDeposit
     {
         /// <summary>
@@ -48,6 +51,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Withdrawal info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidWithdrawal
     {
         /// <summary>
@@ -70,6 +74,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Transfer
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidInternalTransfer
     {
         /// <summary>
@@ -87,6 +92,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Liquidation
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidLiquidation
     {
         /// <summary>
@@ -103,12 +109,13 @@ namespace HyperLiquid.Net.Objects.Models
         /// Liquidated positions
         /// </summary>
         [JsonPropertyName("liquidatedPositions")]
-        public IEnumerable<HyperLiquidLiquidationPosition> Positions { get; set; } = [];
+        public HyperLiquidLiquidationPosition[] Positions { get; set; } = [];
     }
 
     /// <summary>
     /// Liquidation position
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidLiquidationPosition
     {
         /// <summary>
@@ -126,6 +133,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Spot transfer info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidSpotTransfer
     {
         /// <summary>

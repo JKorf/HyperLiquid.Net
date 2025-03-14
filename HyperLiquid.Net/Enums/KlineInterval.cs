@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Attributes;
 
 namespace HyperLiquid.Net.Enums
@@ -5,6 +7,7 @@ namespace HyperLiquid.Net.Enums
     /// <summary>
     /// Interval
     /// </summary>
+    [JsonConverter(typeof(EnumConverter<KlineInterval>))]
     public enum KlineInterval
     {
         /// <summary>

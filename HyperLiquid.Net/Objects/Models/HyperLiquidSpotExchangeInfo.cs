@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -7,23 +8,24 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Spot exchange info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidSpotExchangeInfo
     {
         [JsonInclude, JsonPropertyName("universe")]
-        private IEnumerable<HyperLiquidSymbolReference> SymbolsInt { get; set; } = [];
-        private IEnumerable<HyperLiquidSymbol>? _symbols;
+        private HyperLiquidSymbolReference[] SymbolsInt { get; set; } = [];
+        private HyperLiquidSymbol[]? _symbols;
 
         /// <summary>
         /// Assets
         /// </summary>
         [JsonPropertyName("tokens")]
-        public IEnumerable<HyperLiquidAsset> Assets { get; set; } = [];
+        public HyperLiquidAsset[] Assets { get; set; } = [];
 
         /// <summary>
         /// Symbol info
         /// </summary>
         [JsonIgnore]
-        public IEnumerable<HyperLiquidSymbol> Symbols
+        public HyperLiquidSymbol[] Symbols
         {
             get
             {
@@ -42,7 +44,7 @@ namespace HyperLiquid.Net.Objects.Models
                             QuoteAsset = quoteAsset,
                         };
                         }
-                    ).ToList();
+                    ).ToArray();
                 }
 
                 return _symbols;
@@ -53,6 +55,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Symbol info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidSymbol
     {
         /// <summary>
@@ -84,6 +87,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Asset info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidAsset
     {
         /// <summary>
@@ -128,6 +132,7 @@ namespace HyperLiquid.Net.Objects.Models
         public string FullName { get; set; } = string.Empty;
     }
 
+    [SerializationModel]
     internal record HyperLiquidSymbolReference
     {
         [JsonPropertyName("name")]

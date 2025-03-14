@@ -72,7 +72,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         {
             var update = (HyperLiquidSocketUpdate<T>)message.Data;
             _handler.Invoke(message.As(update.Data!, _topic, null, SocketUpdateType.Update));
-            return new CallResult(null);
+            return CallResult.SuccessResult;
         }
     }
 }

@@ -80,7 +80,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Klines
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<HyperLiquidKline>>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -88,7 +88,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<IEnumerable<HyperLiquidKline>>(spotName.Error);
+                    return new WebCallResult<HyperLiquidKline[]>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -106,7 +106,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<IEnumerable<HyperLiquidKline>>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.SendAsync<HyperLiquidKline[]>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

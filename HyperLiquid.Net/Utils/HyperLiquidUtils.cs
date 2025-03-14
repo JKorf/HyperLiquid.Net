@@ -14,9 +14,9 @@ namespace HyperLiquid.Net.Utils
     /// </summary>
     public static class HyperLiquidUtils
     {
-        private static IEnumerable<HyperLiquidAsset>? _spotAssetInfo;
-        private static IEnumerable<HyperLiquidSymbol>? _spotSymbolInfo;
-        private static IEnumerable<HyperLiquidFuturesSymbol>? _futuresSymbolInfo;
+        private static HyperLiquidAsset[]? _spotAssetInfo;
+        private static HyperLiquidSymbol[]? _spotSymbolInfo;
+        private static HyperLiquidFuturesSymbol[]? _futuresSymbolInfo;
 
         private static DateTime _lastSpotUpdateTime;
         private static DateTime _lastFuturesUpdateTime;
@@ -34,7 +34,7 @@ namespace HyperLiquid.Net.Utils
             try
             {
                 if (DateTime.UtcNow - _lastFuturesUpdateTime < TimeSpan.FromHours(1))
-                    return new CallResult(null);
+                    return CallResult.SuccessResult;
 
                 var symbolInfo = await new HyperLiquidRestClient().FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
@@ -42,7 +42,7 @@ namespace HyperLiquid.Net.Utils
 
                 _futuresSymbolInfo = symbolInfo.Data;
                 _lastFuturesUpdateTime = DateTime.UtcNow;
-                return new CallResult(null);
+                return CallResult.SuccessResult;
             }
             finally
             {
@@ -59,7 +59,7 @@ namespace HyperLiquid.Net.Utils
             try
             {
                 if (DateTime.UtcNow - _lastSpotUpdateTime < TimeSpan.FromHours(1))
-                    return new CallResult(null);
+                    return CallResult.SuccessResult;
 
                 var symbolInfo = await new HyperLiquidRestClient().SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
@@ -68,7 +68,7 @@ namespace HyperLiquid.Net.Utils
                 _spotSymbolInfo = symbolInfo.Data.Symbols;
                 _spotAssetInfo = symbolInfo.Data.Assets;
                 _lastSpotUpdateTime = DateTime.UtcNow;
-                return new CallResult(null);
+                return CallResult.SuccessResult;
             }
             finally
             {

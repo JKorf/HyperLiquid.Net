@@ -5,9 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
-    internal class CancelResultConverter : JsonConverter<IEnumerable<string>>
+    internal class CancelResultConverter : JsonConverter<string[]>
     {
-        public override IEnumerable<string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var resultList = new List<string>();
             reader.Read();
@@ -25,10 +25,10 @@ namespace HyperLiquid.Net.Converters
                 reader.Read();
             }
 
-            return resultList;
+            return resultList.ToArray();
         }
 
-        public override void Write(Utf8JsonWriter writer, IEnumerable<string> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, string[] value, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
             foreach (var item in value)

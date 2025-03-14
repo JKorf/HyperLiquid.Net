@@ -1,10 +1,13 @@
-﻿using CryptoExchange.Net.Attributes;
+using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Attributes;
 
 namespace HyperLiquid.Net.Enums
 {
     /// <summary>
     /// Direction
     /// </summary>
+    [JsonConverter(typeof(EnumConverter<Direction>))]
     public enum Direction
     {
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -6,18 +7,20 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Spot balances
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidBalances
     {
         /// <summary>
         /// Balances
         /// </summary>
         [JsonPropertyName("balances")]
-        public IEnumerable<HyperLiquidBalance> Balances { get; set; } = [];
+        public HyperLiquidBalance[] Balances { get; set; } = [];
     }
 
     /// <summary>
     /// Balance info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidBalance
     {
         /// <summary>

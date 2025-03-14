@@ -1,9 +1,11 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
+    [SerializationModel]
     internal record HyperLiquidOrderStatusResult
     {
         [JsonPropertyName("status")]
@@ -15,6 +17,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Order status
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidOrderStatus
     {
         /// <summary>
