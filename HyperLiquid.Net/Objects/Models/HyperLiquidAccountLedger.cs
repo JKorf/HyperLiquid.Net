@@ -16,23 +16,23 @@ namespace HyperLiquid.Net.Objects.Models
         /// <summary>
         /// Deposits
         /// </summary>
-        public HyperLiquidUserLedger<HyperLiquidDeposit[]> Deposits { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidDeposit>[] Deposits { get; set; } = [];
         /// <summary>
         /// Withdrawals
         /// </summary>
-        public HyperLiquidUserLedger<HyperLiquidWithdrawal[]> Withdrawals { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidWithdrawal>[] Withdrawals { get; set; } = [];
         /// <summary>
         /// Internal transfers
         /// </summary>
-        public HyperLiquidUserLedger<HyperLiquidInternalTransfer[]> InternalTransfer { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidInternalTransfer>[] InternalTransfer { get; set; } = [];
         /// <summary>
         /// Liquidations
         /// </summary>
-        public HyperLiquidUserLedger<HyperLiquidLiquidation[]> Liquidations { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidLiquidation>[] Liquidations { get; set; } = [];
         /// <summary>
         /// Spot transfers
         /// </summary>
-        public HyperLiquidUserLedger<HyperLiquidSpotTransfer[]> SpotTransfers { get; set; } = [];
+        public HyperLiquidUserLedger<HyperLiquidSpotTransfer>[] SpotTransfers { get; set; } = [];
     }
 
     /// <summary>

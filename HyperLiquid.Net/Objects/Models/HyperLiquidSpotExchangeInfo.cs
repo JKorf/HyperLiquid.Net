@@ -12,7 +12,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidSpotExchangeInfo
     {
         [JsonInclude, JsonPropertyName("universe")]
-        private HyperLiquidSymbolReference[] SymbolsInt { get; set; } = [];
+        internal HyperLiquidSymbolReference[] SymbolsInt { get; set; } = [];
         private HyperLiquidSymbol[]? _symbols;
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         [JsonInclude, JsonPropertyName("tokens")]
-        private int[] Assets { get; set; } = [];
+        internal int[] Assets { get; set; } = [];
         [JsonIgnore]
         public int BaseAssetIndex => Assets[0];
         [JsonIgnore]

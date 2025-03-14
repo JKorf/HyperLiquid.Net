@@ -41,11 +41,11 @@ namespace HyperLiquid.Net.Converters
                 }
             }
 
-            result.Deposits = deposits;
-            result.Withdrawals = withdrawals;
-            result.InternalTransfer = transfers;
-            result.Liquidations = liquidations;
-            result.SpotTransfers = spotTransfers;
+            result.Deposits = deposits.ToArray();
+            result.Withdrawals = withdrawals.ToArray();
+            result.InternalTransfer = transfers.ToArray();
+            result.Liquidations = liquidations.ToArray();
+            result.SpotTransfers = spotTransfers.ToArray();
             return result;
         }
 
