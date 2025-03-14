@@ -470,7 +470,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 var triggerParameters = new ParameterCollection();
                 triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
                 triggerParameters.AddString("triggerPx", order.TriggerPrice.Value);
-                triggerParameters.AddEnum("tpsl", order.TpSlType);
+                triggerParameters.AddOptionalEnum("tpsl", order.TpSlType);
                 orderTypeParameters.Add("trigger", triggerParameters);
                 orderParameters.Add("t", orderTypeParameters);
                 orderParameters.AddOptional("c", order.ClientOrderId);
