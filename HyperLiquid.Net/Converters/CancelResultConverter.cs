@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace HyperLiquid.Net.Converters
 {
@@ -15,12 +16,12 @@ namespace HyperLiquid.Net.Converters
             {
                 if (reader.TokenType == JsonTokenType.String)
                 {
-                    resultList.Add(JsonSerializer.Deserialize<string>(ref reader, options)!);
+                    resultList.Add(JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<string>)options.GetTypeInfo(typeof(string)))!);
                     reader.Read();
                     continue;
                 }
 
-                var result = JsonSerializer.Deserialize<ErrorMessage>(ref reader, options);
+                var result = JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<ErrorMessage>)options.GetTypeInfo(typeof(ErrorMessage)))!);
                 resultList.Add(result!.Error);
                 reader.Read();
             }

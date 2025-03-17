@@ -89,7 +89,7 @@ namespace HyperLiquid.Net.Utils
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var symbol = _spotSymbolInfo.SingleOrDefault(x => x.Name == symbolName);
+                var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
                     return new CallResult<int>(new ServerError("Symbol not found"));
 
@@ -101,7 +101,7 @@ namespace HyperLiquid.Net.Utils
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var symbol = _futuresSymbolInfo.SingleOrDefault(x => x.Name == symbolName);
+                var symbol = _futuresSymbolInfo!.SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
                     return new CallResult<int>(new ServerError("Symbol not found"));
 
@@ -116,7 +116,7 @@ namespace HyperLiquid.Net.Utils
         /// <returns></returns>
         public static CallResult<string> GetSymbolNameFromExchangeName(string id)
         {
-            var symbol = _spotSymbolInfo.SingleOrDefault(x => x.ExchangeName == id);
+            var symbol = _spotSymbolInfo?.SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -134,7 +134,7 @@ namespace HyperLiquid.Net.Utils
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var symbol = _spotSymbolInfo.SingleOrDefault(x => x.ExchangeName == id);
+            var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -151,7 +151,7 @@ namespace HyperLiquid.Net.Utils
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var symbol = _spotSymbolInfo.SingleOrDefault(x => x.Name == name);
+            var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.Name == name);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -168,7 +168,7 @@ namespace HyperLiquid.Net.Utils
             var result = new Dictionary<string, string>();
             foreach (var id in ids)
             {
-                var symbol = _spotSymbolInfo.SingleOrDefault(x => x.ExchangeName == id);
+                var symbol = _spotSymbolInfo?.SingleOrDefault(x => x.ExchangeName == id);
                 if (symbol == null)
                     continue;
 
@@ -189,7 +189,7 @@ namespace HyperLiquid.Net.Utils
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var assetInfo = _spotAssetInfo.SingleOrDefault(x => x.Name == asset);
+            var assetInfo = _spotAssetInfo!.SingleOrDefault(x => x.Name == asset);
             if (assetInfo == null)
                 return new CallResult<string>(new ServerError("Asset not found"));
 

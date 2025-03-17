@@ -10,8 +10,8 @@ namespace HyperLiquid.Net.Utils
     /// </summary>
     public class PackConverter
     {
-        private byte[] tmp0 = new byte[8];
-        private Encoding encoder = Encoding.UTF8;
+        private byte[] _tmp0 = new byte[8];
+        private Encoding _encoder = Encoding.UTF8;
 
         /// <summary>
         /// Convert an object to byte array
@@ -59,7 +59,7 @@ namespace HyperLiquid.Net.Utils
             else if (o is double objDouble)
                 Pack(s, objDouble);
             else
-                Pack(s, o.ToString());
+                Pack(s, o.ToString()!);
         }
 
         private void PackNull(Stream s)
@@ -110,7 +110,7 @@ namespace HyperLiquid.Net.Utils
             foreach (object key in dict.Keys)
             {
                 Pack(s, key);
-                Pack(s, dict[key]);
+                Pack(s, dict[key]!);
             }
         }
 
@@ -129,9 +129,9 @@ namespace HyperLiquid.Net.Utils
                 }
                 else
                 {
-                    tmp0[0] = 0xd0;
-                    tmp0[1] = (byte)val;
-                    s.Write(tmp0, 0, 2);
+                    _tmp0[0] = 0xd0;
+                    _tmp0[1] = (byte)val;
+                    s.Write(_tmp0, 0, 2);
                 }
             }
         }
@@ -144,9 +144,9 @@ namespace HyperLiquid.Net.Utils
             }
             else
             {
-                tmp0[0] = 0xcc;
-                tmp0[1] = val;
-                s.Write(tmp0, 0, 2);
+                _tmp0[0] = 0xcc;
+                _tmp0[1] = val;
+                s.Write(_tmp0, 0, 2);
             }
         }
 
@@ -294,11 +294,11 @@ namespace HyperLiquid.Net.Utils
             s.WriteByte(0xca);
             if (BitConverter.IsLittleEndian)
             {
-                tmp0[0] = bytes[3];
-                tmp0[1] = bytes[2];
-                tmp0[2] = bytes[1];
-                tmp0[3] = bytes[0];
-                s.Write(tmp0, 0, 4);
+                _tmp0[0] = bytes[3];
+                _tmp0[1] = bytes[2];
+                _tmp0[2] = bytes[1];
+                _tmp0[3] = bytes[0];
+                s.Write(_tmp0, 0, 4);
             }
             else
             {
@@ -312,15 +312,15 @@ namespace HyperLiquid.Net.Utils
             s.WriteByte(0xcb);
             if (BitConverter.IsLittleEndian)
             {
-                tmp0[0] = bytes[7];
-                tmp0[1] = bytes[6];
-                tmp0[2] = bytes[5];
-                tmp0[3] = bytes[4];
-                tmp0[4] = bytes[3];
-                tmp0[5] = bytes[2];
-                tmp0[6] = bytes[1];
-                tmp0[7] = bytes[0];
-                s.Write(tmp0, 0, 8);
+                _tmp0[0] = bytes[7];
+                _tmp0[1] = bytes[6];
+                _tmp0[2] = bytes[5];
+                _tmp0[3] = bytes[4];
+                _tmp0[4] = bytes[3];
+                _tmp0[5] = bytes[2];
+                _tmp0[6] = bytes[1];
+                _tmp0[7] = bytes[0];
+                s.Write(_tmp0, 0, 8);
             }
             else
             {
@@ -330,7 +330,7 @@ namespace HyperLiquid.Net.Utils
 
         private void Pack(Stream s, string val)
         {
-            var bytes = encoder.GetBytes(val);
+            var bytes = _encoder.GetBytes(val);
             if (bytes.Length < 0x20)
             {
                 s.WriteByte((byte)(0xa0 + bytes.Length));
@@ -357,9 +357,9 @@ namespace HyperLiquid.Net.Utils
         {
             unchecked
             {
-                tmp0[0] = (byte)(val >> 8);
-                tmp0[1] = (byte)val;
-                s.Write(tmp0, 0, 2);
+                _tmp0[0] = (byte)(val >> 8);
+                _tmp0[1] = (byte)val;
+                s.Write(_tmp0, 0, 2);
             }
         }
 
@@ -367,11 +367,11 @@ namespace HyperLiquid.Net.Utils
         {
             unchecked
             {
-                tmp0[0] = (byte)(val >> 24);
-                tmp0[1] = (byte)(val >> 16);
-                tmp0[2] = (byte)(val >> 8);
-                tmp0[3] = (byte)val;
-                s.Write(tmp0, 0, 4);
+                _tmp0[0] = (byte)(val >> 24);
+                _tmp0[1] = (byte)(val >> 16);
+                _tmp0[2] = (byte)(val >> 8);
+                _tmp0[3] = (byte)val;
+                s.Write(_tmp0, 0, 4);
             }
         }
 
@@ -379,15 +379,15 @@ namespace HyperLiquid.Net.Utils
         {
             unchecked
             {
-                tmp0[0] = (byte)(val >> 56);
-                tmp0[1] = (byte)(val >> 48);
-                tmp0[2] = (byte)(val >> 40);
-                tmp0[3] = (byte)(val >> 32);
-                tmp0[4] = (byte)(val >> 24);
-                tmp0[5] = (byte)(val >> 16);
-                tmp0[6] = (byte)(val >> 8);
-                tmp0[7] = (byte)val;
-                s.Write(tmp0, 0, 8);
+                _tmp0[0] = (byte)(val >> 56);
+                _tmp0[1] = (byte)(val >> 48);
+                _tmp0[2] = (byte)(val >> 40);
+                _tmp0[3] = (byte)(val >> 32);
+                _tmp0[4] = (byte)(val >> 24);
+                _tmp0[5] = (byte)(val >> 16);
+                _tmp0[6] = (byte)(val >> 8);
+                _tmp0[7] = (byte)val;
+                s.Write(_tmp0, 0, 8);
             }
         }
     }

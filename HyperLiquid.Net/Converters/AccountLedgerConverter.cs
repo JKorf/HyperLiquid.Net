@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace HyperLiquid.Net.Converters
 {
@@ -24,19 +25,19 @@ namespace HyperLiquid.Net.Converters
                 switch (type)
                 {
                     case "deposit":
-                        deposits.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidDeposit>>(options)!);
+                        deposits.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidDeposit>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidDeposit>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidDeposit>)))!);
                         break;
                     case "withdrawal":
-                        withdrawals.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidWithdrawal>>(options)!);
+                        withdrawals.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidWithdrawal>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidWithdrawal>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidWithdrawal>)))!);
                         break;
                     case "accountClassTransfer":
-                        transfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidInternalTransfer>>(options)!);
+                        transfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidInternalTransfer>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidInternalTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidInternalTransfer>)))!);
                         break;
                     case "liquidation":
-                        liquidations.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidLiquidation>>(options)!);
+                        liquidations.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidLiquidation>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidLiquidation>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidLiquidation>)))!);
                         break;
                     case "spotTransfer":
-                        spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>(options)!);
+                        spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>( (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)))!);
                         break;
                 }
             }

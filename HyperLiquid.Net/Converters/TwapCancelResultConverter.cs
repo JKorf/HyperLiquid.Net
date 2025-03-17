@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace HyperLiquid.Net.Converters
 {
@@ -10,7 +11,7 @@ namespace HyperLiquid.Net.Converters
         {
             if (reader.TokenType == JsonTokenType.StartObject)
             {
-                var error = JsonSerializer.Deserialize<ErrorMessage>(ref reader);
+                var error = JsonSerializer.Deserialize<ErrorMessage>(ref reader, (JsonTypeInfo<ErrorMessage>)options.GetTypeInfo(typeof(ErrorMessage)));
                 return error!.Error;
             }
             else
