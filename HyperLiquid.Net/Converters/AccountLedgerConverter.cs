@@ -37,7 +37,7 @@ namespace HyperLiquid.Net.Converters
                         liquidations.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidLiquidation>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidLiquidation>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidLiquidation>)))!);
                         break;
                     case "spotTransfer":
-                        spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>( (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)))!);
+                        spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)))!);
                         break;
                 }
             }
@@ -54,15 +54,15 @@ namespace HyperLiquid.Net.Converters
         {
             writer.WriteStartArray();
             foreach (var item in value.Withdrawals)
-                JsonSerializer.Serialize(writer, item);
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidWithdrawal>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidWithdrawal>)));
             foreach (var item in value.Deposits)
-                JsonSerializer.Serialize(writer, item);
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidDeposit>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidDeposit>)));
             foreach (var item in value.Liquidations)
-                JsonSerializer.Serialize(writer, item);
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidLiquidation>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidLiquidation>)));
             foreach (var item in value.SpotTransfers)
-                JsonSerializer.Serialize(writer, item);
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)));
             foreach (var item in value.InternalTransfer)
-                JsonSerializer.Serialize(writer, item);
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)));
             writer.WriteEndArray();
         }
     }

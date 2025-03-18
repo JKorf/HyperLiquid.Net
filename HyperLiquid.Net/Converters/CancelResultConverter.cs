@@ -21,7 +21,7 @@ namespace HyperLiquid.Net.Converters
                     continue;
                 }
 
-                var result = JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<ErrorMessage>)options.GetTypeInfo(typeof(ErrorMessage)))!);
+                var result = JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<ErrorMessage>)options.GetTypeInfo(typeof(ErrorMessage)));
                 resultList.Add(result!.Error);
                 reader.Read();
             }
