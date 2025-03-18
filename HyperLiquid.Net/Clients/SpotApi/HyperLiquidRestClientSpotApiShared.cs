@@ -230,7 +230,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 request.Symbol.GetSymbol(FormatSymbol),
                 request.Side == SharedOrderSide.Buy ? Enums.OrderSide.Buy : Enums.OrderSide.Sell,
                 request.OrderType == SharedOrderType.Limit || request.OrderType == SharedOrderType.LimitMaker ? Enums.OrderType.Limit : Enums.OrderType.Market,
-                quantity: request.Quantity!.Value,
+                quantity: request.Quantity?.QuantityInBaseAsset ?? 0,
                 price: request.Price!.Value,
                 timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
                 clientOrderId: request.ClientOrderId,
@@ -268,8 +268,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
                 ClientOrderId = order.Data.Order.ClientOrderId,
                 OrderPrice = order.Data.Order.Price,
-                Quantity = order.Data.Order.Quantity,
-                QuantityFilled = order.Data.Order.Quantity - order.Data.Order.QuantityRemaining,
+                OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
+                QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
                 UpdateTime = order.Data.Timestamp
             });
         }
@@ -302,8 +302,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 TimeInForce = ParseTimeInForce(x.TimeInForce),
                 ClientOrderId = x.ClientOrderId,
                 OrderPrice = x.Price,
-                Quantity = x.Quantity,
-                QuantityFilled = x.Quantity - x.QuantityRemaining,
+                OrderQuantity = new SharedOrderQuantity(x.Quantity),
+                QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
                 UpdateTime = x.Timestamp
             }).ToArray());
         }
@@ -343,8 +343,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
                 ClientOrderId = x.Order.ClientOrderId,
                 OrderPrice = x.Order.Price,
-                Quantity = x.Order.Quantity,
-                QuantityFilled = x.Order.Quantity - x.Order.QuantityRemaining,
+                OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
+                QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
                 UpdateTime = x.Timestamp
             }).ToArray());
         }
@@ -503,8 +503,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
                 ClientOrderId = order.Data.Order.ClientOrderId,
                 OrderPrice = order.Data.Order.Price,
-                Quantity = order.Data.Order.Quantity,
-                QuantityFilled = order.Data.Order.Quantity - order.Data.Order.QuantityRemaining,
+                OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
+                QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
                 UpdateTime = order.Data.Timestamp
             });
         }

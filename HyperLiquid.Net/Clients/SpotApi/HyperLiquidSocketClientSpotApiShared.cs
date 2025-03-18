@@ -148,8 +148,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                             x.Order.Timestamp)
                         {
                             OrderPrice = x.Order.Price,
-                            Quantity = x.Order.Quantity,
-                            QuantityFilled = x.Order.Quantity - x.Order.QuantityRemaining,
+                            OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
+                            QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
                             UpdateTime = x.Timestamp
                         }
                     ).ToArray()));

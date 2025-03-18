@@ -190,8 +190,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                             x.Order.Timestamp)
                         {
                             OrderPrice = x.Order.Price,
-                            Quantity = x.Order.Quantity,
-                            QuantityFilled = x.Order.Quantity - x.Order.QuantityRemaining,
+                            OrderQuantity = new SharedOrderQuantity(x.Order.Quantity, contractQuantity: x.Order.Quantity),
+                            QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining, contractQuantity: x.Order.Quantity - x.Order.QuantityRemaining),
                             UpdateTime = x.Timestamp,
                             ReduceOnly = x.Order.ReduceOnly,
                         }
