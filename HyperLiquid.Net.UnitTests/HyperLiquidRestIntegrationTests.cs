@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Objects.Options;
+using HyperLiquid.Net.SymbolOrderBooks;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -91,6 +92,12 @@ namespace HyperLiquid.Net.UnitTests
         {
             // All already tested by Spot calls
             return Task.CompletedTask;
+        }
+
+        [Test]
+        public async Task TestOrderBooks()
+        {
+            await TestOrderBook(new HyperLiquidSymbolOrderBook("HYPE/USDC"));
         }
     }
 }
