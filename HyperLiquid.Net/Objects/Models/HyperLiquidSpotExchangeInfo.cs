@@ -124,7 +124,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// EVM contract
         /// </summary>
         [JsonPropertyName("evmContract")]
-        public string EvmContract { get; set; } = string.Empty;
+        public HyperLiquidEvmContract? EvmContract { get; set; }
         /// <summary>
         /// Full asset name
         /// </summary>
@@ -133,6 +133,23 @@ namespace HyperLiquid.Net.Objects.Models
     }
 
     [SerializationModel]
+    /// <summary>
+    /// EVM contract  info
+    /// </summary>
+    public record HyperLiquidEvmContract
+    {
+        /// <summary>
+        /// Address
+        /// </summary>
+        [JsonPropertyName("address")]
+        public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Extra decimals
+        /// </summary>
+        [JsonPropertyName("evm_extra_wei_decimals")]
+        public int? EvmExtraWeiDecimals { get; set; }
+    }
+
     internal record HyperLiquidSymbolReference
     {
         [JsonPropertyName("name")]

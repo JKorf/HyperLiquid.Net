@@ -4271,6 +4271,21 @@
             Full asset name
             </summary>
         </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract">
+            <summary>
+            EVM contract  info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract.Address">
+            <summary>
+            Address
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract.EvmExtraWeiDecimals">
+            <summary>
+            Extra decimals
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidTrade">
             <summary>
             Trade info
