@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.Converters
             writer.WriteEndArray();
         }
 
-        class ErrorMessage
+        internal class ErrorMessage
         {
             [JsonPropertyName("error")]
             public string Error { get; set; } = string.Empty;

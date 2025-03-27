@@ -607,5 +607,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+
     }
 }
