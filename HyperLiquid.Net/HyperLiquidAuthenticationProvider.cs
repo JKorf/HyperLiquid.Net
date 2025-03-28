@@ -6,9 +6,9 @@ using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
 using Nethereum.Signer.EIP712;
-using Nethereum.Util;
+//using Nethereum.Util;
 using Nethereum.Signer;
-using Nethereum.ABI.EIP712;
+//using Nethereum.ABI.EIP712;
 using HyperLiquid.Net.Utils;
 
 namespace HyperLiquid.Net
@@ -233,7 +233,7 @@ namespace HyperLiquid.Net
             typeRaw.Message = messageValues.ToArray();
             typeRaw.Types = types;
             typeRaw.PrimaryType = typeName;
-
+            return Eip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
             return Eip712TypedDataSigner.Current.EncodeTypedDataRaw(typeRaw);
         }
 
@@ -261,8 +261,8 @@ namespace HyperLiquid.Net
 
         private static byte[] SignKeccak(byte[] data)
         {
-            var keccack = new Sha3Keccack();
-            return keccack.CalculateHash(data);
+            //var keccack = new Sha3Keccack();
+            return InternalSha3Keccack.CalculateHash(data);
         }
     }
 }
