@@ -141,6 +141,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 1.1.2 - 28 Mar 2025
+    * Fix testnet support
+
 * Version 1.1.1 - 22 Mar 2025
     * Fixed deserialization of spot exchange info
 

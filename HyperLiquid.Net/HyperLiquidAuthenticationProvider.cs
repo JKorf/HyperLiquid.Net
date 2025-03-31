@@ -10,6 +10,7 @@ using Nethereum.Util;
 using Nethereum.Signer;
 using Nethereum.ABI.EIP712;
 using HyperLiquid.Net.Utils;
+using HyperLiquid.Net.Clients.BaseApi;
 
 namespace HyperLiquid.Net
 {
@@ -109,7 +110,7 @@ namespace HyperLiquid.Net
                 var hash = GenerateActionHash(action, nonce);
                 var phantomAgent = new Dictionary<string, object>()
                 {
-                    { "source", "a" },
+                    { "source", ((HyperLiquidRestClientApi)apiClient).ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "b" : "a" },
                     { "connectionId", hash },
                 };
 
