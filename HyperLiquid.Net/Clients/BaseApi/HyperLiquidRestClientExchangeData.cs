@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var resultMapped = new Dictionary<string, decimal>();
             foreach (var item in result.Data)
             {
-                var nameRes = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(item.Key).ConfigureAwait(false);
+                var nameRes = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, item.Key).ConfigureAwait(false);
                 resultMapped.Add(nameRes.Data ?? item.Key, item.Value);
             }
 
@@ -56,7 +56,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<HyperLiquidOrderBook>(spotName.Error);
 
@@ -86,7 +86,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<HyperLiquidKline[]>(spotName.Error);
 

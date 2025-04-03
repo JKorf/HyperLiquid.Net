@@ -17,7 +17,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         IOpenInterestRestClient,
         IFuturesOrderRestClient,
         IFuturesOrderClientIdClient,
-        IFuturesTpSlRestClient
+        IFuturesTpSlRestClient,
+        IBookTickerRestClient
     {
     }
 }

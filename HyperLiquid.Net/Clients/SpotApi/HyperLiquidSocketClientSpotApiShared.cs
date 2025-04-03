@@ -150,7 +150,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                             OrderPrice = x.Order.Price,
                             OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
                             QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
-                            UpdateTime = x.Timestamp
+                            UpdateTime = x.Timestamp,
+                            TriggerPrice = x.Order.TriggerPrice,
+                            IsTriggerOrder = x.Order.TriggerPrice > 0
                         }
                     ).ToArray()));
                 },

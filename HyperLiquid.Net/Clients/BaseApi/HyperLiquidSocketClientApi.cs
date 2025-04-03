@@ -24,6 +24,7 @@ using HyperLiquid.Net.Objects.Sockets;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using System.Text.Json;
+using HyperLiquid.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -43,6 +44,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         private static readonly MessagePath _symbolPath = MessagePath.Get().Property("data").Property("s");
         private static readonly MessagePath _itemSymbolPath = MessagePath.Get().Property("data").Index(0).Property("coin");
         private static readonly MessagePath _bookSymbolPath = MessagePath.Get().Property("data").Property("coin");
+
+        protected IHyperLiquidRestClient _restClient;
         #endregion
 
         #region constructor/destructor
@@ -54,6 +57,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
             base(logger, options.Environment.SocketClientAddress!, options, apiOptions)
         {
             RateLimiter = HyperLiquidExchange.RateLimiter.HyperLiquidSocket;
+
+            _restClient = new HyperLiquidRestClient(x =>
+            {
+                x.Environment = options.Environment;
+            });
 
             RegisterPeriodicQuery(
                 "Ping",
@@ -83,7 +91,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
         {
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -108,7 +116,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
@@ -135,7 +143,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
@@ -161,7 +169,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
@@ -189,7 +197,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -271,7 +279,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -314,7 +322,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -357,7 +365,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 

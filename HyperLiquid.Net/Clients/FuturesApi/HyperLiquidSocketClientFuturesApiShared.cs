@@ -194,6 +194,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                             QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining, contractQuantity: x.Order.Quantity - x.Order.QuantityRemaining),
                             UpdateTime = x.Timestamp,
                             ReduceOnly = x.Order.ReduceOnly,
+                            TriggerPrice = x.Order.TriggerPrice,
+                            IsTriggerOrder = x.Order.TriggerPrice > 0
                         }
                     ).ToArray()));
                 },

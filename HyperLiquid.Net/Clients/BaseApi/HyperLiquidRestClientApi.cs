@@ -14,6 +14,7 @@ using CryptoExchange.Net.SharedApis;
 using CryptoExchange.Net.Converters.MessageParsing;
 using HyperLiquid.Net.Objects.Models;
 using CryptoExchange.Net.Objects.Options;
+using HyperLiquid.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -23,11 +24,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public string ExchangeName => "HyperLiquid";
 
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
+        internal IHyperLiquidRestClient BaseClient { get; }
 
         #region constructor/destructor
-        internal HyperLiquidRestClientApi(ILogger logger, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
+        internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
             : base(logger, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
+            BaseClient = baseClient;
         }
         #endregion
 

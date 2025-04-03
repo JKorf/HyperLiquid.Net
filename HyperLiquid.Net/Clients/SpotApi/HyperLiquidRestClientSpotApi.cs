@@ -14,6 +14,7 @@ using CryptoExchange.Net.Converters.MessageParsing;
 using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
+using HyperLiquid.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Clients.SpotApi
 {
@@ -36,8 +37,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         #region constructor/destructor
-        internal HyperLiquidRestClientSpotApi(ILogger logger, HttpClient? httpClient, HyperLiquidRestOptions options)
-            : base(logger, httpClient, options, options.SpotOptions)
+        internal HyperLiquidRestClientSpotApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
+            : base(logger, baseClient, httpClient, options, options.SpotOptions)
         {
             Account = new HyperLiquidRestClientSpotApiAccount(this);
             ExchangeData = new HyperLiquidRestClientSpotApiExchangeData(logger, this);

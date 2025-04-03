@@ -28,7 +28,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// <summary>
         /// Order price
         /// </summary>
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
         /// <summary>
         /// Quantity
         /// </summary>

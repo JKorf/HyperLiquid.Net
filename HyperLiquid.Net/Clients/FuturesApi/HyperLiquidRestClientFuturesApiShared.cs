@@ -175,6 +175,31 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         #endregion
 
+        #region Book Ticker client
+
+        EndpointOptions<GetBookTickerRequest> IBookTickerRestClient.GetBookTickerOptions { get; } = new EndpointOptions<GetBookTickerRequest>(false);
+        async Task<ExchangeWebResult<SharedBookTicker>> IBookTickerRestClient.GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct)
+        {
+            var validationError = ((IBookTickerRestClient)this).GetBookTickerOptions.ValidateRequest(Exchange, request, request.Symbol.TradingMode, SupportedTradingModes);
+            if (validationError != null)
+                return new ExchangeWebResult<SharedBookTicker>(Exchange, validationError);
+
+            var symbol = request.Symbol.GetSymbol(FormatSymbol);
+            var resultTicker = await ExchangeData.GetOrderBookAsync(symbol, ct: ct).ConfigureAwait(false);
+            if (!resultTicker)
+                return resultTicker.AsExchangeResult<SharedBookTicker>(Exchange, null, default);
+
+            return resultTicker.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedBookTicker(
+                ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
+                symbol,
+                resultTicker.Data.Levels.Asks[0].Price,
+                resultTicker.Data.Levels.Asks[0].Quantity,
+                resultTicker.Data.Levels.Bids[0].Price,
+                resultTicker.Data.Levels.Bids[0].Quantity));
+        }
+
+        #endregion
+
         #region Futures Symbol client
         EndpointOptions<GetSymbolsRequest> IFuturesSymbolRestClient.GetFuturesSymbolsOptions { get; } = new EndpointOptions<GetSymbolsRequest>(false);
 
@@ -357,7 +382,6 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return new ExchangeWebResult<SharedId>(Exchange, validationError);
 
-#warning rework the order placement, split order / trigger order not working
             var result = await Trading.PlaceOrderAsync(
                 request.Symbol.GetSymbol(FormatSymbol),
                 request.Side == SharedOrderSide.Buy ? Enums.OrderSide.Buy : Enums.OrderSide.Sell,
@@ -404,7 +428,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity, contractQuantity: order.Data.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining, contractQuantity: order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
                 UpdateTime = order.Data.Timestamp,
-                ReduceOnly = order.Data.Order.ReduceOnly
+                ReduceOnly = order.Data.Order.ReduceOnly,
+                TriggerPrice = order.Data.Order.TriggerPrice,
+                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
             });
         }
 
@@ -439,7 +465,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 OrderQuantity = new SharedOrderQuantity(x.Quantity, contractQuantity: x.Quantity),
                 QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining, contractQuantity: x.Quantity - x.QuantityRemaining),
                 UpdateTime = x.Timestamp,
-                ReduceOnly = x.ReduceOnly
+                ReduceOnly = x.ReduceOnly,
+                TriggerPrice = x.TriggerPrice,
+                IsTriggerOrder = x.TriggerPrice > 0
             }).ToArray());
         }
 
@@ -479,7 +507,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 OrderQuantity = new SharedOrderQuantity(x.Order.Quantity, contractQuantity: x.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining, contractQuantity: x.Order.Quantity - x.Order.QuantityRemaining),
                 UpdateTime = x.Timestamp,
-                ReduceOnly = x.Order.ReduceOnly
+                ReduceOnly = x.Order.ReduceOnly,
+                TriggerPrice = x.Order.TriggerPrice,
+                IsTriggerOrder = x.Order.TriggerPrice > 0
             }).ToArray());
         }
 
@@ -696,7 +726,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 OrderPrice = order.Data.Order.Price,
                 OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity, contractQuantity: order.Data.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining, contractQuantity: order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
-                UpdateTime = order.Data.Timestamp
+                UpdateTime = order.Data.Timestamp,
+                TriggerPrice = order.Data.Order.TriggerPrice,
+                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
             });
         }
 
@@ -730,14 +762,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return new ExchangeWebResult<SharedId>(Exchange, validationError);
 
-            var result = await Trading.PlaceTriggerOrderAsync(
+            var result = await Trading.PlaceOrderAsync(
                 request.Symbol.GetSymbol(FormatSymbol),
                 request.PositionSide == SharedPositionSide.Long ? OrderSide.Buy : OrderSide.Sell,
                 OrderType.StopMarket,
                 request.Quantity!.Value,
-                0,
-                request.TriggerPrice,
-                request.TpSlSide == SharedTpSlSide.TakeProfit ? TpSlType.TakeProfit : TpSlType.StopLoss,
+                price: request.TriggerPrice,
+                triggerPrice: request.TriggerPrice,
+                tpSlType: request.TpSlSide == SharedTpSlSide.TakeProfit ? TpSlType.TakeProfit : TpSlType.StopLoss,
                 tpSlGrouping: TpSlGrouping.PositionTpSl,
                 reduceOnly: true,
                 ct: ct).ConfigureAwait(false);
@@ -746,8 +778,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return result.AsExchangeResult<SharedId>(Exchange, null, default);
 
             // Return
-#warning should return an id
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(""));
+            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(result.Data.OrderId.ToString()));
         }
 
         EndpointOptions<CancelTpSlRequest> IFuturesTpSlRestClient.CancelTpSlOptions { get; } = new EndpointOptions<CancelTpSlRequest>(true)
@@ -773,7 +804,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<bool>(Exchange, null, default);
-
+#warning check
             // Return
             return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, true);
         }
