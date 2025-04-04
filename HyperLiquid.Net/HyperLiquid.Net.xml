@@ -1715,6 +1715,16 @@
             Stop Limit
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderType.TakeProfitMarket">
+            <summary>
+            Stop Market
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderType.TakeProfit">
+            <summary>
+            Stop Limit
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Enums.PositionType">
             <summary>
             Position type

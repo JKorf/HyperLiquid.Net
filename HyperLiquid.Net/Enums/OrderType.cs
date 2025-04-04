@@ -29,6 +29,16 @@ namespace HyperLiquid.Net.Enums
         /// Stop Limit
         /// </summary>
         [Map("Stop Limit")]
-        StopLimit
+        StopLimit,
+        /// <summary>
+        /// Stop Market
+        /// </summary>
+        [Map("Take Profit Market")]
+        TakeProfitMarket,
+        /// <summary>
+        /// Stop Limit
+        /// </summary>
+        [Map("Take Profit")]
+        TakeProfit
     }
 }

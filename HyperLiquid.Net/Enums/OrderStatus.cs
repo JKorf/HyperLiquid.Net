@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Enums
         /// <summary>
         /// Canceled
         /// </summary>
-        [Map("canceled")]
+        [Map("canceled", "reduceOnlyCanceled")]
         Canceled,
         /// <summary>
         /// Trigger

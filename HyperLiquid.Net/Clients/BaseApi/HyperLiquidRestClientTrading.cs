@@ -305,7 +305,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             CancellationToken ct = default)
         {
             var result = await PlaceMultipleOrdersAsync([
-                new HyperLiquidOrderRequest(symbol, side, orderType, quantity, price, timeInForce, reduceOnly, clientOrderId: clientOrderId)
+                new HyperLiquidOrderRequest(symbol, side, orderType, quantity, price, timeInForce, reduceOnly, triggerPrice: triggerPrice, tpSlType: tpSlType, clientOrderId: clientOrderId)
                 ], tpSlGrouping, ct).ConfigureAwait(false);
 
             if (!result)
@@ -353,7 +353,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     var maxSlippage = order.MaxSlippage ?? 5;
                     var price = order.Side == OrderSide.Buy ? order.Price * (1 + maxSlippage / 100m) : order.Price * (1 - maxSlippage / 100m);
-                    orderParameters.AddString("p", Math.Round(price ?? 0, 3).Normalize());
+                    var decimalPlaces = CountDecimalDigits(order.Price ?? 0);
+                    orderParameters.AddString("p", Math.Round(price ?? 0, decimalPlaces).Normalize());
                     orderParameters.AddString("s", order.Quantity);
                     orderParameters.Add("r", order.ReduceOnly ?? false);
                     var limitParameters = new ParameterCollection();
@@ -431,7 +432,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 else if (order.WaitingForFill != null)
                     result.Add(new CallResult<HyperLiquidOrderResult>(order.WaitingForFill! with { Status = OrderStatus.WaitingTrigger }));
                 else
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultResting! with { Status = OrderStatus.WaitingTrigger }));
+                    result.Add(new CallResult<HyperLiquidOrderResult>(order.WaitingForTrigger! with { Status = OrderStatus.WaitingTrigger }));
             }
 
             if (result.All(x => !x.Success))
@@ -807,5 +808,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         #endregion
+
+        private int CountDecimalDigits(decimal n)
+        {
+            return n.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    .SkipWhile(c => c != '.')
+                    .Skip(1)
+                    .Count();
+        }
     }
 }
