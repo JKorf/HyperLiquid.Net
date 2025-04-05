@@ -1,4 +1,7 @@
-﻿using System;
+﻿using HyperLiquid.Net.Utils;
+using Nethereum.Hex.HexConvertors;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,10 +9,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace HyperLiquid.Net
 {
-    internal static class Eip712TypedDataEncoder
+    internal static class LightEip712TypedDataEncoder
     {
         internal static byte[] EncodeTypedDataRaw(TypedDataRaw typedData)
         {
@@ -17,7 +21,7 @@ namespace HyperLiquid.Net
             using (var writer = new BinaryWriter(memoryStream))
             {
                 writer.Write((byte)0x19);  //"1901".HexToByteArray());
-                writer.Write((byte)0x01); 
+                writer.Write((byte)0x01);
                 writer.Write(HashStruct(typedData.Types, "EIP712Domain", typedData.DomainRawValues));
                 writer.Write(HashStruct(typedData.Types, typedData.PrimaryType, typedData.Message));
 
@@ -98,7 +102,7 @@ namespace HyperLiquid.Net
         {
             foreach (var memberValue in memberValues)
             {
-                switch (memberValue.TypeName)   
+                switch (memberValue.TypeName)
                 {
                     case var refType when IsReferenceType(refType):
                         {
@@ -169,14 +173,18 @@ namespace HyperLiquid.Net
                                 {
                                     value = memberValue.Value;
                                 }
-                                var abiValue = new ABIValue(memberValue.TypeName, value);
-                                var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
+                                var abiValueEncoded = AbiValueEncodeInt(memberValue.TypeName, value);
+                                // Todo : EGA
+                                //var abiValue = new Nethereum.ABI.ABIValue(memberValue.TypeName, value);
+                                //var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
                                 writer.Write(abiValueEncoded);
                             }
                             else
                             {
-                                var abiValue = new ABIValue(memberValue.TypeName, memberValue.Value);
-                                var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
+                                var abiValueEncoded = AbiValueEncode(memberValue.TypeName, memberValue.Value);
+                                // Todo : EGA
+                                //var abiValue = new ABIValue(memberValue.TypeName, memberValue.Value);
+                                //var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
                                 writer.Write(abiValueEncoded);
                             }
                             break;
@@ -186,72 +194,88 @@ namespace HyperLiquid.Net
 
 
         }
-        public static byte[] HexToByteArray(this string value)
+
+        private static byte[] AbiValueEncodeInt(string typeName, object value)
         {
+            int size;
+            bool signed = !typeName.StartsWith("u"); // uint versus int
+            if (signed)
             {
-                byte[] bytes;
-                if (string.IsNullOrEmpty(value))
-                {
-                    bytes = Array.Empty<byte>();
-                }
-                else
-                {
-                    var string_length = value.Length;
-                    var character_index = value.StartsWith("0x", StringComparison.Ordinal) ? 2 : 0;
-                    // Does the string define leading HEX indicator '0x'. Adjust starting index accordingly.               
-                    var number_of_characters = string_length - character_index;
-
-                    var add_leading_zero = false;
-                    if (0 != number_of_characters % 2)
-                    {
-                        add_leading_zero = true;
-
-                        number_of_characters += 1; // Leading '0' has been striped from the string presentation.
-                    }
-
-                    bytes = new byte[number_of_characters / 2]; // Initialize our byte array to hold the converted string.
-
-                    var write_index = 0;
-                    if (add_leading_zero)
-                    {
-                        bytes[write_index++] = FromCharacterToByte(value[character_index], character_index);
-                        character_index += 1;
-                    }
-
-                    for (var read_index = character_index; read_index < value.Length; read_index += 2)
-                    {
-                        var upper = FromCharacterToByte(value[read_index], read_index, 4);
-                        var lower = FromCharacterToByte(value[read_index + 1], read_index + 1);
-
-                        bytes[write_index++] = (byte)(upper | lower);
-                    }
-                }
-
-                return bytes;
-            }
-        }
-        private static byte FromCharacterToByte(char character, int index, int shift = 0)
-        {
-            var value = (byte)character;
-            if (0x40 < value && 0x47 > value || 0x60 < value && 0x67 > value)
-            {
-                if (0x40 == (0x40 & value))
-                    if (0x20 == (0x20 & value))
-                        value = (byte)((value + 0xA - 0x61) << shift);
-                    else
-                        value = (byte)((value + 0xA - 0x41) << shift);
-            }
-            else if (0x29 < value && 0x40 > value)
-            {
-                value = (byte)((value - 0x30) << shift);
+                size = int.Parse(typeName.Substring(3));
             }
             else
             {
-                throw new FormatException(string.Format(
-                    "Character '{0}' at index '{1}' is not valid alphanumeric character.", character, index));
+                size = int.Parse(typeName.Substring(4));
             }
+            if (size == 0)
+            {
+                size = 256;
+            }
+            var result = new byte[size / 8];
+            BigInteger v;
+            switch (value)
+            {
+                case int i:
+                    v = new BigInteger(i);
+                    break;
+                case long l:
+                    v = new BigInteger(l);
+                    break;
+                case ulong r:
+                    v = new BigInteger(r);
+                    break;
+                default:
+                    v = new BigInteger(0);
+                    break;
+            }
+            if (signed && v < 0)
+            {
+                // Pad with FF
+                for (int i = 0; i < result.Length; i++)
+                {
+                    result[i] = 0xFF;
+                }
+            }
+            var t = v.ToByteArray();
+            if (BitConverter.IsLittleEndian)
+            {
+                t = t.Reverse().ToArray();
+            }
+            t.CopyTo(result, result.Length - t.Length);
+            return result;
+        }
 
-            return value;
+        private static byte[] AbiValueEncode(string typeName, object value)
+        {
+            int size;
+            byte[] result;
+            switch (typeName)
+            {
+                case "address":
+                case "bytes32":
+                    {
+                        if (value is byte[] t)
+                        {
+                            if (t.Length == 32)
+                                return t;
+                            result = new byte[32];
+                            t.CopyTo(result, result.Length - t.Length);
+                            return result;
+                        }
+                        result = new byte[32];
+                        switch (value)
+                        {
+                            case string s:
+                                {
+                                    var h = s.HexToByteArray();
+                                    h.CopyTo(result, result.Length - h.Length);
+                                    return result;
+                                }
+                        }
+                        return result;
+                    }
+            }
+            return Array.Empty<byte>();
         }
 
     }
