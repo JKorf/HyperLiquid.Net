@@ -750,6 +750,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Tp/SL Client
         EndpointOptions<SetTpSlRequest> IFuturesTpSlRestClient.SetTpSlOptions { get; } = new EndpointOptions<SetTpSlRequest>(true)
         {
+            RequestNotes = "API doesn't return an id for trigger orders",
             RequiredOptionalParameters = new List<ParameterDescription>
             {
                 new ParameterDescription(nameof(SetTpSlRequest.Quantity), typeof(decimal), "The quantity to close", 0.123m)
@@ -804,7 +805,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<bool>(Exchange, null, default);
-#warning check
+
             // Return
             return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, true);
         }
