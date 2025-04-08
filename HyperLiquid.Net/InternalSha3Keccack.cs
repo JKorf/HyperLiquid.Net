@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto.Digests;
-using System;
-
-namespace HyperLiquid.Net
+﻿namespace HyperLiquid.Net
 {
     internal static class InternalSha3Keccack
     {

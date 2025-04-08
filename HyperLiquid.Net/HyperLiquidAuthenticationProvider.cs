@@ -5,21 +5,9 @@ using System.Net.Http;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
-//using Nethereum.Signer.EIP712;
-//using Nethereum.Util;
-//using Nethereum.Signer;
-//using Nethereum.ABI.EIP712;
 using HyperLiquid.Net.Utils;
 using System.Security.Cryptography;
 using System.Numerics;
-using Org.BouncyCastle.Crypto;
-using Nethereum.Signer.Crypto;
-using Org.BouncyCastle.Asn1.X9;
-using Org.BouncyCastle.Math.EC;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
-// using Nethereum.Hex.HexConvertors.Extensions;
-// using Org.BouncyCastle.Math.EC;
 
 namespace HyperLiquid.Net
 {
@@ -154,17 +142,13 @@ namespace HyperLiquid.Net
         public static Dictionary<string, object> SignRequest(string request, string secret)
         {
             var messageBytes = ConvertHexStringToByteArray(request);
-            var signer = new Nethereum.Signer.MessageSigner();
-            var z = new Nethereum.Signer.EthECKey(secret);
-            var sign = signer.SignAndCalculateV(messageBytes, new Nethereum.Signer.EthECKey(secret));
             var bSecret = secret.HexToByteArray();
             var t = new byte[32];
             bSecret.CopyTo(t, Math.Max(0, t.Length - bSecret.Length));
-            //            var BigSecret = new BigInteger(t);
             ECParameters eCParameters = new ECParameters()
             {
                 D = t,
-                Curve = System.Security.Cryptography.ECCurve.CreateFromFriendlyName("secp256k1"),
+                Curve = ECCurve.CreateFromFriendlyName("secp256k1"),
                 Q =
                 {
                     X = null,
@@ -186,9 +170,8 @@ namespace HyperLiquid.Net
                 rs.s.Reverse().ToArray().CopyTo(c, 0);
                 BigInteger sValue = new BigInteger(c);
 
-                var v = RecoverFromSignature(rValue, sValue, /*rs.flip, */messageBytes, parameters.Q.X, parameters.Q.Y);
+                var v = RecoverFromSignature(rValue, sValue, messageBytes, parameters.Q.X!, parameters.Q.Y!);
 
-                //Debug.Assert(27 + v == (int)sign.V[0]);
                 return new Dictionary<string, object>()
                 {
                     { "r", "0x" + BytesToHexString(rs.r).ToLowerInvariant() },
@@ -196,12 +179,6 @@ namespace HyperLiquid.Net
                     { "v", 27 + v}
                 };
             }
-            //return new Dictionary<string, object>()
-            //{
-            //    { "r", "0x" + BytesToHexString(sign.R).ToLowerInvariant() },
-            //    { "s", "0x" + BytesToHexString(sign.S).ToLowerInvariant() },
-            //    { "v", (int)sign.V[0] }
-            //};
         }
 
         public static (byte[] r, byte[] s, bool flip) NormalizeSignature(byte[] signature)
@@ -241,61 +218,7 @@ namespace HyperLiquid.Net
             }
             return (r, normalizedS, flip);
         }
-        private static int RecoverFromSignatureBad(BigInteger rValue, BigInteger sValue, bool flip, byte[] messageBytes, byte[] secretKey)
-        {
-            var c = new byte[33];
-            messageBytes.Reverse().ToArray().CopyTo(c, 0);
-            var eValue = new System.Numerics.BigInteger(c);
-            c = new byte[33];
-            secretKey.Reverse().ToArray().CopyTo(c, 0);
-            var dValue = new System.Numerics.BigInteger(c);
-            System.Numerics.BigInteger N;
-            var b = System.Numerics.BigInteger.TryParse("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out N);
-            Debug.Assert(b, "Parse N");
-
-            var sInv = System.Numerics.BigInteger.ModPow(sValue, N - 2, N);
-            Debug.Assert((sInv * sValue) % N == 1);
-            var u1 = (eValue * sInv) % N;
-            var u2 = (rValue * sInv) % N;
-            var u1du2 = (u1 + u2 * dValue) % N;
-            var d2 = new byte[32];
-            var u1du2b = u1du2.ToByteArray();
-            u1du2b.Take(32).Reverse().ToArray().CopyTo(d2, Math.Max(0, 32 - u1du2b.Length));
-            ECParameters eCParameters2 = new ECParameters()
-            {
-                D = d2,
-                Curve = System.Security.Cryptography.ECCurve.CreateFromFriendlyName("secp256k1"),
-                Q =
-                    {
-                        X = null,
-                        Y = null
-                    }
-            };
-            using (ECDsa dsa2 = ECDsa.Create(eCParameters2))
-            {
-                var parameters2 = dsa2.ExportParameters(true);
-                c = new byte[33];
-                parameters2.Q.X.Reverse().ToArray().CopyTo(c, 0);
-                var newX = new BigInteger(c);
-                Debug.Assert(newX == rValue);
-                c = new byte[33];
-                parameters2.Q.Y.Reverse().ToArray().CopyTo(c, 0);
-                var newY = new BigInteger(c);
-                var result = 0;
-                if (newX > Secp256k1PointCalculator.N)
-                {
-                    result = 2;
-                }
-                if (newY.IsEven != flip)
-                {
-                    result += 1;
-                }
-                var tt = new Secp256k1Point(newX, newY);
-                Debug.Assert(tt.IsValid());
-                return result;
-            }
-        }
-
+ 
         private static int RecoverFromSignature(BigInteger r, BigInteger s, byte[] message, byte[] publicKeyX, byte[] publicKeyY)
         {
 
@@ -475,32 +398,6 @@ namespace HyperLiquid.Net
             typeRaw.PrimaryType = typeName;
             return LightEip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
             //            return Eip712TypedDataSigner.Current.EncodeTypedDataRaw(Converter(typeRaw));
-        }
-
-        private static Nethereum.ABI.EIP712.TypedDataRaw Converter(TypedDataRaw source)
-        {
-            var result = new Nethereum.ABI.EIP712.TypedDataRaw();
-            result.PrimaryType = source.PrimaryType;
-            result.Types = new Dictionary<string, Nethereum.ABI.EIP712.MemberDescription[]>();
-            foreach (var member in source.Types)
-            {
-                result.Types.Add(member.Key, member.Value.Select(x => new Nethereum.ABI.EIP712.MemberDescription()
-                {
-                    Name = x.Name,
-                    Type = x.Type,
-                }).ToArray());
-            }
-            result.DomainRawValues = source.DomainRawValues.Select(v => new Nethereum.ABI.EIP712.MemberValue()
-            {
-                Value = v.Value,
-                TypeName = v.TypeName,
-            }).ToArray();
-            result.Message = source.Message.Select(v => new Nethereum.ABI.EIP712.MemberValue()
-            {
-                Value = v.Value,
-                TypeName = v.TypeName,
-            }).ToArray();
-            return result;
         }
 
         private byte[] GenerateActionHash(object action, long nonce)

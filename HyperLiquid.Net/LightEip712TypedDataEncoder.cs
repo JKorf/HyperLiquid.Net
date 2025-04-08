@@ -1,6 +1,4 @@
 ﻿using HyperLiquid.Net.Utils;
-using Nethereum.Hex.HexConvertors;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -247,7 +245,6 @@ namespace HyperLiquid.Net
 
         private static byte[] AbiValueEncode(string typeName, object value)
         {
-            int size;
             byte[] result;
             switch (typeName)
             {

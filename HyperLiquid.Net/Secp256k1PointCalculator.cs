@@ -1,15 +1,6 @@
-﻿using Org.BouncyCastle.Asn1.Sec;
-using Org.BouncyCastle.Math.EC;
-using Org.BouncyCastle.Math.EC.Endo;
-using Org.BouncyCastle.Math.EC.Multiplier;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyperLiquid.Net
 {
@@ -132,17 +123,12 @@ namespace HyperLiquid.Net
 
         public static Secp256k1Point Negate(this Secp256k1Point p)
         {
-            //Debug.Assert(p.IsValid());
             return p.IsInfinity() ? p : new Secp256k1Point(p.X, p.Y.Secp256k1Negate());
         }
 
         public static Secp256k1Point MultiplyPositiveByN(Secp256k1Point p)
         {
-            //(BigInteger a, BigInteger b) = DecomposeScalar(0);
             return Secp256k1Point.Infinity;
-
-            //ECPointMap pointMap = glvEndomorphism.PointMap;
-            //return ECAlgorithms.ImplShamirsTrickWNaf(p, a, pointMap, b);
         }
 
         public static bool IsNormalized(this Secp256k1Point p)
@@ -193,31 +179,7 @@ namespace HyperLiquid.Net
             }
 
             var result = ImplSumOfMultiplies(precompInfos, ps, abs);
-            var BCsecp256k1 = SecNamedCurves.GetByName("secp256k1");
-            var BCps = new Org.BouncyCastle.Math.EC.ECPoint[ps.Length];
-            for (int i = 0; i < ps.Length; i++)
-            {
-                BCps[i] = BCsecp256k1.Curve.CreatePoint(ToBouncyCastle(ps[i].X), ToBouncyCastle(ps[i].Y));
-            }
-            var BCks = new Org.BouncyCastle.Math.BigInteger[ks.Length];
-            for(int i = 0; i < ks.Length; i++)
-            {
-                BCks[i] = ToBouncyCastle(ks[i]);
-            }
-
-
-            var BCresult = Org.BouncyCastle.Math.EC.ECAlgorithms.SumOfMultiplies(BCps, BCks);
-            BCresult = BCresult.Normalize();
             result = result.Normalize();
-            var BCX = BCresult.XCoord.ToBigInteger().ToString(16);
-            var BCY = BCresult.YCoord.ToBigInteger().ToString(16);
-            var mx = result.X.ToString("x");
-            var my = result.Y.ToString("x");
-            var good = mx.EndsWith(BCX) && my.EndsWith(BCY);
-            if (!good)
-            {
-                Debug.Assert(good);
-            }
             return result;
         }
 
@@ -500,14 +462,6 @@ namespace HyperLiquid.Net
                 return Secp256k1Point.Infinity;
 
             var result = p.TwiceJacobianModified();
-            var bcp = p.ToBouncyCastle();
-            var bct = bcp.Twice();
-            //if (!EqualBouncyCastle(result, bct))
-            //{
-            //    var r2 = p.TwiceJacobianModified();
-            //    var bct2 = bcp.Twice();
-            //    Debug.Assert(false, "failed");
-            //}
             return result;
         }
 
@@ -642,7 +596,6 @@ namespace HyperLiquid.Net
         }
         public static Secp256k1Point TwiceJacobianModified(this Secp256k1Point p)
         {
-            //Debug.Assert(p.IsValid());
             BigInteger X1 = p.X, Y1 = p.Y, Z1 = p.Z;
 
             BigInteger X1Squared = X1.Secp256k1Square();
@@ -657,7 +610,6 @@ namespace HyperLiquid.Net
             BigInteger Z3 = Z1.IsOne ? _2Y1 : _2Y1.Secp256k1Multiply(Z1);
 
             var result = new Secp256k1Point(X3, Y3, Z3);
-            //Debug.Assert(result.IsValid());
             return result;
 
         }
@@ -705,29 +657,6 @@ namespace HyperLiquid.Net
 
             return q;
         }
-        public static Org.BouncyCastle.Math.BigInteger ToBouncyCastle(this BigInteger p)
-        {
-            if (p.Sign >= 0)
-                return new Org.BouncyCastle.Math.BigInteger(p.ToString("x"), 16);
-            return new Org.BouncyCastle.Math.BigInteger((-p).ToString("x"), 16).Negate();
-        }
-        public static Org.BouncyCastle.Math.EC.ECPoint ToBouncyCastle(this Secp256k1Point p)
-        {
-            var BCsecp256k1 = SecNamedCurves.GetByName("secp256k1");
-            var result = BCsecp256k1.Curve.CreatePoint(ToBouncyCastle(p.X), ToBouncyCastle(p.Y));
-            Org.BouncyCastle.Math.EC.FpFieldElement oldZ = result.GetZCoord(0) as Org.BouncyCastle.Math.EC.FpFieldElement;
-            result.GetZCoords()[0] = new FpFieldElement(oldZ.Q, new Org.BouncyCastle.Math.BigInteger(p.Z.ToString("x"), 16));
-            return result;
-        }
-
-        public static bool EqualBouncyCastle(this Secp256k1Point p, Org.BouncyCastle.Math.EC.ECPoint bcp)
-        {
-            if (!p.X.ToString("x").EndsWith(bcp.XCoord.ToBigInteger().ToString(16))) return false;
-            if (!p.Y.ToString("x").EndsWith(bcp.YCoord.ToBigInteger().ToString(16))) return false;
-            if (!p.Z.ToString("x").EndsWith(bcp.GetZCoord(0).ToBigInteger().ToString(16))) return false;
-            return true;
-        }
-
         public static Secp256k1WNafPreCompInfo Precompute(Secp256k1PointPreCompCache precompInfos, Secp256k1Point p, int width, bool includeNegated)
         {
             Debug.Assert(p.IsValid());
@@ -783,11 +712,9 @@ namespace HyperLiquid.Net
                         {
                             twiceP = wNafPreCompInfo.Twice.Value;
                         }
-//                        Debug.Assert(eCPoint.IsValid());
                         while (curPreCompLen < reqPreCompLen)
                         {
                             last = (preComp[curPreCompLen++] = last.Add(twiceP));
-//                            Debug.Assert(eCPoint2.IsValid());
                         }
                     }
 
@@ -824,23 +751,6 @@ namespace HyperLiquid.Net
 
             precompInfos.Set(p, wNafPreCompInfo);
 
-            var r = Org.BouncyCastle.Math.EC.Multiplier.WNafUtilities.Precompute(p.ToBouncyCastle(), width, includeNegated);
-            Debug.Assert(wNafPreCompInfo.Twice.Value.X.ToString("x").EndsWith(r.Twice.XCoord.ToBigInteger().ToString(16)), "Twice X");
-            Debug.Assert(wNafPreCompInfo.Twice.Value.Y.ToString("x").EndsWith(r.Twice.YCoord.ToBigInteger().ToString(16)), "Twice Y");
-            Debug.Assert(wNafPreCompInfo.PreComp.Length == r.PreComp.Length, "PreComp.Length");
-            Debug.Assert(wNafPreCompInfo.PreCompNeg.Length == r.PreCompNeg.Length, "PreCompNeg.Length");
-            for (int i = 0; i < r.PreComp.Length; i++)
-            {
-                Debug.Assert(wNafPreCompInfo.PreComp[i].X.ToString("x").EndsWith(r.PreComp[i].XCoord.ToBigInteger().ToString(16)), $"PreComp[{i}] X");
-                Debug.Assert(wNafPreCompInfo.PreComp[i].Y.ToString("x").EndsWith(r.PreComp[i].YCoord.ToBigInteger().ToString(16)), $"PreComp[{i}] Y");
-                Debug.Assert(wNafPreCompInfo.PreComp[i].Z.ToString("x").EndsWith(r.PreComp[i].GetZCoord(0).ToBigInteger().ToString(16)), $"PreComp[{i}] Z");
-            }
-            for (int i = 0; i < r.PreCompNeg.Length; i++)
-            {
-                Debug.Assert(wNafPreCompInfo.PreCompNeg[i].X.ToString("x").EndsWith(r.PreCompNeg[i].XCoord.ToBigInteger().ToString(16)), $"PreCompNeg[{i}] X");
-                Debug.Assert(wNafPreCompInfo.PreCompNeg[i].Y.ToString("x").EndsWith(r.PreCompNeg[i].YCoord.ToBigInteger().ToString(16)), $"PreCompNeg[{i}] Y");
-                Debug.Assert(wNafPreCompInfo.PreCompNeg[i].Z.ToString("x").EndsWith(r.PreCompNeg[i].GetZCoord(0).ToBigInteger().ToString(16)), $"PreCompNeg[{i}] Z");
-            }
             return wNafPreCompInfo;
         }
         private static void NormalizeAll(Secp256k1Point[] points, int off, int len, BigInteger? iso)
