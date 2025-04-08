@@ -14,16 +14,18 @@ namespace HyperLiquid.Net.Interfaces.Clients
         /// <summary>
         /// Futures API endpoints
         /// </summary>
+        /// <see cref="IHyperLiquidSocketClientFuturesApi"/>
         public IHyperLiquidSocketClientFuturesApi FuturesApi { get; }
         /// <summary>
         /// Spot API endpoints
         /// </summary>
+        /// <see cref="IHyperLiquidSocketClientSpotApi"/>
         public IHyperLiquidSocketClientSpotApi SpotApi { get; }
 
         /// <summary>
         /// Update specific options
         /// </summary>
-        /// <param name="options">Options to update. Only specific options are changable after the client has been created</param>
+        /// <param name="options">Options to update. Only specific options are changeable after the client has been created</param>
         void SetOptions(UpdateOptions options);
 
         /// <summary>

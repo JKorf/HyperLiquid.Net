@@ -2307,20 +2307,23 @@
             <summary>
             Endpoints related to account settings, info or actions
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.ExchangeData">
             <summary>
             Endpoints related to retrieving market and system data
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.Trading">
             <summary>
             Endpoints related to orders and trades
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.SharedClient">
             <summary>
-            Get the shared rest requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared rest requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount">
@@ -2465,17 +2468,19 @@
             <summary>
             Spot API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.FuturesApi">
             <summary>
             Futures API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.SetOptions(CryptoExchange.Net.Objects.Options.UpdateOptions)">
             <summary>
             Update specific options
             </summary>
-            <param name="options">Options to update. Only specific options are changable after the client has been created</param>
+            <param name="options">Options to update. Only specific options are changeable after the client has been created</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.SetApiCredentials(CryptoExchange.Net.Authentication.ApiCredentials)">
             <summary>
@@ -2492,17 +2497,19 @@
             <summary>
             Futures API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SpotApi">
             <summary>
             Spot API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SetOptions(CryptoExchange.Net.Objects.Options.UpdateOptions)">
             <summary>
             Update specific options
             </summary>
-            <param name="options">Options to update. Only specific options are changable after the client has been created</param>
+            <param name="options">Options to update. Only specific options are changeable after the client has been created</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SetApiCredentials(CryptoExchange.Net.Authentication.ApiCredentials)">
             <summary>
@@ -2519,20 +2526,23 @@
             <summary>
             Endpoints related to account settings, info or actions
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.ExchangeData">
             <summary>
             Endpoints related to retrieving market and system data
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.Trading">
             <summary>
             Endpoints related to orders and trades
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiTrading"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.SharedClient">
             <summary>
-            Get the shared rest requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared rest requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount">
@@ -2718,7 +2728,7 @@
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi.SharedClient">
             <summary>
-            Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApiShared">
