@@ -4722,7 +4722,7 @@
         </member>
         <member name="T:HyperLiquid.Net.Secp256k1PointCalculator">
             <summary>
-            This class regroup helper functions associated with the secp256k1 Curle 
+            This class regroup helper functions associated with the secp256k1 Curve 
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Secp256k1ZCalculator">

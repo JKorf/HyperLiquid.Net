@@ -57,7 +57,7 @@ namespace HyperLiquid.Net.UnitTests
                     {
                         return "Bad Signature";
                     }
-                    var recId = ECKey.RecoverFromSignature(eCDSASignature, binaryHash, false, privateKey.GetPubKey(false));
+                    var recId = ECKey.RecoverFromSignature(eCDSASignature, binaryHash, true, privateKey.GetPubKey(false));
                     if (recId + 27 != v)
                     {
                         return $"Bad v. Expecting {recId + 27}, got {v}";

@@ -16,6 +16,8 @@ using Org.BouncyCastle.Crypto;
 using Nethereum.Signer.Crypto;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Math.EC;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 // using Nethereum.Hex.HexConvertors.Extensions;
 // using Org.BouncyCastle.Math.EC;
 
@@ -184,7 +186,9 @@ namespace HyperLiquid.Net
                 rs.s.Reverse().ToArray().CopyTo(c, 0);
                 BigInteger sValue = new BigInteger(c);
 
-                var v = RecoverFromSignature(rValue, sValue, messageBytes, new byte[0]);
+                var v = RecoverFromSignature(rValue, sValue, /*rs.flip, */messageBytes, parameters.Q.X, parameters.Q.Y);
+
+                //Debug.Assert(27 + v == (int)sign.V[0]);
                 return new Dictionary<string, object>()
                 {
                     { "r", "0x" + BytesToHexString(rs.r).ToLowerInvariant() },
@@ -192,15 +196,15 @@ namespace HyperLiquid.Net
                     { "v", 27 + v}
                 };
             }
-            return new Dictionary<string, object>()
-            {
-                { "r", "0x" + BytesToHexString(sign.R).ToLowerInvariant() },
-                { "s", "0x" + BytesToHexString(sign.S).ToLowerInvariant() },
-                { "v", (int)sign.V[0] }
-            };
+            //return new Dictionary<string, object>()
+            //{
+            //    { "r", "0x" + BytesToHexString(sign.R).ToLowerInvariant() },
+            //    { "s", "0x" + BytesToHexString(sign.S).ToLowerInvariant() },
+            //    { "v", (int)sign.V[0] }
+            //};
         }
 
-        public static (byte[] r, byte[] s) NormalizeSignature(byte[] signature)
+        public static (byte[] r, byte[] s, bool flip) NormalizeSignature(byte[] signature)
         {
             // Ensure the signature is in the correct format (r, s)
             if (signature.Length != 64)
@@ -218,10 +222,11 @@ namespace HyperLiquid.Net
             s.Reverse().ToArray().CopyTo(c, 0);
             BigInteger sValue = new BigInteger(c);
             byte[] normalizedS;
+            var flip = false;
             if (sValue > Secp256k1PointCalculator.HalfN)
             {
                 sValue = Secp256k1PointCalculator.N - sValue;
-
+                flip = true;
                 normalizedS = sValue.ToByteArray().Reverse().ToArray();
                 if (normalizedS.Length < 32)
                 {
@@ -234,13 +239,64 @@ namespace HyperLiquid.Net
             {
                 normalizedS = s;
             }
-            return (r, normalizedS);
+            return (r, normalizedS, flip);
         }
-        private static int RecoverFromSignature(BigInteger r, BigInteger s, byte[] message, byte[] uncompressedPublicKey)
+        private static int RecoverFromSignatureBad(BigInteger rValue, BigInteger sValue, bool flip, byte[] messageBytes, byte[] secretKey)
         {
+            var c = new byte[33];
+            messageBytes.Reverse().ToArray().CopyTo(c, 0);
+            var eValue = new System.Numerics.BigInteger(c);
+            c = new byte[33];
+            secretKey.Reverse().ToArray().CopyTo(c, 0);
+            var dValue = new System.Numerics.BigInteger(c);
+            System.Numerics.BigInteger N;
+            var b = System.Numerics.BigInteger.TryParse("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out N);
+            Debug.Assert(b, "Parse N");
 
+            var sInv = System.Numerics.BigInteger.ModPow(sValue, N - 2, N);
+            Debug.Assert((sInv * sValue) % N == 1);
+            var u1 = (eValue * sInv) % N;
+            var u2 = (rValue * sInv) % N;
+            var u1du2 = (u1 + u2 * dValue) % N;
+            var d2 = new byte[32];
+            var u1du2b = u1du2.ToByteArray();
+            u1du2b.Take(32).Reverse().ToArray().CopyTo(d2, Math.Max(0, 32 - u1du2b.Length));
+            ECParameters eCParameters2 = new ECParameters()
+            {
+                D = d2,
+                Curve = System.Security.Cryptography.ECCurve.CreateFromFriendlyName("secp256k1"),
+                Q =
+                    {
+                        X = null,
+                        Y = null
+                    }
+            };
+            using (ECDsa dsa2 = ECDsa.Create(eCParameters2))
+            {
+                var parameters2 = dsa2.ExportParameters(true);
+                c = new byte[33];
+                parameters2.Q.X.Reverse().ToArray().CopyTo(c, 0);
+                var newX = new BigInteger(c);
+                Debug.Assert(newX == rValue);
+                c = new byte[33];
+                parameters2.Q.Y.Reverse().ToArray().CopyTo(c, 0);
+                var newY = new BigInteger(c);
+                var result = 0;
+                if (newX > Secp256k1PointCalculator.N)
+                {
+                    result = 2;
+                }
+                if (newY.IsEven != flip)
+                {
+                    result += 1;
+                }
+                var tt = new Secp256k1Point(newX, newY);
+                Debug.Assert(tt.IsValid());
+                return result;
+            }
         }
-        private static int RecoverFromSignatureOld(BigInteger r, BigInteger s, byte[] message, byte[] uncompressedPublicKey)
+
+        private static int RecoverFromSignature(BigInteger r, BigInteger s, byte[] message, byte[] publicKeyX, byte[] publicKeyY)
         {
 
             if (r < 0)
@@ -251,6 +307,13 @@ namespace HyperLiquid.Net
                 throw new ArgumentNullException("message");
 
 
+            byte[] c = new byte[33];
+            publicKeyX.Reverse().ToArray().CopyTo(c, 0);
+            BigInteger publicKeyXValue = new BigInteger(c);
+
+            c = new byte[33];
+            publicKeyY.Reverse().ToArray().CopyTo(c, 0);
+            BigInteger publicKeyYValue = new BigInteger(c);
 
             //var curve = Secp256k1;
             //var pubToHex = uncompressedPublicKey.ToHex();
@@ -260,7 +323,7 @@ namespace HyperLiquid.Net
             //var n = curve.N;
 
             //   1.5. Compute e from M using Steps 2 and 3 of ECDSA signature verification.
-            byte[] c = new byte[33];
+            c = new byte[33];
             message.Reverse().ToArray().CopyTo(c, 0);
             var e = new BigInteger(c);
             //   1.6. For k from 1 to 2 do the following.   (loop is outside this function via iterating recId)
@@ -276,6 +339,10 @@ namespace HyperLiquid.Net
             // inverse of 3 modulo 11 is 8 because 3 + 8 mod 11 = 0, and -3 mod 11 = 8.
 
             var eInv = (-e) % Secp256k1PointCalculator.N;
+            if (eInv < 0)
+            {
+                eInv += Secp256k1PointCalculator.N;
+            }
             var rInv = BigInteger.ModPow(r, Secp256k1PointCalculator.N - 2, Secp256k1PointCalculator.N);
             //            var rInv = r.ModInverse(s_curveOrder);
             var srInv = (rInv * s) % Secp256k1PointCalculator.N;
@@ -303,20 +370,20 @@ namespace HyperLiquid.Net
                 {
                     // So it's encoded in the recId.
                     var R = Secp256k1PointCalculator.DecompressPointSecp256k1(x, (recId & 1));
-                    var tx = R.X.ToString("X");
-                    var ty = R.Y.ToString("X");
+                    var tx = R.X.ToString("x");
+                    var ty = R.Y.ToString("x");
                     var b = tx == ty;
                     //   1.4. If nR != point at infinity, then do another iteration of Step 1 (callers responsibility).
 
                     if (R.MultiplyByN().IsInfinity())
                     {
-                        //var q = Secp256k1PointCalculator.SumOfTwoMultiplies(Secp256k1PointCalculator.G, eInvrInv, R, srInv);
-                        //q = q.Normalize();
-                        //if (Compare(q.GetEncoded(), uncompressedPublicKey))
-                        //{
-                        recId = i;
+                        var q = Secp256k1PointCalculator.SumOfTwoMultiplies(new Secp256k1PointPreCompCache(), Secp256k1PointCalculator.G, eInvrInv, R, srInv);
+                        q = q.Normalize();
+                        if (q.X == publicKeyXValue && q.Y == publicKeyYValue)
+                        {
+                            recId = i;
                             break;
-                        //}
+                        }
                     }
                 }
             }

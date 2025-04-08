@@ -57,6 +57,19 @@ namespace HyperLiquid.Net
         {
             return Secp256k1ModReduce(x * x);
         }
+        static internal BigInteger Secp256k1Multiply(this BigInteger x, BigInteger y)
+        {
+            if (x.IsZero || y.IsOne)
+                return x;
+            if (y.IsZero || x.IsOne)
+                return y;
+            return Secp256k1ModReduce(x * y);
+        }
+        static internal BigInteger Secp256k1Invert(this BigInteger x)
+        {
+            // Todo : take Bouncy Castle implementation 3 time faster.
+            return Secp256k1ModReduce(BigInteger.ModPow(x, Q - 2, Q));
+        }
         static internal BigInteger Secp256k1Negate(this BigInteger x)
         {
             return x.IsZero ? x : Q - x;
@@ -73,6 +86,33 @@ namespace HyperLiquid.Net
         private static BigInteger? CheckSqrt(BigInteger x, BigInteger z)
         {
             return z.Secp256k1Square().Equals(x) ? z : null;
+        }
+
+        static internal BigInteger Secp256k1Add(this BigInteger x1, BigInteger x2)
+        {
+            BigInteger x3 = x1 + x2;
+            if (x3 > Q)
+            {
+                x3 -= Q;
+            }
+            return x3;
+        }
+        static internal BigInteger Secp256k1Two(this BigInteger x) => x.Secp256k1Add(x);
+        static internal BigInteger Secp256k1Three(this BigInteger x) => x.Secp256k1Add(x.Secp256k1Two());
+        static internal BigInteger Secp256k1Subtract(this BigInteger x1, BigInteger x2)
+        {
+            BigInteger x3 = x1 - x2;
+            if (x3.Sign < 0)
+            {
+                x3 += Q;
+            }
+            return x3;
+        }
+        static internal BigInteger Secp256k1MultiplyMinusProduct(this BigInteger a, BigInteger b, BigInteger x, BigInteger y)
+        {
+            BigInteger ab = a.Secp256k1Multiply(b);
+            BigInteger xy = x.Secp256k1Multiply(y);
+            return ab.Secp256k1Subtract(xy).Secp256k1ModReduce();
         }
 
     }
