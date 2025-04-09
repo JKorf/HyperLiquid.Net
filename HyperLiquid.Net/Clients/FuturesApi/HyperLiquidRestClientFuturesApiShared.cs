@@ -148,7 +148,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (symbol == null)
                 return result.AsExchangeError<SharedFuturesTicker>(Exchange, new ServerError("Symbol not found"));
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, symbol.MidPrice == null ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
+            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
             {
                 FundingRate = symbol.FundingRate,
                 MarkPrice = symbol.MarkPrice
@@ -166,7 +166,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return result.AsExchangeResult<SharedFuturesTicker[]>(Exchange, null, default);
 
-            return result.AsExchangeResult<SharedFuturesTicker[]>(Exchange, TradingMode.PerpetualLinear, result.Data.Tickers.Select(x => new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), x.Symbol, x.MidPrice, null, null, x.NotionalVolume, x.MidPrice == null ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100), 3))
+            return result.AsExchangeResult<SharedFuturesTicker[]>(Exchange, TradingMode.PerpetualLinear, result.Data.Tickers.Select(x => new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), x.Symbol, x.MidPrice, null, null, x.NotionalVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100), 3))
             {
                 FundingRate = x.FundingRate,
                 MarkPrice = x.MarkPrice
