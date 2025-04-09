@@ -166,6 +166,31 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Book Ticker client
+
+        EndpointOptions<GetBookTickerRequest> IBookTickerRestClient.GetBookTickerOptions { get; } = new EndpointOptions<GetBookTickerRequest>(false);
+        async Task<ExchangeWebResult<SharedBookTicker>> IBookTickerRestClient.GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct)
+        {
+            var validationError = ((IBookTickerRestClient)this).GetBookTickerOptions.ValidateRequest(Exchange, request, request.Symbol.TradingMode, SupportedTradingModes);
+            if (validationError != null)
+                return new ExchangeWebResult<SharedBookTicker>(Exchange, validationError);
+
+            var symbol = request.Symbol.GetSymbol(FormatSymbol);
+            var resultTicker = await ExchangeData.GetOrderBookAsync(symbol, ct: ct).ConfigureAwait(false);
+            if (!resultTicker)
+                return resultTicker.AsExchangeResult<SharedBookTicker>(Exchange, null, default);
+
+            return resultTicker.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedBookTicker(
+                ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
+                symbol,
+                resultTicker.Data.Levels.Asks[0].Price,
+                resultTicker.Data.Levels.Asks[0].Quantity,
+                resultTicker.Data.Levels.Bids[0].Price,
+                resultTicker.Data.Levels.Bids[0].Quantity));
+        }
+
+        #endregion
+
         #region Spot Symbol client
         EndpointOptions<GetSymbolsRequest> ISpotSymbolRestClient.GetSpotSymbolsOptions { get; } = new EndpointOptions<GetSymbolsRequest>(false);
 
@@ -270,7 +295,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 OrderPrice = order.Data.Order.Price,
                 OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
-                UpdateTime = order.Data.Timestamp
+                UpdateTime = order.Data.Timestamp,
+                TriggerPrice = order.Data.Order.TriggerPrice,
+                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
             });
         }
 
@@ -304,7 +331,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 OrderPrice = x.Price,
                 OrderQuantity = new SharedOrderQuantity(x.Quantity),
                 QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
-                UpdateTime = x.Timestamp
+                UpdateTime = x.Timestamp,
+                TriggerPrice = x.TriggerPrice,
+                IsTriggerOrder = x.TriggerPrice > 0
             }).ToArray());
         }
 
@@ -345,7 +374,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 OrderPrice = x.Order.Price,
                 OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
-                UpdateTime = x.Timestamp
+                UpdateTime = x.Timestamp,
+                TriggerPrice = x.Order.TriggerPrice,
+                IsTriggerOrder = x.Order.TriggerPrice > 0
             }).ToArray());
         }
 
@@ -505,7 +536,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 OrderPrice = order.Data.Order.Price,
                 OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
                 QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
-                UpdateTime = order.Data.Timestamp
+                UpdateTime = order.Data.Timestamp,
+                TriggerPrice = order.Data.Order.TriggerPrice,
+                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
             });
         }
 
@@ -607,5 +640,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+
     }
 }

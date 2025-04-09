@@ -1,5 +1,6 @@
 ﻿using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Clients;
+using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Models;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal futures symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync()
+        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync(IHyperLiquidRestClient client)
         {
             await _semaphoreFutures.WaitAsync().ConfigureAwait(false);
 
@@ -36,7 +37,7 @@ namespace HyperLiquid.Net.Utils
                 if (DateTime.UtcNow - _lastFuturesUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
-                var symbolInfo = await new HyperLiquidRestClient().FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
+                var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
@@ -53,7 +54,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateSpotSymbolInfoAsync()
+        public static async Task<CallResult> UpdateSpotSymbolInfoAsync(IHyperLiquidRestClient client)
         {
             await _semaphoreSpot.WaitAsync().ConfigureAwait(false);
             try
@@ -61,7 +62,7 @@ namespace HyperLiquid.Net.Utils
                 if (DateTime.UtcNow - _lastSpotUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
-                var symbolInfo = await new HyperLiquidRestClient().SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
+                var symbolInfo = await client.SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
@@ -79,13 +80,14 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get symbol id from a symbol name
         /// </summary>
+        /// <param name="client">Client to make a request to retrieve exchange info if necessary</param>
         /// <param name="symbolName">Symbol name</param>
         /// <returns></returns>
-        public static async Task<CallResult<int>> GetSymbolIdFromNameAsync(string symbolName)
+        public static async Task<CallResult<int>> GetSymbolIdFromNameAsync(IHyperLiquidRestClient client, string symbolName)
         {
             if (SymbolIsExchangeSpotSymbol(symbolName))
             {
-                var update = await UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+                var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
@@ -97,7 +99,7 @@ namespace HyperLiquid.Net.Utils
             }
             else
             {
-                var update = await UpdateFuturesSymbolInfoAsync().ConfigureAwait(false);
+                var update = await UpdateFuturesSymbolInfoAsync(client).ConfigureAwait(false);
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
@@ -126,11 +128,12 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="client">Client to make a request to retrieve exchange info if necessary</param>
+        /// <param name="id">Id</param>
         /// <returns></returns>
-        public static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(string id)
+        public static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(IHyperLiquidRestClient client, string id)
         {
-            var update = await UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 
@@ -145,9 +148,9 @@ namespace HyperLiquid.Net.Utils
         /// Get an exchange symbol name from a symbol name
         /// </summary>
         /// <returns></returns>
-        public static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(string name)
+        public static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(IHyperLiquidRestClient client, string name)
         {
-            var update = await UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 
@@ -181,11 +184,12 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get an asset name and id from an exchange asset name
         /// </summary>
+        /// <param name="client">Client to make a request to retrieve exchange info if necessary</param>
         /// <param name="asset">Exchange asset name</param>
         /// <returns></returns>
-        public static async Task<CallResult<string>> GetAssetNameAndIdAsync(string asset)
+        public static async Task<CallResult<string>> GetAssetNameAndIdAsync(IHyperLiquidRestClient client, string asset)
         {
-            var update = await UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 

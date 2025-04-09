@@ -73,7 +73,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 

@@ -13,6 +13,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidCancelResult>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidTwapOrderResultIntWrapper>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidTwapCancelResult>))]
+    [JsonSerializable(typeof(CancelResultConverter.ErrorMessage))]
 
     // End manual defined attributes
 

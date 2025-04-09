@@ -61,10 +61,7 @@
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOrderHistoryAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceMultipleTriggerOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},HyperLiquid.Net.Enums.TpSlGrouping,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.Threading.CancellationToken)">
@@ -420,6 +417,11 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.ParameterCollection">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.ErrorMessage">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -1678,6 +1680,16 @@
             Margin canceled
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.WaitingFill">
+            <summary>
+            Waiting for main order to fill before placing this order
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.WaitingTrigger">
+            <summary>
+            Waiting for trigger price to be reached before placing this order
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Enums.OrderType">
             <summary>
             Order type
@@ -1699,6 +1711,16 @@
             </summary>
         </member>
         <member name="F:HyperLiquid.Net.Enums.OrderType.StopLimit">
+            <summary>
+            Stop Limit
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderType.TakeProfitMarket">
+            <summary>
+            Stop Market
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderType.TakeProfit">
             <summary>
             Stop Limit
             </summary>
@@ -2078,7 +2100,7 @@
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
-            <param name="clientOrderId">Client rder id</param>
+            <param name="clientOrderId">Client order id</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.Threading.CancellationToken)">
@@ -2089,7 +2111,7 @@
             <param name="requests">Cancel requests</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Nullable{System.Decimal},System.Nullable{HyperLiquid.Net.Enums.TpSlType},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.Threading.CancellationToken)">
             <summary>
             Place a new order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
@@ -2101,38 +2123,15 @@
             <param name="price">Limit price. For market orders pass the current price of the symbol for max slippage calculation.</param>
             <param name="timeInForce">Time in force</param>
             <param name="reduceOnly">Reduce only</param>
-            <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
-            <param name="ct">Cancellation token</param>
-        </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Threading.CancellationToken)">
-            <summary>
-            Place multiple new orders in a single call
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
-            </summary>
-            <param name="orders">Orders to place</param>
-            <param name="ct">Cancellation token</param>
-        </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceTriggerOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Decimal,HyperLiquid.Net.Enums.TpSlType,HyperLiquid.Net.Enums.TpSlGrouping,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Threading.CancellationToken)">
-            <summary>
-            Place a new trigger order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
-            </summary>
-            <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
-            <param name="side">Order side</param>
-            <param name="orderType">Order type</param>
-            <param name="quantity">Quantity</param>
-            <param name="price">Limit price. For market orders pass the current price of the symbol for max slippage calculation.</param>
-            <param name="timeInForce">Time in force</param>
-            <param name="reduceOnly">Reduce only</param>
-            <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
             <param name="triggerPrice">Trigger order trigger price</param>
             <param name="tpSlType">Trigger order type</param>
             <param name="tpSlGrouping">Trigger order grouping</param>
+            <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleTriggerOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},HyperLiquid.Net.Enums.TpSlGrouping,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.Threading.CancellationToken)">
             <summary>
-            Place multiple new trigger orders
+            Place multiple new orders in a single call
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
             </summary>
             <param name="orders">Orders to place</param>
@@ -2308,20 +2307,23 @@
             <summary>
             Endpoints related to account settings, info or actions
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.ExchangeData">
             <summary>
             Endpoints related to retrieving market and system data
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.Trading">
             <summary>
             Endpoints related to orders and trades
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi.SharedClient">
             <summary>
-            Get the shared rest requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared rest requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount">
@@ -2466,17 +2468,19 @@
             <summary>
             Spot API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.FuturesApi">
             <summary>
             Futures API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.SetOptions(CryptoExchange.Net.Objects.Options.UpdateOptions)">
             <summary>
             Update specific options
             </summary>
-            <param name="options">Options to update. Only specific options are changable after the client has been created</param>
+            <param name="options">Options to update. Only specific options are changeable after the client has been created</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient.SetApiCredentials(CryptoExchange.Net.Authentication.ApiCredentials)">
             <summary>
@@ -2493,17 +2497,19 @@
             <summary>
             Futures API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SpotApi">
             <summary>
             Spot API endpoints
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SetOptions(CryptoExchange.Net.Objects.Options.UpdateOptions)">
             <summary>
             Update specific options
             </summary>
-            <param name="options">Options to update. Only specific options are changable after the client has been created</param>
+            <param name="options">Options to update. Only specific options are changeable after the client has been created</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient.SetApiCredentials(CryptoExchange.Net.Authentication.ApiCredentials)">
             <summary>
@@ -2520,20 +2526,23 @@
             <summary>
             Endpoints related to account settings, info or actions
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.ExchangeData">
             <summary>
             Endpoints related to retrieving market and system data
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.Trading">
             <summary>
             Endpoints related to orders and trades
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiTrading"/>
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApi.SharedClient">
             <summary>
-            Get the shared rest requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared rest requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount">
@@ -2719,7 +2728,7 @@
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi.SharedClient">
             <summary>
-            Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApiShared">
@@ -4276,6 +4285,11 @@
             Full asset name
             </summary>
         </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract">
+            <summary>
+            EVM contract  info
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract.Address">
             <summary>
             Address
@@ -4789,20 +4803,21 @@
             Util methods for the HyperLiquid API
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateFuturesSymbolInfoAsync">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateFuturesSymbolInfoAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient)">
             <summary>
             Update the internal futures symbol info
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateSpotSymbolInfoAsync">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateSpotSymbolInfoAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient)">
             <summary>
             Update the internal spot symbol info
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolIdFromNameAsync(System.String)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolIdFromNameAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
             Get symbol id from a symbol name
             </summary>
+            <param name="client">Client to make a request to retrieve exchange info if necessary</param>
             <param name="symbolName">Symbol name</param>
             <returns></returns>
         </member>
@@ -4813,14 +4828,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(System.String)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
             Get a symbol name from an exchange symbol name
             </summary>
-            <param name="id"></param>
+            <param name="client">Client to make a request to retrieve exchange info if necessary</param>
+            <param name="id">Id</param>
             <returns></returns>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(System.String)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
             Get an exchange symbol name from a symbol name
             </summary>
@@ -4833,10 +4849,11 @@
             <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetAssetNameAndIdAsync(System.String)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetAssetNameAndIdAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
             Get an asset name and id from an exchange asset name
             </summary>
+            <param name="client">Client to make a request to retrieve exchange info if necessary</param>
             <param name="asset">Exchange asset name</param>
             <returns></returns>
         </member>

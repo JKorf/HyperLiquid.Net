@@ -132,7 +132,6 @@ namespace HyperLiquid.Net.Objects.Models
         public string FullName { get; set; } = string.Empty;
     }
 
-    [SerializationModel]
     /// <summary>
     /// EVM contract  info
     /// </summary>

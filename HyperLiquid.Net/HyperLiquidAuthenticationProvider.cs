@@ -8,6 +8,7 @@ using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Utils;
 using System.Security.Cryptography;
 using System.Numerics;
+using HyperLiquid.Net.Clients.BaseApi;
 
 namespace HyperLiquid.Net
 {
@@ -39,7 +40,7 @@ namespace HyperLiquid.Net
 
         private static readonly Dictionary<string, object> _userActionDomain = new Dictionary<string, object>()
         {
-            { "chainId", 2748 },
+            { "chainId", 421614 },
             { "name", "HyperliquidSignTransaction" },
             { "verifyingContract", "0x0000000000000000000000000000000000000000" },
             { "version", "1" },
@@ -107,7 +108,7 @@ namespace HyperLiquid.Net
                 var hash = GenerateActionHash(action, nonce);
                 var phantomAgent = new Dictionary<string, object>()
                 {
-                    { "source", "a" },
+                    { "source", ((HyperLiquidRestClientApi)apiClient).ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "b" : "a" },
                     { "connectionId", hash },
                 };
 

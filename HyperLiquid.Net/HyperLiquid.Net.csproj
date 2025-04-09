@@ -7,9 +7,9 @@
   <PropertyGroup>
     <PackageId>HyperLiquid.Net</PackageId>
     <Authors>JKorf</Authors>
-    <PackageVersion>1.1.1</PackageVersion>
-    <AssemblyVersion>1.1.1</AssemblyVersion>
-    <FileVersion>1.1.1</FileVersion>
+    <PackageVersion>2.0.0-beta1</PackageVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0-beta1</FileVersion>
     <Description>HyperLiquid.Net is a client library for accessing the HyperLiquid DEX REST and Websocket API. All data is mapped to readable models and enum values. Additional features include an implementation for maintaining a client side order book, easy integration with other exchange client libraries and more.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>HyperLiquid;HyperLiquid.Net;HyperLiquid.xyz;HyperLiquid Client;HyperLiquid API;CryptoCurrency;CryptoCurrency Exchange</PackageTags>
