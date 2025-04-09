@@ -309,7 +309,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "maxFeeRate", $"{maxFeePercentage.ToString(CultureInfo.InvariantCulture)}%" },
                 { "builder", builderAddress },
-                { "nonce", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value },
+#warning TESTING SIGNATURE, REMOVE BEFORE RELEASE
+                { "nonce", 1L },//DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value },
                 { "signatureChainId", "0x66eee" },
                 { "type", "approveBuilderFee" },
             };
