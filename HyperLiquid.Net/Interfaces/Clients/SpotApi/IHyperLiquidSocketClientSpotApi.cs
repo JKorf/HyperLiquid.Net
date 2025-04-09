@@ -11,6 +11,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot streams
     /// </summary>
+    /// <see cref="IHyperLiquidSocketClientApi"/>
     public interface IHyperLiquidSocketClientSpotApi : IHyperLiquidSocketClientApi
     {
         /// <summary>

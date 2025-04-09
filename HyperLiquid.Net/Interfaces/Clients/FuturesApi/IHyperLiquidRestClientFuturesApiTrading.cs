@@ -9,6 +9,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures trading endpoints, placing and managing orders.
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientTrading"/>
     public interface IHyperLiquidRestClientFuturesApiTrading : IHyperLiquidRestClientTrading
     {
         /// <summary>

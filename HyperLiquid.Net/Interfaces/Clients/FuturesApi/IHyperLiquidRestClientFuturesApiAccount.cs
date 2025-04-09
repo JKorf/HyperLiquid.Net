@@ -11,6 +11,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientAccount"/>
     public interface IHyperLiquidRestClientFuturesApiAccount: IHyperLiquidRestClientAccount
     {
         /// <summary>

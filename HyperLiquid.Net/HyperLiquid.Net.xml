@@ -2710,6 +2710,7 @@
             <summary>
             HyperLiquid spot trading endpoints, placing and managing orders.
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading"/>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi">
             <summary>

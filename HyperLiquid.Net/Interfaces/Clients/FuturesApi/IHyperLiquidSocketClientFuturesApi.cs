@@ -12,6 +12,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures streams
     /// </summary>
+    /// <see cref="IHyperLiquidSocketClientApi"/>
     public interface IHyperLiquidSocketClientFuturesApi : IHyperLiquidSocketClientApi
     {
         /// <summary>
@@ -46,7 +47,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default);
 
         /// <summary>
-        /// Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+        /// Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
         /// </summary>
         public IHyperLiquidSocketClientFuturesApiShared SharedClient { get; }
     }
