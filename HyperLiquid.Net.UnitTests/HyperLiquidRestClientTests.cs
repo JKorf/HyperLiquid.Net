@@ -6,6 +6,10 @@ using System.Net.Http;
 using HyperLiquid.Net.Clients;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using Nethereum.Signer;
+using System.Net.Sockets;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Signer.Crypto;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -13,9 +17,11 @@ namespace HyperLiquid.Net.UnitTests
     public class HyperLiquidRestClientTests
     {
         [Test]
-        public void CheckSignatureExample1()
+        public void CheckNonDeterministSignatureExample1()
         {
-            var authProvider = new HyperLiquidAuthenticationProvider(new ApiCredentials("0xaa", "0xbb"));
+            const string hash = "FACE28327892D757909E0DB4B499EC67D51AD9127BFBC53B96CCB173155D7B94";
+            const string secret = "0xbb";
+            var authProvider = new HyperLiquidAuthenticationProvider(new ApiCredentials("0xaa", secret));
             var client = (RestApiClient)new HyperLiquidRestClient().SpotApi;
 
             CryptoExchange.Net.Testing.TestHelpers.CheckSignature(
@@ -26,10 +32,39 @@ namespace HyperLiquid.Net.UnitTests
                 (uriParams, bodyParams, headers) =>
                 {
                     var signature = (Dictionary<string, object>)bodyParams["signature"];
-
-                    return signature["r"].ToString() + "-" + signature["s"].ToString();
+                    var privateKey = new ECKey(secret.HexToByteArray(), true);
+                    var r = signature["r"].ToString();
+                    var s = signature["s"].ToString();
+                    if (!r.StartsWith("0x"))
+                    {
+                        return $"bad start for r :{r}";
+                    }
+                    if (!s.StartsWith("0x"))
+                    {
+                        return $"bad start for s :{s}";
+                    }
+                    if (!int.TryParse(signature["v"].ToString(), out var v))
+                    {
+                        return $"v is not an int : {signature["v"]}";
+                    }
+                    ECDSASignature eCDSASignature = new ECDSASignature(
+                            new Org.BouncyCastle.Math.BigInteger(r.Substring(2), 16),
+                            new Org.BouncyCastle.Math.BigInteger(s.Substring(2), 16)
+                            );
+                    var binaryHash = hash.HexToByteArray();
+                    var verifyResult = privateKey.Verify(binaryHash, eCDSASignature);
+                    if (!verifyResult)
+                    {
+                        return "Bad Signature";
+                    }
+                    var recId = ECKey.RecoverFromSignature(eCDSASignature, binaryHash, true, privateKey.GetPubKey(false));
+                    if (recId + 27 != v)
+                    {
+                        return $"Bad v. Expecting {recId + 27}, got {v}";
+                    }
+                    return "Good";
                 },
-                "0x9b6ce90642ed560d93419b17c8b02f6b953b773c5d53c8d6d0d1f12b05e18d01-0x76044596dd1032e3663dc6b198e66f328aaeae11ac11504770682de3f414c861",
+                "Good",
                 new Dictionary<string, object>
                 {
                     { "action", new ParameterCollection

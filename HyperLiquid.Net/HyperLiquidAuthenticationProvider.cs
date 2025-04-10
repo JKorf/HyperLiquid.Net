@@ -1,16 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
-using Nethereum.Signer.EIP712;
-using Nethereum.Util;
-using Nethereum.Signer;
-using Nethereum.ABI.EIP712;
 using HyperLiquid.Net.Utils;
+using System.Security.Cryptography;
+using System.Numerics;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Signing;
 
 namespace HyperLiquid.Net
 {
@@ -130,7 +129,7 @@ namespace HyperLiquid.Net
                 { "HyperliquidTransaction:" + name, props }
             };
 
-            foreach(var item in parameters.Where(x => x.Key != "type" && x.Key != "signatureChainId"))
+            foreach (var item in parameters.Where(x => x.Key != "type" && x.Key != "signatureChainId"))
             {
                 props.Add(new Dictionary<string, object>
                 {
@@ -145,19 +144,147 @@ namespace HyperLiquid.Net
         public static Dictionary<string, object> SignRequest(string request, string secret)
         {
             var messageBytes = ConvertHexStringToByteArray(request);
-            var signer = new MessageSigner();
-            var sign = signer.SignAndCalculateV(messageBytes, new EthECKey(secret));
-
-            return new Dictionary<string, object>() 
+            var bSecret = secret.HexToByteArray();
+            var t = new byte[32];
+            bSecret.CopyTo(t, Math.Max(0, t.Length - bSecret.Length));
+            ECParameters eCParameters = new ECParameters()
             {
-                { "r", "0x" + BytesToHexString(sign.R).ToLowerInvariant() },
-                { "s", "0x" + BytesToHexString(sign.S).ToLowerInvariant() },
-                { "v", (int)sign.V[0] }
+                D = t,
+                Curve = ECCurve.CreateFromFriendlyName("secp256k1"),
+                Q =
+                {
+                    X = null,
+                    Y = null
+                }
             };
+
+            using (ECDsa dsa = ECDsa.Create(eCParameters))
+            {
+                var s = dsa.SignHash(messageBytes);
+                var rs = NormalizeSignature(s);
+                var parameters = dsa.ExportParameters(false);
+
+                var c = new byte[33];
+
+                rs.r.Reverse().ToArray().CopyTo(c, 0);
+                BigInteger rValue = new BigInteger(c);
+                c = new byte[33];
+                rs.s.Reverse().ToArray().CopyTo(c, 0);
+                BigInteger sValue = new BigInteger(c);
+
+                var v = RecoverFromSignature(rValue, sValue, messageBytes, parameters.Q.X!, parameters.Q.Y!);
+
+                return new Dictionary<string, object>()
+                {
+                    { "r", "0x" + BytesToHexString(rs.r).ToLowerInvariant() },
+                    { "s", "0x" + BytesToHexString(rs.s).ToLowerInvariant() },
+                    { "v", 27 + v}
+                };
+            }
+        }
+
+        public static (byte[] r, byte[] s, bool flip) NormalizeSignature(byte[] signature)
+        {
+            // Ensure the signature is in the correct format (r, s)
+            if (signature.Length != 64)
+                throw new ArgumentException("Invalid signature length.");
+
+            byte[] r = new byte[32];
+            byte[] s = new byte[32];
+            Array.Copy(signature, 0, r, 0, 32);
+            Array.Copy(signature, 32, s, 0, 32);
+
+            // Normalize the 's' value to be in the lower half of the curve order
+            byte[] c = new byte[33];
+            s.Reverse().ToArray().CopyTo(c, 0);
+            BigInteger sValue = new BigInteger(c);
+            byte[] normalizedS;
+            var flip = false;
+            if (sValue > Secp256k1PointCalculator._halfN)
+            {
+                sValue = Secp256k1PointCalculator._n - sValue;
+                flip = true;
+                normalizedS = sValue.ToByteArray().Reverse().ToArray();
+                if (normalizedS.Length < 32)
+                {
+                    byte[] paddedS = new byte[32];
+                    Array.Copy(normalizedS, 0, paddedS, 32 - normalizedS.Length, normalizedS.Length);
+                    normalizedS = paddedS;
+                }
+            }
+            else
+            {
+                normalizedS = s;
+            }
+
+            return (r, normalizedS, flip);
+        }
+ 
+        private static int RecoverFromSignature(BigInteger r, BigInteger s, byte[] message, byte[] publicKeyX, byte[] publicKeyY)
+        {
+            if (r < 0)
+                throw new ArgumentException("r should be positive");
+            if (s < 0)
+                throw new ArgumentException("s should be positive");
+            if (message == null)
+                throw new ArgumentNullException("message");
+
+            byte[] c = new byte[33];
+            publicKeyX.Reverse().ToArray().CopyTo(c, 0);
+            BigInteger publicKeyXValue = new BigInteger(c);
+
+            c = new byte[33];
+            publicKeyY.Reverse().ToArray().CopyTo(c, 0);
+            BigInteger publicKeyYValue = new BigInteger(c);
+
+            // Compute e from M using Steps 2 and 3 of ECDSA signature verification.
+            c = new byte[33];
+            message.Reverse().ToArray().CopyTo(c, 0);
+            var e = new BigInteger(c);
+            
+            var eInv = (-e) % Secp256k1PointCalculator._n;
+            if (eInv < 0)            
+                eInv += Secp256k1PointCalculator._n;            
+
+            var rInv = BigInteger.ModPow(r, Secp256k1PointCalculator._n - 2, Secp256k1PointCalculator._n);
+            var srInv = (rInv * s) % Secp256k1PointCalculator._n;
+            var eInvrInv = (rInv * eInv) % Secp256k1PointCalculator._n;
+
+            var recId = -1;
+
+            for (var i = 0; i < 4; i++)
+            {
+                recId = i;
+                var intAdd = recId / 2;
+                var x = r + (intAdd * Secp256k1PointCalculator._n);
+
+                if (x < Secp256k1ZCalculator._q)
+                {
+                    var R = Secp256k1PointCalculator.DecompressPointSecp256k1(x, (recId & 1));
+                    var tx = R.X.ToString("x");
+                    var ty = R.Y.ToString("x");
+                    var b = tx == ty;
+                    if (R.MultiplyByN().IsInfinity())
+                    {
+                        var q = Secp256k1PointCalculator.SumOfTwoMultiplies(new Secp256k1PointPreCompCache(), Secp256k1PointCalculator._g, eInvrInv, R, srInv);
+                        q = q.Normalize();
+                        if (q.X == publicKeyXValue && q.Y == publicKeyYValue)
+                        {
+                            recId = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (recId == -1)
+                throw new Exception("Could not construct a recoverable key. This should never happen.");
+
+            return recId;
         }
 
         public byte[] EncodeEip721(
-            Dictionary<string, object> domain, 
+            Dictionary<string, object> domain,
             Dictionary<string, object> messageTypes,
             Dictionary<string, object> messageData)
         {
@@ -205,7 +332,7 @@ namespace HyperLiquid.Net
             var messageTypesDescription = new List<MemberDescription> { };
             for (var i = 0; i < messageTypesContent.Count; i++)
             {
-                var elem = (IDictionary<string, object>)messageTypesContent[i]; 
+                var elem = (IDictionary<string, object>)messageTypesContent[i];
                 var name = (string)elem["name"];
                 var type = (string)elem["type"];
                 messageTypesDict[name] = type;
@@ -234,8 +361,7 @@ namespace HyperLiquid.Net
             typeRaw.Message = messageValues.ToArray();
             typeRaw.Types = types;
             typeRaw.PrimaryType = typeName;
-
-            return Eip712TypedDataSigner.Current.EncodeTypedDataRaw(typeRaw);
+            return LightEip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
         }
 
         private byte[] GenerateActionHash(object action, long nonce)
@@ -262,8 +388,7 @@ namespace HyperLiquid.Net
 
         private static byte[] SignKeccak(byte[] data)
         {
-            var keccack = new Sha3Keccack();
-            return keccack.CalculateHash(data);
+            return InternalSha3Keccack.CalculateHash(data);
         }
     }
 }

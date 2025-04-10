@@ -2330,6 +2330,7 @@
             <summary>
             HyperLiquid futures account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientAccount"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>
@@ -2353,6 +2354,7 @@
             <summary>
             HyperLiquid futures exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
             <summary>
@@ -2393,6 +2395,7 @@
             <summary>
             HyperLiquid futures trading endpoints, placing and managing orders.
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Threading.CancellationToken)">
             <summary>
@@ -2417,6 +2420,7 @@
             <summary>
             HyperLiquid futures streams
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi.SubscribeToSymbolUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidFuturesTicker}},System.Threading.CancellationToken)">
             <summary>
@@ -2451,7 +2455,7 @@
         </member>
         <member name="P:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi.SharedClient">
             <summary>
-            Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+            Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApiShared">
@@ -2549,6 +2553,7 @@
             <summary>
             HyperLiquid spot account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientAccount"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetBalancesAsync(System.String,System.Threading.CancellationToken)">
             <summary>
@@ -2678,6 +2683,7 @@
             <summary>
             HyperLiquid spot exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
             <summary>
@@ -2716,6 +2722,7 @@
             <summary>
             HyperLiquid spot streams
             </summary>
+            <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi"/>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi.SubscribeToSymbolUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTicker}},System.Threading.CancellationToken)">
             <summary>
@@ -4734,6 +4741,16 @@
         </member>
         <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.DoHandleMessage(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Objects.Sockets.DataEvent{System.Object})">
             <inheritdoc />
+        </member>
+        <member name="T:HyperLiquid.Net.Signing.Secp256k1PointCalculator">
+            <summary>
+            This class regroup helper functions associated with the secp256k1 Curve 
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Signing.Secp256k1ZCalculator">
+            <summary>
+            This class regroup helper functions for computation in the Z/Zp associated with secp256k1
+            </summary>
         </member>
         <member name="T:HyperLiquid.Net.SymbolOrderBooks.HyperLiquidOrderBookFactory">
             <summary>
