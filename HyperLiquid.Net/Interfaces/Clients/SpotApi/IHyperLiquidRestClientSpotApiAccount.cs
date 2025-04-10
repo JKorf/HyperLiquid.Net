@@ -12,6 +12,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientAccount"/>
     public interface IHyperLiquidRestClientSpotApiAccount : IHyperLiquidRestClientAccount
     {
         /// <summary>

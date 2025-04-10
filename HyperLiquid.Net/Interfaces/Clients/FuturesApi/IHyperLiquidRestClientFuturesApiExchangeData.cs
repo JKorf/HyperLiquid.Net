@@ -11,6 +11,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientExchangeData"/>
     public interface IHyperLiquidRestClientFuturesApiExchangeData : IHyperLiquidRestClientExchangeData
     {
         /// <summary>
