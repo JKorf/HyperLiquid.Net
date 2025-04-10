@@ -65,7 +65,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// Time in force
         /// </summary>
         [JsonPropertyName("tif")]
-        public TimeInForce TimeInForce { get; set; }
+        public TimeInForce? TimeInForce { get; set; }
         /// <summary>
         /// Original order quantity
         /// </summary>
