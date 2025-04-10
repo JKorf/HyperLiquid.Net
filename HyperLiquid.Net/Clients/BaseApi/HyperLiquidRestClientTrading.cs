@@ -436,7 +436,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             }
 
             if (result.All(x => !x.Success))
-                return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(result.First().Error!, result.ToArray());
+                return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(new ServerError("All orders failed"), result.ToArray());
 
             return intResult.As<CallResult<HyperLiquidOrderResult>[]>(result.ToArray());
         }
