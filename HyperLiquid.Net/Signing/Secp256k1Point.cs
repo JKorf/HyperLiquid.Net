@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperLiquid.Net
+namespace HyperLiquid.Net.Signing
 {
     // represent a point on the Secq256k1 curve
     // Only mode JACOBIAN_MODIFIED
@@ -15,6 +15,6 @@ namespace HyperLiquid.Net
     {
         public Secp256k1Point(BigInteger X, BigInteger Y) : this(X, Y, BigInteger.One) { }
 
-        public static Secp256k1Point Infinity = new Secp256k1Point(Secp256k1ZCalculator.Q, Secp256k1ZCalculator.Q);
+        public static Secp256k1Point Infinity = new Secp256k1Point(Secp256k1ZCalculator._q, Secp256k1ZCalculator._q);
     }
 }

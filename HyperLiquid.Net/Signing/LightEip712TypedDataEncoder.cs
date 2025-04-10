@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace HyperLiquid.Net
+namespace HyperLiquid.Net.Signing
 {
     internal static class LightEip712TypedDataEncoder
     {
@@ -18,7 +18,7 @@ namespace HyperLiquid.Net
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {
-                writer.Write((byte)0x19);  //"1901".HexToByteArray());
+                writer.Write((byte)0x19);
                 writer.Write((byte)0x01);
                 writer.Write(HashStruct(typedData.Types, "EIP712Domain", typedData.DomainRawValues));
                 writer.Write(HashStruct(typedData.Types, typedData.PrimaryType, typedData.Message));
@@ -71,9 +71,7 @@ namespace HyperLiquid.Net
         private static string ConvertToElementType(string type)
         {
             if (type.Contains("["))
-            {
                 return type.Substring(0, type.IndexOf("["));
-            }
             return type;
         }
 
@@ -117,14 +115,15 @@ namespace HyperLiquid.Net
                     case "bytes":
                         {
                             byte[] value;
-                            if (memberValue.Value is string)
+                            if (memberValue.Value is string v)
                             {
-                                value = ((string)memberValue.Value).HexToByteArray();
+                                value = v.HexToByteArray();
                             }
                             else
                             {
                                 value = (byte[])memberValue.Value;
                             }
+
                             var abiValueEncoded = InternalSha3Keccack.CalculateHash(value);
                             writer.Write(abiValueEncoded);
                             break;
@@ -155,42 +154,30 @@ namespace HyperLiquid.Net
                             else if (memberValue.TypeName.StartsWith("int") || memberValue.TypeName.StartsWith("uint"))
                             {
                                 object value;
-                                if (memberValue.Value is string)
+                                if (memberValue.Value is string v)
                                 {
-                                    BigInteger parsedOutput;
-                                    if (BigInteger.TryParse((string)memberValue.Value, out parsedOutput))
-                                    {
-                                        value = parsedOutput;
-                                    }
-                                    else
-                                    {
+                                    if (BigInteger.TryParse(v, out BigInteger parsedOutput))                                    
+                                        value = parsedOutput;                                    
+                                    else                                    
                                         value = memberValue.Value;
-                                    }
                                 }
                                 else
                                 {
                                     value = memberValue.Value;
                                 }
+
                                 var abiValueEncoded = AbiValueEncodeInt(memberValue.TypeName, value);
-                                // Todo : EGA
-                                //var abiValue = new Nethereum.ABI.ABIValue(memberValue.TypeName, value);
-                                //var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
                                 writer.Write(abiValueEncoded);
                             }
                             else
                             {
                                 var abiValueEncoded = AbiValueEncode(memberValue.TypeName, memberValue.Value);
-                                // Todo : EGA
-                                //var abiValue = new ABIValue(memberValue.TypeName, memberValue.Value);
-                                //var abiValueEncoded = _abiEncode.GetABIEncoded(abiValue);
                                 writer.Write(abiValueEncoded);
                             }
                             break;
                         }
                 }
             }
-
-
         }
 
         private static byte[] AbiValueEncodeInt(string typeName, object value)
@@ -198,18 +185,13 @@ namespace HyperLiquid.Net
             int size;
             bool signed = !typeName.StartsWith("u"); // uint versus int
             if (signed)
-            {
                 size = int.Parse(typeName.Substring(3));
-            }
-            else
-            {
+            else            
                 size = int.Parse(typeName.Substring(4));
-            }
+            
             if (size == 0)
-            {
                 size = 256;
-            }
-//            var result = new byte[size / 8];
+
             var result = new byte[32];
             BigInteger v;
             switch (value)
@@ -227,6 +209,7 @@ namespace HyperLiquid.Net
                     v = new BigInteger(0);
                     break;
             }
+
             if (signed && v < 0)
             {
                 // Pad with FF
@@ -235,11 +218,11 @@ namespace HyperLiquid.Net
                     result[i] = 0xFF;
                 }
             }
+
             var t = v.ToByteArray();
             if (BitConverter.IsLittleEndian)
-            {
                 t = t.Reverse().ToArray();
-            }
+
             t.CopyTo(result, result.Length - t.Length);
             return result;
         }
@@ -260,6 +243,7 @@ namespace HyperLiquid.Net
                             t.CopyTo(result, result.Length - t.Length);
                             return result;
                         }
+
                         result = new byte[32];
                         switch (value)
                         {
@@ -270,9 +254,11 @@ namespace HyperLiquid.Net
                                     return result;
                                 }
                         }
+
                         return result;
                     }
             }
+
             return Array.Empty<byte>();
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperLiquid.Net
+namespace HyperLiquid.Net.Signing
 {
     internal sealed class Secp256k1WNafPreCompInfo
     {

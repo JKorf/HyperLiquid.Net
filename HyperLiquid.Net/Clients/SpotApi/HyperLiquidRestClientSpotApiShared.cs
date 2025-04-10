@@ -475,7 +475,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             return order.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(request.OrderId));
         }
 
-        private SharedTimeInForce? ParseTimeInForce(TimeInForce timeInForce)
+        private SharedTimeInForce? ParseTimeInForce(TimeInForce? timeInForce)
         {
             if (timeInForce == TimeInForce.ImmediateOrCancel) return SharedTimeInForce.ImmediateOrCancel;
             if (timeInForce == TimeInForce.GoodTillCanceled) return SharedTimeInForce.GoodTillCanceled;

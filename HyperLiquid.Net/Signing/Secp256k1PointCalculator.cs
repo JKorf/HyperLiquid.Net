@@ -2,48 +2,48 @@
 using System.Diagnostics;
 using System.Numerics;
 
-namespace HyperLiquid.Net
+namespace HyperLiquid.Net.Signing
 {
     /// <summary>
     /// This class regroup helper functions associated with the secp256k1 Curve 
     /// </summary>
     internal static class Secp256k1PointCalculator
     {
-        internal readonly static int A = 0;
-        internal readonly static int B = 7;
-        internal readonly static BigInteger N;
-        internal readonly static BigInteger HalfN;
-        internal readonly static BigInteger G1;
-        internal readonly static BigInteger G2;
-        internal readonly static BigInteger V1_0;
-        internal readonly static BigInteger V1_1;
-        internal readonly static BigInteger V2_0;
-        internal readonly static BigInteger V2_1;
-        internal readonly static BigInteger Beta;
-        internal readonly static Secp256k1Point G;
-        internal readonly static BigInteger ScaleXPointMap;
-        private static readonly BigInteger[] DEFAULT_WINDOW_SIZE_CUTOFFS = new BigInteger[] { BigInteger.One << 13, BigInteger.One << 41, BigInteger.One << 121, BigInteger.One << 337, BigInteger.One << 897, BigInteger.One << 2305 };
+        internal readonly static int _a = 0;
+        internal readonly static int _b = 7;
+        internal readonly static BigInteger _n;
+        internal readonly static BigInteger _halfN;
+        internal readonly static BigInteger _g1;
+        internal readonly static BigInteger _g2;
+        internal readonly static BigInteger _v1_0;
+        internal readonly static BigInteger _v1_1;
+        internal readonly static BigInteger _v2_0;
+        internal readonly static BigInteger _v2_1;
+        internal readonly static BigInteger _beta;
+        internal readonly static Secp256k1Point _g;
+        internal readonly static BigInteger _scaleXPointMap;
+        private static readonly BigInteger[] _defaultWindowSizeCutOffs = new BigInteger[] { BigInteger.One << 13, BigInteger.One << 41, BigInteger.One << 121, BigInteger.One << 337, BigInteger.One << 897, BigInteger.One << 2305 };
 
         static Secp256k1PointCalculator()
         {
-            var b = BigInteger.TryParse("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out N);
+            var b = BigInteger.TryParse("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _n);
             Debug.Assert(b, "Parse N");
-            HalfN = N >> 1;
-            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb153dab", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out G1);
+            _halfN = _n >> 1;
+            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb153dab", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _g1);
             Debug.Assert(b, "Parse G1");
-            b = BigInteger.TryParse("00e4437ed6010e88286f547fa90abfe4c42212", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out G2);
+            b = BigInteger.TryParse("00e4437ed6010e88286f547fa90abfe4c42212", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _g2);
             Debug.Assert(b, "Parse G2");
-            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb15", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out V1_0);
+            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb15", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _v1_0);
             Debug.Assert(b, "Parse V1_0");
             b = BigInteger.TryParse("00e4437ed6010e88286f547fa90abfe4c3", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var v);
             Debug.Assert(b, "Parse V1_1");
-            V1_1 = -v;
-            b = BigInteger.TryParse("00114ca50f7a8e2f3f657c1108d9d44cfd8", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out V2_0);
+            _v1_1 = -v;
+            b = BigInteger.TryParse("00114ca50f7a8e2f3f657c1108d9d44cfd8", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _v2_0);
             Debug.Assert(b, "Parse V2_0");
-            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb15", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out V2_1);
+            b = BigInteger.TryParse("003086d221a7d46bcde86c90e49284eb15", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _v2_1);
             Debug.Assert(b, "Parse V2_1");
 
-            b = BigInteger.TryParse("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out Beta);
+            b = BigInteger.TryParse("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _beta);
             Debug.Assert(b, "Parse Beta");
 
             b = BigInteger.TryParse("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var Gx);
@@ -51,31 +51,23 @@ namespace HyperLiquid.Net
             b = BigInteger.TryParse("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var Gy);
             Debug.Assert(b, "Parse G.Y");
 
-            G = new Secp256k1Point(Gx, Gy);
-            Debug.Assert(G.IsValid(), "Parse G");
+            _g = new Secp256k1Point(Gx, Gy);
+            Debug.Assert(_g.IsValid(), "Parse G");
 
-            b = BigInteger.TryParse("07ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ScaleXPointMap);
+            b = BigInteger.TryParse("07ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee", System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _scaleXPointMap);
             Debug.Assert(b, "Parse ScaleXPointMap");
         }
 
         internal static Secp256k1Point DecompressPointSecp256k1(BigInteger X1, int yTilde)
         {
             var x = X1;
-            var rhs = ((X1.Secp256k1Square() * X1) + 7).Secp256k1ModReduce();
-            var y = rhs.Secp256k1Sqrt();
-            /*
-             * If y is not a square, then we haven't got a point on the curve
-             */
-            if (y == null)
-                throw new ArgumentException("Invalid point compression");
-
-            if (y.Value.IsEven == (yTilde == 1))
-            {
+            var rhs = (X1.Secp256k1Square() * X1 + 7).Secp256k1ModReduce();
+            var y = rhs.Secp256k1Sqrt() ?? throw new ArgumentException("Invalid point compression");
+            if (y.IsEven == (yTilde == 1))
                 // Use the other root
-                y = y.Value.Secp256k1Negate();
-            }
+                y = y.Secp256k1Negate();
 
-            return new Secp256k1Point(x, y.Value);
+            return new Secp256k1Point(x, y);
         }
 
         public static bool IsValid(this Secp256k1Point p)
@@ -89,7 +81,7 @@ namespace HyperLiquid.Net
             if (!p.Y.Secp256k1IsValid())
                 return false;
 
-            if (!SatisfiesCurveEquation(p))
+            if (!p.SatisfiesCurveEquation())
                 return false;
 
             return true;
@@ -115,6 +107,7 @@ namespace HyperLiquid.Net
         {
             if (p.IsInfinity())
                 return p;
+
             Secp256k1Point result = MultiplyPositiveByN(p);
 
             Debug.Assert(result.IsValid());
@@ -140,14 +133,10 @@ namespace HyperLiquid.Net
         public static Secp256k1Point Normalize(this Secp256k1Point p)
         {
             if (p.IsInfinity())
-            {
                 return p;
-            }
 
             if (p.Z.IsOne)
-            {
                 return p;
-            }
 
             return p.Normalize(p.Z.Secp256k1Invert());
         }
@@ -157,22 +146,24 @@ namespace HyperLiquid.Net
             BigInteger zInv2 = zInv.Secp256k1Square(), zInv3 = zInv2.Secp256k1Multiply(zInv);
             return new Secp256k1Point(p.X.Secp256k1Multiply(zInv2), p.Y.Secp256k1Multiply(zInv3));
         }
+
         internal static Secp256k1Point SumOfTwoMultiplies(Secp256k1PointPreCompCache precompInfos, Secp256k1Point p, BigInteger a, Secp256k1Point q, BigInteger b)
         {
             Secp256k1Point result = ImplSumOfMultipliesGlv(precompInfos, new Secp256k1Point[] { p, q }, new BigInteger[] { a, b });
             Debug.Assert(result.IsValid());
             return result;
         }
+
         internal static Secp256k1Point ImplSumOfMultipliesGlv(Secp256k1PointPreCompCache precompInfos, Secp256k1Point[] ps, BigInteger[] ks)
         {
             int len = ps.Length;
 
-            BigInteger[] abs = new BigInteger[len << 1];
+            var abs = new BigInteger[len << 1];
             for (int i = 0, j = 0; i < len; ++i)
             {
-                var ksMod = ks[i] % N;
+                var ksMod = ks[i] % _n;
                 if (ksMod < 0)
-                    ksMod += N;
+                    ksMod += _n;
                 (BigInteger a, BigInteger b) = DecomposeScalar(ksMod);
                 abs[j++] = a;
                 abs[j++] = b;
@@ -188,7 +179,7 @@ namespace HyperLiquid.Net
             int halfCount = ps.Length, fullCount = halfCount << 1;
 
             bool[] negs = new bool[fullCount];
-            Secp256k1WNafPreCompInfo[] infos = new Secp256k1WNafPreCompInfo[fullCount];
+            var infos = new Secp256k1WNafPreCompInfo[fullCount];
             byte[][] wnafs = new byte[fullCount][];
 
             for (int i = 0; i < halfCount; ++i)
@@ -198,7 +189,7 @@ namespace HyperLiquid.Net
                 BigInteger kj0 = ks[j0]; negs[j0] = kj0.Sign < 0; kj0 = BigInteger.Abs(kj0);
                 BigInteger kj1 = ks[j1]; negs[j1] = kj1.Sign < 0; kj1 = BigInteger.Abs(kj1);
 
-                int width = System.Math.Max(2, System.Math.Min(16, GetWindowSize(BigInteger.Max(kj0, kj1))));
+                int width = Math.Max(2, Math.Min(16, GetWindowSize(BigInteger.Max(kj0, kj1))));
 
                 Secp256k1Point P = ps[i], Q = MapPointWithPrecomp(precompInfos, P, width, true);
                 infos[j0] = precompInfos.Get(P) ?? new Secp256k1WNafPreCompInfo();
@@ -215,7 +206,7 @@ namespace HyperLiquid.Net
             int len = 0, count = wnafs.Length;
             for (int i = 0; i < count; ++i)
             {
-                len = System.Math.Max(len, wnafs[i].Length);
+                len = Math.Max(len, wnafs[i].Length);
             }
 
             Secp256k1Point R = Secp256k1Point.Infinity;
@@ -228,12 +219,12 @@ namespace HyperLiquid.Net
                 for (int j = 0; j < count; ++j)
                 {
                     byte[] wnaf = wnafs[j];
-                    int wi = i < wnaf.Length ? (int)(sbyte)wnaf[i] : 0;
+                    int wi = i < wnaf.Length ? (sbyte)wnaf[i] : 0;
                     if (wi != 0)
                     {
-                        int n = System.Math.Abs(wi);
+                        int n = Math.Abs(wi);
                         Secp256k1WNafPreCompInfo info = infos[j];
-                        Secp256k1Point[] table = (wi < 0 == negs[j]) ? info.PreComp : info.PreCompNeg;
+                        Secp256k1Point[] table = wi < 0 == negs[j] ? info.PreComp : info.PreCompNeg;
                         r = r.Add(table[n >> 1]);
                     }
                 }
@@ -254,9 +245,7 @@ namespace HyperLiquid.Net
             }
 
             if (zeroes > 0)
-            {
                 R = R.TimesPow2(zeroes);
-            }
 
             return R;
         }
@@ -319,14 +308,12 @@ namespace HyperLiquid.Net
         public static byte[] GenerateWindowNaf(int width, BigInteger k)
         {
             if (width == 2)
-            {
                 return GenerateNaf(k);
-            }
 
             if (width < 2 || width > 8)
                 throw new ArgumentException("must be in the range [2, 8]", "width");
             if (k.Sign == 0)
-                return Array.Empty<Byte>();
+                return Array.Empty<byte>();
 
             byte[] wnaf = new byte[257];
 
@@ -346,30 +333,24 @@ namespace HyperLiquid.Net
                     continue;
                 }
 
-                k = k >> (pos);
+                k = k >> pos;
                 kb = k.ToByteArray();
                 int digit = kb[0] & mask;
                 if (carry)
-                {
                     ++digit;
-                }
 
                 carry = (digit & sign) != 0;
                 if (carry)
-                {
                     digit -= pow2;
-                }
 
-                length += (length > 0) ? pos - 1 : pos;
+                length += length > 0 ? pos - 1 : pos;
                 wnaf[length++] = (byte)digit;
                 pos = width;
             }
 
             // Reduce the WNAF array to its actual length
             if (wnaf.Length > length)
-            {
                 Array.Resize(ref wnaf, length);
-            }
 
             return wnaf;
         }
@@ -377,7 +358,7 @@ namespace HyperLiquid.Net
         private static bool TestBit(byte[] bytes, int pos)
         {
             var byteIndex = pos / 8;
-            var byteMask = 1 << (pos % 8);
+            var byteMask = 1 << pos % 8;
             return (bytes[byteIndex] & byteMask) > 0;
         }
 
@@ -397,7 +378,7 @@ namespace HyperLiquid.Net
         private static byte[] GenerateNaf(BigInteger k)
         {
             if (k.Sign == 0)
-                return Array.Empty<Byte>();
+                return Array.Empty<byte>();
 
             BigInteger _3k = k.Secp256k1Three();
             byte[] _3kb = _3k.ToByteArray();
@@ -417,7 +398,7 @@ namespace HyperLiquid.Net
                         continue;
                     if (i * 8 + j >= digits)
                         break;
-                    var mask = ((byte)1) << j;
+                    var mask = 1 << j;
                     if ((mask & x) > 0)
                     {
                         naf[i - 1] = (byte)((b & mask) > 0 ? -1 : 1);
@@ -430,11 +411,10 @@ namespace HyperLiquid.Net
             return naf;
         }
 
-
         public static int GetWindowSize(BigInteger q)
         {
             int i;
-            for (i = 0; i < DEFAULT_WINDOW_SIZE_CUTOFFS.Length && q >= DEFAULT_WINDOW_SIZE_CUTOFFS[i]; i++)
+            for (i = 0; i < _defaultWindowSizeCutOffs.Length && q >= _defaultWindowSizeCutOffs[i]; i++)
             {
             }
 
@@ -452,6 +432,7 @@ namespace HyperLiquid.Net
 
             return p.TwiceJacobianModified().Add(p);
         }
+
         public static Secp256k1Point Twice(this Secp256k1Point p)
         {
             if (p.IsInfinity())
@@ -494,9 +475,7 @@ namespace HyperLiquid.Net
                     if (dx.IsZero)
                     {
                         if (dy.IsZero)
-                        {
                             return p1.Twice();
-                        }
                         return Secp256k1Point.Infinity;
                     }
 
@@ -509,13 +488,9 @@ namespace HyperLiquid.Net
                     Z3 = dx;
 
                     if (Z1IsOne)
-                    {
                         Z3Squared = C;
-                    }
-                    else
-                    {
-                        Z3 = Z3.Secp256k1Multiply(Z1);
-                    }
+                    else                    
+                        Z3 = Z3.Secp256k1Multiply(Z1);                    
                 }
                 else
                 {
@@ -553,10 +528,8 @@ namespace HyperLiquid.Net
                     if (H.IsZero)
                     {
                         if (R.IsZero)
-                        {
                             // this == b, i.e. this must be doubled
                             return p1.Twice();
-                        }
 
                         // this == -b, i.e. the result is the point at infinity
                         return Secp256k1Point.Infinity;
@@ -571,13 +544,9 @@ namespace HyperLiquid.Net
 
                     Z3 = H;
                     if (!Z1IsOne)
-                    {
                         Z3 = Z3.Secp256k1Multiply(Z1);
-                    }
                     if (!Z2IsOne)
-                    {
                         Z3 = Z3.Secp256k1Multiply(Z2);
-                    }
 
                     // Alternative calculation of Z3 using fast square
                     //X3 = four(X3);
@@ -585,10 +554,9 @@ namespace HyperLiquid.Net
                     //Z3 = doubleProductFromSquares(Z1, Z2, Z1Squared, Z2Squared).Multiply(H);
 
                     if (Z3 == H)
-                    {
                         Z3Squared = HSquared;
-                    }
                 }
+
                 return new Secp256k1Point(X3, Y3, Z3);
             }
 
@@ -602,7 +570,7 @@ namespace HyperLiquid.Net
             BigInteger M = X1Squared.Secp256k1Three();
             BigInteger _2Y1 = Y1.Secp256k1Two();
             BigInteger _2Y1Squared = _2Y1.Secp256k1Multiply(Y1);
-            BigInteger S = (X1.Secp256k1Multiply(_2Y1Squared)).Secp256k1Two();
+            BigInteger S = X1.Secp256k1Multiply(_2Y1Squared).Secp256k1Two();
             BigInteger X3 = M.Secp256k1Square().Secp256k1Subtract(S.Secp256k1Two());
             BigInteger _4T = _2Y1Squared.Secp256k1Square();
             BigInteger _8T = _4T.Secp256k1Two();
@@ -611,14 +579,13 @@ namespace HyperLiquid.Net
 
             var result = new Secp256k1Point(X3, Y3, Z3);
             return result;
-
         }
 
         private static Secp256k1Point MapPointMap(this Secp256k1Point p)
         {
             return p.IsInfinity()
                 ? p
-                : new Secp256k1Point(p.X.Secp256k1Multiply(ScaleXPointMap), p.Y, p.Z);
+                : new Secp256k1Point(p.X.Secp256k1Multiply(_scaleXPointMap), p.Y, p.Z);
         }
 
         public static Secp256k1Point MapPointWithPrecomp(Secp256k1PointPreCompCache precompInfos, Secp256k1Point p, int width, bool includeNegated)
@@ -636,20 +603,22 @@ namespace HyperLiquid.Net
             }
 
             Secp256k1Point[] preCompP = wnafPreCompP.PreComp;
-            Secp256k1Point[] preCompQ = new Secp256k1Point[preCompP.Length];
+            var preCompQ = new Secp256k1Point[preCompP.Length];
             for (int i = 0; i < preCompP.Length; ++i)
             {
                 preCompQ[i] = preCompP[i].MapPointMap();
             }
+
             wnafPreCompQ.PreComp = preCompQ;
 
             if (includeNegated)
             {
-                Secp256k1Point[] preCompNegQ = new Secp256k1Point[preCompQ.Length];
+                var preCompNegQ = new Secp256k1Point[preCompQ.Length];
                 for (int i = 0; i < preCompNegQ.Length; ++i)
                 {
                     preCompNegQ[i] = preCompQ[i].Negate();
                 }
+
                 wnafPreCompQ.PreCompNeg = preCompNegQ;
             }
 
@@ -661,7 +630,7 @@ namespace HyperLiquid.Net
         {
             Debug.Assert(p.IsValid());
             Secp256k1WNafPreCompInfo wNafPreCompInfo = precompInfos.Get(p) ?? new Secp256k1WNafPreCompInfo();
-            int reqPreCompLen = 1 << System.Math.Max(0, width - 2);
+            int reqPreCompLen = 1 << Math.Max(0, width - 2);
             Secp256k1Point[] preComp = wNafPreCompInfo.PreComp;
             int iniPreCompLen = preComp.Length;
 
@@ -703,18 +672,17 @@ namespace HyperLiquid.Net
                                 BigInteger iso3 = iso2.Secp256k1Multiply(iso.Value);
                                 last = new Secp256k1Point(last.X.Secp256k1Multiply(iso2), last.Y.Secp256k1Multiply(iso3), last.Z);
                                 if (iniPreCompLen == 0)
-                                {
                                     preComp[0] = last;
-                                }
                             }
                         }
                         else
                         {
                             twiceP = wNafPreCompInfo.Twice.Value;
                         }
+
                         while (curPreCompLen < reqPreCompLen)
                         {
-                            last = (preComp[curPreCompLen++] = last.Add(twiceP));
+                            last = preComp[curPreCompLen++] = last.Add(twiceP);
                         }
                     }
 
@@ -736,9 +704,7 @@ namespace HyperLiquid.Net
                 {
                     i = array2.Length;
                     if (i < reqPreCompLen)
-                    {
                         Array.Resize(ref array2, reqPreCompLen);
-                    }
                 }
 
                 for (; i < reqPreCompLen; i++)
@@ -750,14 +716,14 @@ namespace HyperLiquid.Net
             }
 
             precompInfos.Set(p, wNafPreCompInfo);
-
             return wNafPreCompInfo;
         }
+
         private static void NormalizeAll(Secp256k1Point[] points, int off, int len, BigInteger? iso)
         {
             // Figure out which of the points actually need to be normalized
 
-            BigInteger[] zs = new BigInteger[len];
+            var zs = new BigInteger[len];
             int[] indices = new int[len];
             int count = 0;
             for (int i = 0; i < len; ++i)
@@ -771,9 +737,7 @@ namespace HyperLiquid.Net
             }
 
             if (count == 0)
-            {
                 return;
-            }
 
             MontgomeryTrick(zs, 0, count, iso);
 
@@ -791,7 +755,7 @@ namespace HyperLiquid.Net
             //* "Fast Multi-scalar Multiplication Methods on Elliptic Curves with Precomputation Strategy Using Montgomery Trick"
             //* by Katsuyuki Okeya, Kouichi Sakurai.
 
-            BigInteger[] c = new BigInteger[len];
+            var c = new BigInteger[len];
             c[0] = zs[off];
 
             int i = 0;
@@ -803,9 +767,7 @@ namespace HyperLiquid.Net
             --i;
 
             if (scale != null)
-            {
                 c[i] = c[i].Secp256k1Multiply(scale.Value);
-            }
 
             BigInteger u = c[i].Secp256k1Invert();
 
@@ -822,110 +784,28 @@ namespace HyperLiquid.Net
 
         private static BigInteger CalculateB(BigInteger k, BigInteger g, int t)
         {
-            bool negative = (g.Sign < 0);
+            bool negative = g.Sign < 0;
             var gAbs = negative ? -g : g;
             BigInteger b = k * gAbs;
-            var c = b >> (t - 1);
+            var c = b >> t - 1;
             if (c.IsEven)
-            {
-                b = (c >> 1);
-            }
-            else
-            {
+                b = c >> 1;
+            else            
                 b = (c >> 1) + 1;
-            }
+            
             return negative ? -b : b;
         }
 
         private static (BigInteger a, BigInteger b) DecomposeScalar(BigInteger k)
         {
             int bits = 272;
-            BigInteger b1 = CalculateB(k, G1, bits);
-            BigInteger b2 = CalculateB(k, G2, bits);
+            BigInteger b1 = CalculateB(k, _g1, bits);
+            BigInteger b2 = CalculateB(k, _g2, bits);
 
-            BigInteger a = k - ((b1 * V1_0) + (b2 * V2_0));
-            BigInteger b = -((b1 * V1_1) + (b2 * V2_1));
+            BigInteger a = k - (b1 * _v1_0 + b2 * _v2_0);
+            BigInteger b = -(b1 * _v1_1 + b2 * _v2_1);
 
             return (a, b);
         }
-        /*
-        internal static ECPoint ImplShamirsTrickWNaf(Secp256k1Point P, BigInteger k, ECPointMap pointMapQ, BigInteger l)
-        {
-            bool negK = k.Sign < 0, negL = l.Sign < 0;
-
-            k = k.Sign < 0 ? -k : k;
-            l = l.Sign < 0 ? -l : l;
-
-            int width = System.Math.Max(2, System.Math.Min(16, WNafUtilities.GetWindowSize(System.Math.Max(k.BitLength, l.BitLength))));
-
-            ECPoint Q = WNafUtilities.MapPointWithPrecomp(P, width, true, pointMapQ);
-            WNafPreCompInfo infoP = WNafUtilities.GetWNafPreCompInfo(P);
-            WNafPreCompInfo infoQ = WNafUtilities.GetWNafPreCompInfo(Q);
-
-            ECPoint[] preCompP = negK ? infoP.PreCompNeg : infoP.PreComp;
-            ECPoint[] preCompQ = negL ? infoQ.PreCompNeg : infoQ.PreComp;
-            ECPoint[] preCompNegP = negK ? infoP.PreComp : infoP.PreCompNeg;
-            ECPoint[] preCompNegQ = negL ? infoQ.PreComp : infoQ.PreCompNeg;
-
-            byte[] wnafP = WNafUtilities.GenerateWindowNaf(width, k);
-            byte[] wnafQ = WNafUtilities.GenerateWindowNaf(width, l);
-
-            return ImplShamirsTrickWNaf(preCompP, preCompNegP, wnafP, preCompQ, preCompNegQ, wnafQ);
-        }
-
-        private static ECPoint ImplShamirsTrickWNaf(ECPoint[] preCompP, ECPoint[] preCompNegP, byte[] wnafP,
-            ECPoint[] preCompQ, ECPoint[] preCompNegQ, byte[] wnafQ)
-        {
-            int len = System.Math.Max(wnafP.Length, wnafQ.Length);
-
-            ECCurve curve = preCompP[0].Curve;
-            ECPoint infinity = curve.Infinity;
-
-            ECPoint R = infinity;
-            int zeroes = 0;
-
-            for (int i = len - 1; i >= 0; --i)
-            {
-                int wiP = i < wnafP.Length ? (int)(sbyte)wnafP[i] : 0;
-                int wiQ = i < wnafQ.Length ? (int)(sbyte)wnafQ[i] : 0;
-
-                if ((wiP | wiQ) == 0)
-                {
-                    ++zeroes;
-                    continue;
-                }
-
-                ECPoint r = infinity;
-                if (wiP != 0)
-                {
-                    int nP = System.Math.Abs(wiP);
-                    ECPoint[] tableP = wiP < 0 ? preCompNegP : preCompP;
-                    r = r.Add(tableP[nP >> 1]);
-                }
-                if (wiQ != 0)
-                {
-                    int nQ = System.Math.Abs(wiQ);
-                    ECPoint[] tableQ = wiQ < 0 ? preCompNegQ : preCompQ;
-                    r = r.Add(tableQ[nQ >> 1]);
-                }
-
-                if (zeroes > 0)
-                {
-                    R = R.TimesPow2(zeroes);
-                    zeroes = 0;
-                }
-
-                R = R.TwicePlus(r);
-            }
-
-            if (zeroes > 0)
-            {
-                R = R.TimesPow2(zeroes);
-            }
-
-            return R;
-        }
-        */
-
     }
 }

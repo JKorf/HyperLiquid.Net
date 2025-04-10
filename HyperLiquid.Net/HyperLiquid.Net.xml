@@ -4742,12 +4742,12 @@
         <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.DoHandleMessage(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Objects.Sockets.DataEvent{System.Object})">
             <inheritdoc />
         </member>
-        <member name="T:HyperLiquid.Net.Secp256k1PointCalculator">
+        <member name="T:HyperLiquid.Net.Signing.Secp256k1PointCalculator">
             <summary>
             This class regroup helper functions associated with the secp256k1 Curve 
             </summary>
         </member>
-        <member name="T:HyperLiquid.Net.Secp256k1ZCalculator">
+        <member name="T:HyperLiquid.Net.Signing.Secp256k1ZCalculator">
             <summary>
             This class regroup helper functions for computation in the Z/Zp associated with secp256k1
             </summary>

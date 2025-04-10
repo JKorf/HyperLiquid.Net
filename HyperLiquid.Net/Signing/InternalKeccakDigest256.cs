@@ -1,96 +1,93 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace HyperLiquid.Net
+namespace HyperLiquid.Net.Signing
 {
     internal class InternalKeccakDigest256
     {
-        private static readonly ulong[] KeccakRoundConstants = KeccakInitializeRoundConstants();
+        private static readonly ulong[] _keccakRoundConstants = KeccakInitializeRoundConstants();
+        private static readonly int[] _keccakRhoOffsets = KeccakInitializeRhoOffsets();
 
-        private static readonly int[] KeccakRhoOffsets = KeccakInitializeRhoOffsets();
-
-
-        private readonly int rate;
-        const int STATE_LENGTH = (1600 / 8);
-        private readonly ulong[] state = new ulong[STATE_LENGTH / 8];
-        private readonly byte[] dataQueue = new byte[1536 / 8];
-        private int bitsInQueue;
-        private int fixedOutputLength;
-        private bool squeezing;
-        private int bitsAvailableForSqueezing;
+        private readonly int _rate;
+        private const int _stateLength = 1600 / 8;
+        private readonly ulong[] _state = new ulong[_stateLength / 8];
+        private readonly byte[] _dataQueue = new byte[1536 / 8];
+        private int _bitsInQueue;
+        private int _fixedOutputLength;
+        private bool _squeezing;
+        private int _bitsAvailableForSqueezing;
 
         public InternalKeccakDigest256()
         {
-            rate = (1600 - (256 << 1));
-            this.bitsInQueue = 0;
-            this.squeezing = false;
-            this.bitsAvailableForSqueezing = 0;
-            this.fixedOutputLength = (1600 - rate) >> 1;
+            _rate = 1600 - (256 << 1);
+            _bitsInQueue = 0;
+            _squeezing = false;
+            _bitsAvailableForSqueezing = 0;
+            _fixedOutputLength = 1600 - _rate >> 1;
         }
+
         internal void BlockUpdate(byte[] data, int length)
         {
-            int bytesInQueue = bitsInQueue >> 3;
-            int rateBytes = rate >> 3;
+            int bytesInQueue = _bitsInQueue >> 3;
+            int rateBytes = _rate >> 3;
 
             int count = 0;
             while (count < length)
             {
-                if (bytesInQueue == 0 && count <= (length - rateBytes))
+                if (bytesInQueue == 0 && count <= length - rateBytes)
                 {
                     do
                     {
                         KeccakAbsorb(data, count);
                         count += rateBytes;
-                    } while (count <= (length - rateBytes));
+                    } while (count <= length - rateBytes);
                 }
                 else
                 {
-                    int partialBlock = System.Math.Min(rateBytes - bytesInQueue, length - count);
-                    Array.Copy(data, count, dataQueue, bytesInQueue, partialBlock);
+                    int partialBlock = Math.Min(rateBytes - bytesInQueue, length - count);
+                    Array.Copy(data, count, _dataQueue, bytesInQueue, partialBlock);
 
                     bytesInQueue += partialBlock;
                     count += partialBlock;
 
                     if (bytesInQueue == rateBytes)
                     {
-                        KeccakAbsorb(dataQueue, 0);
+                        KeccakAbsorb(_dataQueue, 0);
                         bytesInQueue = 0;
                     }
                 }
             }
 
-            bitsInQueue = bytesInQueue << 3;
+            _bitsInQueue = bytesInQueue << 3;
         }
 
         internal void DoFinal(byte[] output, int outOff)
         {
-            Squeeze(output, outOff, fixedOutputLength >> 3);
+            Squeeze(output, outOff, _fixedOutputLength >> 3);
         }
 
-        internal int GetDigestSize() => fixedOutputLength >> 3;
+        internal int GetDigestSize() => _fixedOutputLength >> 3;
 
         protected void Squeeze(byte[] output, int off, int len)
         {
-            if (!squeezing)
-            {
+            if (!_squeezing)
                 PadAndSwitchToSqueezingPhase();
-            }
 
             long outputLength = (long)len << 3;
             long i = 0;
             while (i < outputLength)
             {
-                if (bitsAvailableForSqueezing == 0)
+                if (_bitsAvailableForSqueezing == 0)
                 {
                     KeccakPermutation();
                     KeccakExtract();
-                    bitsAvailableForSqueezing = rate;
+                    _bitsAvailableForSqueezing = _rate;
                 }
 
-                int partialBlock = (int)System.Math.Min((long)bitsAvailableForSqueezing, outputLength - i);
-                Array.Copy(dataQueue, (rate - bitsAvailableForSqueezing) >> 3, output, off + (int)(i >> 3),
+                int partialBlock = (int)Math.Min(_bitsAvailableForSqueezing, outputLength - i);
+                Array.Copy(_dataQueue, _rate - _bitsAvailableForSqueezing >> 3, output, off + (int)(i >> 3),
                     partialBlock >> 3);
-                bitsAvailableForSqueezing -= partialBlock;
+                _bitsAvailableForSqueezing -= partialBlock;
                 i += partialBlock;
             }
         }
@@ -111,16 +108,12 @@ namespace HyperLiquid.Net
 
                     bool loBit = (LFSRState & 0x01) != 0;
                     if (loBit)
-                    {
                         keccakRoundConstants[i] ^= 1UL << bitPosition;
-                    }
 
                     bool hiBit = (LFSRState & 0x80) != 0;
                     LFSRState <<= 1;
                     if (hiBit)
-                    {
                         LFSRState ^= 0x71;
-                    }
                 }
             }
 
@@ -137,8 +130,8 @@ namespace HyperLiquid.Net
             y = 0;
             for (t = 1; t < 25; t++)
             {
-                rhoOffset = (rhoOffset + t) & 63;
-                keccakRhoOffsets[(((x) % 5) + 5 * ((y) % 5))] = rhoOffset;
+                rhoOffset = rhoOffset + t & 63;
+                keccakRhoOffsets[x % 5 + 5 * (y % 5)] = rhoOffset;
                 newX = (0 * x + 1 * y) % 5;
                 newY = (2 * x + 3 * y) % 5;
                 x = newX;
@@ -148,32 +141,32 @@ namespace HyperLiquid.Net
             return keccakRhoOffsets;
         }
 
-
         private void KeccakAbsorb(byte[] data, int off)
         {
-            int count = rate >> 6;
+            int count = _rate >> 6;
             for (int i = 0; i < count; ++i)
             {
-                state[i] ^= Pack.LE_To_UInt64(data, off);
+                _state[i] ^= Pack.LeToUInt64(data, off);
                 off += 8;
             }
 
             KeccakPermutation();
         }
+
         private void KeccakPermutation()
         {
             for (int i = 0; i < 24; i++)
             {
-                Theta(state);
-                Rho(state);
-                Pi(state);
-                Chi(state);
-                Iota(state, i);
+                Theta(_state);
+                Rho(_state);
+                Pi(_state);
+                Chi(_state);
+                Iota(_state, i);
             }
         }
-        private static ulong leftRotate(ulong v, int r)
+        private static ulong LeftRotate(ulong v, int r)
         {
-            return (v << r) | (v >> -r);
+            return v << r | v >> -r;
         }
 
         private static void Theta(ulong[] A)
@@ -184,7 +177,7 @@ namespace HyperLiquid.Net
             ulong C3 = A[3 + 0] ^ A[3 + 5] ^ A[3 + 10] ^ A[3 + 15] ^ A[3 + 20];
             ulong C4 = A[4 + 0] ^ A[4 + 5] ^ A[4 + 10] ^ A[4 + 15] ^ A[4 + 20];
 
-            ulong dX = leftRotate(C1, 1) ^ C4;
+            ulong dX = LeftRotate(C1, 1) ^ C4;
 
             A[0] ^= dX;
             A[5] ^= dX;
@@ -192,7 +185,7 @@ namespace HyperLiquid.Net
             A[15] ^= dX;
             A[20] ^= dX;
 
-            dX = leftRotate(C2, 1) ^ C0;
+            dX = LeftRotate(C2, 1) ^ C0;
 
             A[1] ^= dX;
             A[6] ^= dX;
@@ -200,7 +193,7 @@ namespace HyperLiquid.Net
             A[16] ^= dX;
             A[21] ^= dX;
 
-            dX = leftRotate(C3, 1) ^ C1;
+            dX = LeftRotate(C3, 1) ^ C1;
 
             A[2] ^= dX;
             A[7] ^= dX;
@@ -208,7 +201,7 @@ namespace HyperLiquid.Net
             A[17] ^= dX;
             A[22] ^= dX;
 
-            dX = leftRotate(C4, 1) ^ C2;
+            dX = LeftRotate(C4, 1) ^ C2;
 
             A[3] ^= dX;
             A[8] ^= dX;
@@ -216,7 +209,7 @@ namespace HyperLiquid.Net
             A[18] ^= dX;
             A[23] ^= dX;
 
-            dX = leftRotate(C0, 1) ^ C3;
+            dX = LeftRotate(C0, 1) ^ C3;
 
             A[4] ^= dX;
             A[9] ^= dX;
@@ -230,7 +223,7 @@ namespace HyperLiquid.Net
             // KeccakRhoOffsets[0] == 0
             for (int x = 1; x < 25; x++)
             {
-                A[x] = leftRotate(A[x], KeccakRhoOffsets[x]);
+                A[x] = LeftRotate(A[x], _keccakRhoOffsets[x]);
             }
         }
 
@@ -269,11 +262,11 @@ namespace HyperLiquid.Net
 
             for (int yBy5 = 0; yBy5 < 25; yBy5 += 5)
             {
-                chiC0 = A[0 + yBy5] ^ ((~A[(((0 + 1) % 5) + yBy5)]) & A[(((0 + 2) % 5) + yBy5)]);
-                chiC1 = A[1 + yBy5] ^ ((~A[(((1 + 1) % 5) + yBy5)]) & A[(((1 + 2) % 5) + yBy5)]);
-                chiC2 = A[2 + yBy5] ^ ((~A[(((2 + 1) % 5) + yBy5)]) & A[(((2 + 2) % 5) + yBy5)]);
-                chiC3 = A[3 + yBy5] ^ ((~A[(((3 + 1) % 5) + yBy5)]) & A[(((3 + 2) % 5) + yBy5)]);
-                chiC4 = A[4 + yBy5] ^ ((~A[(((4 + 1) % 5) + yBy5)]) & A[(((4 + 2) % 5) + yBy5)]);
+                chiC0 = A[0 + yBy5] ^ ~A[(0 + 1) % 5 + yBy5] & A[(0 + 2) % 5 + yBy5];
+                chiC1 = A[1 + yBy5] ^ ~A[(1 + 1) % 5 + yBy5] & A[(1 + 2) % 5 + yBy5];
+                chiC2 = A[2 + yBy5] ^ ~A[(2 + 1) % 5 + yBy5] & A[(2 + 2) % 5 + yBy5];
+                chiC3 = A[3 + yBy5] ^ ~A[(3 + 1) % 5 + yBy5] & A[(3 + 2) % 5 + yBy5];
+                chiC4 = A[4 + yBy5] ^ ~A[(4 + 1) % 5 + yBy5] & A[(4 + 2) % 5 + yBy5];
 
                 A[0 + yBy5] = chiC0;
                 A[1 + yBy5] = chiC1;
@@ -285,84 +278,84 @@ namespace HyperLiquid.Net
 
         private static void Iota(ulong[] A, int indexRound)
         {
-            A[0] ^= KeccakRoundConstants[indexRound];
+            A[0] ^= _keccakRoundConstants[indexRound];
         }
 
         private void PadAndSwitchToSqueezingPhase()
         {
-            Debug.Assert(bitsInQueue < rate);
+            Debug.Assert(_bitsInQueue < _rate);
 
-            dataQueue[bitsInQueue >> 3] |= (byte)(1U << (bitsInQueue & 7));
+            _dataQueue[_bitsInQueue >> 3] |= (byte)(1U << (_bitsInQueue & 7));
 
-            if (++bitsInQueue == rate)
+            if (++_bitsInQueue == _rate)
             {
-                KeccakAbsorb(dataQueue, 0);
-                bitsInQueue = 0;
+                KeccakAbsorb(_dataQueue, 0);
+                _bitsInQueue = 0;
             }
 
             {
-                int full = bitsInQueue >> 6, partial = bitsInQueue & 63;
+                int full = _bitsInQueue >> 6, partial = _bitsInQueue & 63;
                 int off = 0;
                 for (int i = 0; i < full; ++i)
                 {
-                    state[i] ^= Pack.LE_To_UInt64(dataQueue, off);
+                    _state[i] ^= Pack.LeToUInt64(_dataQueue, off);
                     off += 8;
                 }
 
                 if (partial > 0)
                 {
                     ulong mask = (1UL << partial) - 1UL;
-                    state[full] ^= Pack.LE_To_UInt64(dataQueue, off) & mask;
+                    _state[full] ^= Pack.LeToUInt64(_dataQueue, off) & mask;
                 }
 
-                state[(rate - 1) >> 6] ^= (1UL << 63);
+                _state[_rate - 1 >> 6] ^= 1UL << 63;
             }
 
             KeccakPermutation();
             KeccakExtract();
-            bitsAvailableForSqueezing = rate;
+            _bitsAvailableForSqueezing = _rate;
 
-            bitsInQueue = 0;
-            squeezing = true;
+            _bitsInQueue = 0;
+            _squeezing = true;
         }
         private void KeccakExtract()
         {
-            Pack.UInt64_To_LE(state, 0, rate >> 6, dataQueue, 0);
+            Pack.UInt64ToLe(_state, 0, _rate >> 6, _dataQueue, 0);
         }
 
         static class Pack
         {
-            internal static ulong LE_To_UInt64(byte[] bs, int off)
+            internal static ulong LeToUInt64(byte[] bs, int off)
             {
-                uint lo = LE_To_UInt32(bs, off);
-                uint hi = LE_To_UInt32(bs, off + 4);
-                return ((ulong)hi << 32) | (ulong)lo;
+                uint lo = LeToUInt32(bs, off);
+                uint hi = LeToUInt32(bs, off + 4);
+                return (ulong)hi << 32 | lo;
             }
-            internal static uint LE_To_UInt32(byte[] bs, int off)
+            internal static uint LeToUInt32(byte[] bs, int off)
             {
-                return (uint)bs[off]
+                return bs[off]
                        | (uint)bs[off + 1] << 8
                        | (uint)bs[off + 2] << 16
                        | (uint)bs[off + 3] << 24;
             }
 
-            internal static void UInt64_To_LE(ulong[] ns, int nsOff, int nsLen, byte[] bs, int bsOff)
+            internal static void UInt64ToLe(ulong[] ns, int nsOff, int nsLen, byte[] bs, int bsOff)
             {
                 for (int i = 0; i < nsLen; ++i)
                 {
-                    UInt64_To_LE(ns[nsOff + i], bs, bsOff);
+                    UInt64ToLe(ns[nsOff + i], bs, bsOff);
                     bsOff += 8;
                 }
             }
-            internal static void UInt64_To_LE(ulong n, byte[] bs, int off)
+            internal static void UInt64ToLe(ulong n, byte[] bs, int off)
             {
-                UInt32_To_LE((uint)(n), bs, off);
-                UInt32_To_LE((uint)(n >> 32), bs, off + 4);
+                UInt32ToLe((uint)n, bs, off);
+                UInt32ToLe((uint)(n >> 32), bs, off + 4);
             }
 
-            internal static void UInt32_To_LE(uint n, byte[] bs, int off)
+            internal static void UInt32ToLe(uint n, byte[] bs, int off)
             {
-                bs[off] = (byte)(n);
+                bs[off] = (byte)n;
                 bs[off + 1] = (byte)(n >> 8);
                 bs[off + 2] = (byte)(n >> 16);
                 bs[off + 3] = (byte)(n >> 24);

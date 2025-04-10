@@ -9,6 +9,7 @@ using HyperLiquid.Net.Utils;
 using System.Security.Cryptography;
 using System.Numerics;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Signing;
 
 namespace HyperLiquid.Net
 {
@@ -186,9 +187,7 @@ namespace HyperLiquid.Net
         {
             // Ensure the signature is in the correct format (r, s)
             if (signature.Length != 64)
-            {
                 throw new ArgumentException("Invalid signature length.");
-            }
 
             byte[] r = new byte[32];
             byte[] s = new byte[32];
@@ -201,9 +200,9 @@ namespace HyperLiquid.Net
             BigInteger sValue = new BigInteger(c);
             byte[] normalizedS;
             var flip = false;
-            if (sValue > Secp256k1PointCalculator.HalfN)
+            if (sValue > Secp256k1PointCalculator._halfN)
             {
-                sValue = Secp256k1PointCalculator.N - sValue;
+                sValue = Secp256k1PointCalculator._n - sValue;
                 flip = true;
                 normalizedS = sValue.ToByteArray().Reverse().ToArray();
                 if (normalizedS.Length < 32)
@@ -217,19 +216,18 @@ namespace HyperLiquid.Net
             {
                 normalizedS = s;
             }
+
             return (r, normalizedS, flip);
         }
  
         private static int RecoverFromSignature(BigInteger r, BigInteger s, byte[] message, byte[] publicKeyX, byte[] publicKeyY)
         {
-
             if (r < 0)
                 throw new ArgumentException("r should be positive");
             if (s < 0)
                 throw new ArgumentException("s should be positive");
             if (message == null)
                 throw new ArgumentNullException("message");
-
 
             byte[] c = new byte[33];
             publicKeyX.Reverse().ToArray().CopyTo(c, 0);
@@ -239,38 +237,18 @@ namespace HyperLiquid.Net
             publicKeyY.Reverse().ToArray().CopyTo(c, 0);
             BigInteger publicKeyYValue = new BigInteger(c);
 
-            //var curve = Secp256k1;
-            //var pubToHex = uncompressedPublicKey.ToHex();
-
-            // 1.0 For j from 0 to h   (h == recId here and the loop is outside this function)
-            //   1.1 Let x = r + jn
-            //var n = curve.N;
-
-            //   1.5. Compute e from M using Steps 2 and 3 of ECDSA signature verification.
+            // Compute e from M using Steps 2 and 3 of ECDSA signature verification.
             c = new byte[33];
             message.Reverse().ToArray().CopyTo(c, 0);
             var e = new BigInteger(c);
-            //   1.6. For k from 1 to 2 do the following.   (loop is outside this function via iterating recId)
-            //   1.6.1. Compute a candidate public key as:
-            //               Q = mi(r) * (sR - eG)
-            //
-            // Where mi(x) is the modular multiplicative inverse. We transform this into the following:
-            //               Q = (mi(r) * s ** R) + (mi(r) * -e ** G)
-            // Where -e is the modular additive inverse of e, that is z such that z + e = 0 (mod n). In the above equation
-            // ** is point multiplication and + is point addition (the EC group operator).
-            //
-            // We can find the additive inverse by subtracting e from zero then taking the mod. For example the additive
-            // inverse of 3 modulo 11 is 8 because 3 + 8 mod 11 = 0, and -3 mod 11 = 8.
+            
+            var eInv = (-e) % Secp256k1PointCalculator._n;
+            if (eInv < 0)            
+                eInv += Secp256k1PointCalculator._n;            
 
-            var eInv = (-e) % Secp256k1PointCalculator.N;
-            if (eInv < 0)
-            {
-                eInv += Secp256k1PointCalculator.N;
-            }
-            var rInv = BigInteger.ModPow(r, Secp256k1PointCalculator.N - 2, Secp256k1PointCalculator.N);
-            //            var rInv = r.ModInverse(s_curveOrder);
-            var srInv = (rInv * s) % Secp256k1PointCalculator.N;
-            var eInvrInv = (rInv * eInv) % Secp256k1PointCalculator.N;
+            var rInv = BigInteger.ModPow(r, Secp256k1PointCalculator._n - 2, Secp256k1PointCalculator._n);
+            var srInv = (rInv * s) % Secp256k1PointCalculator._n;
+            var eInvrInv = (rInv * eInv) % Secp256k1PointCalculator._n;
 
             var recId = -1;
 
@@ -278,30 +256,17 @@ namespace HyperLiquid.Net
             {
                 recId = i;
                 var intAdd = recId / 2;
-                var x = r + (intAdd * Secp256k1PointCalculator.N);
+                var x = r + (intAdd * Secp256k1PointCalculator._n);
 
-                //   1.2. Convert the integer x to an octet string X of length mlen using the conversion routine
-                //        specified in Section 2.3.7, where mlen = ⌈(log2 p)/8⌉ or mlen = ⌈m/8⌉.
-                //   1.3. Convert the octet string (16 set binary digits)||X to an elliptic curve point R using the
-                //        conversion routine specified in Section 2.3.4. If this conversion routine outputs “invalid”, then
-                //        do another iteration of Step 1.
-                //
-                // More concisely, what these points mean is to use X as a compressed public key.
-
-                //using bouncy and Q value of Point
-
-                if (x < Secp256k1ZCalculator.Q)
+                if (x < Secp256k1ZCalculator._q)
                 {
-                    // So it's encoded in the recId.
                     var R = Secp256k1PointCalculator.DecompressPointSecp256k1(x, (recId & 1));
                     var tx = R.X.ToString("x");
                     var ty = R.Y.ToString("x");
                     var b = tx == ty;
-                    //   1.4. If nR != point at infinity, then do another iteration of Step 1 (callers responsibility).
-
                     if (R.MultiplyByN().IsInfinity())
                     {
-                        var q = Secp256k1PointCalculator.SumOfTwoMultiplies(new Secp256k1PointPreCompCache(), Secp256k1PointCalculator.G, eInvrInv, R, srInv);
+                        var q = Secp256k1PointCalculator.SumOfTwoMultiplies(new Secp256k1PointPreCompCache(), Secp256k1PointCalculator._g, eInvrInv, R, srInv);
                         q = q.Normalize();
                         if (q.X == publicKeyXValue && q.Y == publicKeyYValue)
                         {
@@ -311,13 +276,12 @@ namespace HyperLiquid.Net
                     }
                 }
             }
+
             if (recId == -1)
                 throw new Exception("Could not construct a recoverable key. This should never happen.");
+
             return recId;
         }
-
-
-
 
         public byte[] EncodeEip721(
             Dictionary<string, object> domain,
@@ -398,7 +362,6 @@ namespace HyperLiquid.Net
             typeRaw.Types = types;
             typeRaw.PrimaryType = typeName;
             return LightEip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
-            //            return Eip712TypedDataSigner.Current.EncodeTypedDataRaw(Converter(typeRaw));
         }
 
         private byte[] GenerateActionHash(object action, long nonce)
@@ -425,7 +388,6 @@ namespace HyperLiquid.Net
 
         private static byte[] SignKeccak(byte[] data)
         {
-            //var keccack = new Sha3Keccack();
             return InternalSha3Keccack.CalculateHash(data);
         }
     }

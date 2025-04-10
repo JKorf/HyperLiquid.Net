@@ -1,4 +1,4 @@
-﻿namespace HyperLiquid.Net
+﻿namespace HyperLiquid.Net.Signing
 {
     internal static class InternalSha3Keccack
     {
