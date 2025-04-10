@@ -209,7 +209,8 @@ namespace HyperLiquid.Net
             {
                 size = 256;
             }
-            var result = new byte[size / 8];
+//            var result = new byte[size / 8];
+            var result = new byte[32];
             BigInteger v;
             switch (value)
             {
