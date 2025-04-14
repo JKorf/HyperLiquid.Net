@@ -21,4 +21,10 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("data")]
         public T Data { get; set; } = default!;
     }
+
+    internal class HyperLiquidDefault
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = string.Empty;
+    }
 }
