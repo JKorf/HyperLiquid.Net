@@ -301,7 +301,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             string? clientOrderId = null,
             decimal? triggerPrice = null,
             TpSlType? tpSlType = null,
-            TpSlGrouping? tpSlGrouping = null,
+            TpSlGrouping? tpSlGrouping = null, 
+			string? vaultAddress = null,
             CancellationToken ct = default)
         {
             var result = await PlaceMultipleOrdersAsync([
@@ -326,6 +327,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public async Task<WebCallResult<CallResult<HyperLiquidOrderResult>[]>> PlaceMultipleOrdersAsync(
             IEnumerable<HyperLiquidOrderRequest> orders,
             TpSlGrouping? tpSlGrouping = null,
+			string? vaultAddress = null,			
             CancellationToken ct = default)
         {
             var orderRequests = new List<ParameterCollection>();
@@ -413,6 +415,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "action", actionParameters }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
@@ -445,9 +450,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Cancel Order
 
-        public async Task<WebCallResult> CancelOrderAsync(string symbol, long orderId, CancellationToken ct = default)
+        public async Task<WebCallResult> CancelOrderAsync(string symbol, long orderId, string? vaultAddress = null, CancellationToken ct = default)
         {
-            var result = await CancelOrdersAsync([new HyperLiquidCancelRequest(symbol, orderId)], ct).ConfigureAwait(false);
+            var result = await CancelOrdersAsync([new HyperLiquidCancelRequest(symbol, orderId)], vaultAddress, ct).ConfigureAwait(false);
             if (!result)
                 return result.AsDataless();
 
@@ -463,7 +468,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Orders
 
         /// <inheritdoc />
-        public async Task<WebCallResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, CancellationToken ct = default)
+        public async Task<WebCallResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, string? vaultAddress = null, CancellationToken ct = default)
         {
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in requests)
@@ -491,6 +496,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     }
                 }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
@@ -514,9 +522,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Cancel Order By Client Order Id
 
-        public async Task<WebCallResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, CancellationToken ct = default)
+        public async Task<WebCallResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, string? vaultAddress, CancellationToken ct = default)
         {
-            var result = await CancelOrdersByClientOrderIdAsync([new HyperLiquidCancelByClientOrderIdRequest(symbol, clientOrderId)], ct).ConfigureAwait(false);
+            var result = await CancelOrdersByClientOrderIdAsync([new HyperLiquidCancelByClientOrderIdRequest(symbol, clientOrderId)], vaultAddress, ct).ConfigureAwait(false);
             if (!result)
                 return result.AsDataless();
 
@@ -532,7 +540,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Orders By Client Order Id
 
         /// <inheritdoc />
-        public async Task<WebCallResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, CancellationToken ct = default)
+        public async Task<WebCallResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, string? vaultAddress = null, CancellationToken ct = default)
         {
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in requests)
@@ -560,6 +568,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     }
                 }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
@@ -584,7 +595,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel after
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(TimeSpan? timeout, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(TimeSpan? timeout, string? vaultAddress = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection();
             var actionParameters = new ParameterCollection()
@@ -593,6 +604,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             actionParameters.AddOptionalMilliseconds("time", timeout == null ? null : DateTime.UtcNow + timeout);
             parameters.Add("action", actionParameters);
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAsync<HyperLiquidOrderStatus[]>(request, parameters, ct).ConfigureAwait(false);
@@ -617,6 +631,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TimeInForce? timeInForce = null,
             bool? reduceOnly = null,
             string? newClientOrderId = null,
+            string? vaultAddress = null,
             CancellationToken ct = default)
         {
             if (orderId == null == (clientOrderId == null))
@@ -653,6 +668,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.AddOptional("oid", clientOrderId);
             actionParameters.Add("order", orderParameters);
             parameters.Add("action", actionParameters);
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
+            
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
@@ -665,6 +684,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public async Task<WebCallResult<CallResult<HyperLiquidOrderResult>[]>> EditOrdersAsync(
             IEnumerable<HyperLiquidEditOrderRequest> requests,
+            string? vaultAddress = null,
             CancellationToken ct = default)
         {
             var orderRequests = new List<ParameterCollection>();
@@ -712,6 +732,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     }
                 }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
@@ -738,7 +761,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Place TWAP order
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(string symbol, OrderSide orderSide, decimal quantity, bool reduceOnly, int minutes, bool randomize, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(
+            string symbol, 
+            OrderSide orderSide, 
+            decimal quantity, 
+            bool reduceOnly, 
+            int minutes, 
+            bool randomize, 
+            string? vaultAddress = null,
+            CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
@@ -761,6 +792,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "action", actionParameters }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAuthAsync<HyperLiquidTwapOrderResultIntWrapper>(request, parameters, ct).ConfigureAwait(false);
@@ -778,7 +812,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Twap Order
 
         /// <inheritdoc />
-        public async Task<WebCallResult> CancelTwapOrderAsync(string symbol, long twapId, CancellationToken ct = default)
+        public async Task<WebCallResult> CancelTwapOrderAsync(string symbol, long twapId, string? vaultAddress = null, CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
@@ -795,6 +829,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "action", actionParameters }
             };
+            
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAuthAsync<HyperLiquidTwapCancelResult>(request, parameters, ct).ConfigureAwait(false);

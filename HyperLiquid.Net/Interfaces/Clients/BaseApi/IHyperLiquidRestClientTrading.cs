@@ -77,16 +77,18 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="orderId">Order id</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> CancelOrderAsync(string symbol, long orderId, CancellationToken ct = default);
+        Task<WebCallResult> CancelOrderAsync(string symbol, long orderId, string? vaultAddress = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel multiple orders
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
         /// </summary>
         /// <param name="requests">Cancel requests</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, CancellationToken ct = default);
+        Task<WebCallResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, string? vaultAddress = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel order by client order id
@@ -94,16 +96,18 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="clientOrderId">Client order id</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, CancellationToken ct = default);
+        Task<WebCallResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, string? vaultAddress = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel multiple orders by client order id
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
         /// </summary>
         /// <param name="requests">Cancel requests</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, CancellationToken ct = default);
+        Task<WebCallResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, string? vaultAddress = null, CancellationToken ct = default);
 
         /// <summary>
         /// Place a new order
@@ -120,6 +124,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="tpSlType">Trigger order type</param>
         /// <param name="tpSlGrouping">Trigger order grouping</param>
         /// <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidOrderResult>> PlaceOrderAsync(
             string symbol,
@@ -133,6 +138,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             decimal? triggerPrice = null,
             TpSlType? tpSlType = null,
             TpSlGrouping? tpSlGrouping = null,
+            string? vaultAddress = null,
             CancellationToken ct = default
             );
 
@@ -142,10 +148,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="orders">Orders to place</param>
         /// <param name="tpSlGrouping">Take profit / Stop loss grouping</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<CallResult<HyperLiquidOrderResult>[]>> PlaceMultipleOrdersAsync(
             IEnumerable<HyperLiquidOrderRequest> orders,
             TpSlGrouping? tpSlGrouping = null,
+            string? vaultAddress = null,
             CancellationToken ct = default);
 
         /// <summary>
@@ -153,8 +161,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /></para>
         /// </summary>
         /// <param name="timeout">Timeout after which to cancel all order, or null to cancel the countdown</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(TimeSpan? timeout, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(TimeSpan? timeout, string? vaultAddress = null, CancellationToken ct = default);
 
         /// <summary>
         /// Edit an existing order
@@ -170,6 +179,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="timeInForce">Time in force</param>
         /// <param name="reduceOnly">Reduce only</param>
         /// <param name="newClientOrderId">The new client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> EditOrderAsync(
             string symbol,
@@ -182,6 +192,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TimeInForce? timeInForce = null,
             bool? reduceOnly = null,
             string? newClientOrderId = null,
+            string? vaultAddress = null,
             CancellationToken ct = default);
 
         /// <summary>
@@ -189,9 +200,11 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /></para>
         /// </summary>
         /// <param name="requests">Edit requests</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<CallResult<HyperLiquidOrderResult>[]>> EditOrdersAsync(
             IEnumerable<HyperLiquidEditOrderRequest> requests,
+            string? vaultAddress = null,
             CancellationToken ct = default);
 
         /// <summary>
@@ -204,8 +217,17 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="reduceOnly">Reduce only</param>
         /// <param name="minutes">Time of the TWAP in minutes</param>
         /// <param name="randomize">Randomize</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(string symbol, OrderSide orderSide, decimal quantity, bool reduceOnly, int minutes, bool randomize, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(
+            string symbol, 
+            OrderSide orderSide, 
+            decimal quantity, 
+            bool reduceOnly, 
+            int minutes, 
+            bool randomize, 
+            string? vaultAddress = null,
+            CancellationToken ct = default);
 
         /// <summary>
         /// Cancel a Time Weighted Average Price order
@@ -213,7 +235,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="twapId">TWAP order id</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> CancelTwapOrderAsync(string symbol, long twapId, CancellationToken ct = default);
+        Task<WebCallResult> CancelTwapOrderAsync(string symbol, long twapId, string? vaultAddress = null, CancellationToken ct = default);
     }
 }
