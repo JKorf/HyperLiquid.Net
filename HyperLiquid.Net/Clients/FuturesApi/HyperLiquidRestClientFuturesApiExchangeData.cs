@@ -85,7 +85,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             parameters.AddOptionalMilliseconds("endTime", endTime);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
+            if (result.Error?.Code == 500 && result.Error?.Message == "null")
+                return result.AsError<HyperLiquidFundingRate[]>(new ServerError("Symbol not found"));
+
+            return result;
         }
 
         #endregion
