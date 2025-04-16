@@ -204,7 +204,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!result)
                 return result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, null, default);
 
-            return result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, TradingMode.Spot, result.Data.Symbols.Select(s => new SharedSpotSymbol(s.BaseAsset.Name, s.QuoteAsset.Name, s.Name, true)
+            var resultData = result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, TradingMode.Spot, result.Data.Symbols.Select(s => new SharedSpotSymbol(s.BaseAsset.Name, s.QuoteAsset.Name, s.Name, true)
             {
                 MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
                 MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
@@ -212,6 +212,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 PriceSignificantFigures = 5,
                 PriceDecimals = 8 - s.BaseAsset.QuantityDecimals
             }).ToArray());
+
+            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, resultData.Data);
+            return resultData;
         }
 
         #endregion
