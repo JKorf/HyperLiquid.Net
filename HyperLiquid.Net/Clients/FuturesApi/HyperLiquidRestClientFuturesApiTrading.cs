@@ -29,7 +29,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult> SetLeverageAsync(string symbol, int leverage, MarginType marginType, CancellationToken ct = default)
         {
-            var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(symbol).ConfigureAwait(false);
+            var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
 
@@ -55,7 +55,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult> UpdateIsolatedMarginAsync(string symbol, decimal updateValue, CancellationToken ct = default)
         {
-            var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(symbol).ConfigureAwait(false);
+            var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
 

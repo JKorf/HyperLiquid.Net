@@ -11,6 +11,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot streams
     /// </summary>
+    /// <see cref="IHyperLiquidSocketClientApi"/>
     public interface IHyperLiquidSocketClientSpotApi : IHyperLiquidSocketClientApi
     {
         /// <summary>
@@ -24,7 +25,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default);
 
         /// <summary>
-        /// Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+        /// Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
         /// </summary>
         public IHyperLiquidSocketClientSpotApiShared SharedClient { get; }
     }

@@ -39,7 +39,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="startTime">Data start time</param>
         /// <param name="endTime">Data end time</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<IEnumerable<HyperLiquidKline>>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
 
     }
 }

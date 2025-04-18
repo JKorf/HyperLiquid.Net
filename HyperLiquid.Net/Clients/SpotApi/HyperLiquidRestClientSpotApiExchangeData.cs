@@ -52,7 +52,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             foreach (var ticker in result.Data.Tickers)
             {
-                var nameResult = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(ticker.Symbol!).ConfigureAwait(false);
+                var nameResult = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, ticker.Symbol!).ConfigureAwait(false);
                 if (nameResult)
                     ticker.Symbol = nameResult.Data;
             }

@@ -1,4 +1,5 @@
-﻿using System;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -6,6 +7,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Funding history item
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidUserLedger<T>
     {
         /// <summary>

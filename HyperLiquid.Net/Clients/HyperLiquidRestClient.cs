@@ -47,8 +47,8 @@ namespace HyperLiquid.Net.Clients
         {
             Initialize(options.Value);
                         
-            SpotApi = AddApiClient(new HyperLiquidRestClientSpotApi(_logger, httpClient, options.Value));
-            FuturesApi = AddApiClient(new HyperLiquidRestClientFuturesApi(_logger, httpClient, options.Value));
+            SpotApi = AddApiClient(new HyperLiquidRestClientSpotApi(_logger, this, httpClient, options.Value));
+            FuturesApi = AddApiClient(new HyperLiquidRestClientFuturesApi(_logger, this, httpClient, options.Value));
         }
 
         #endregion

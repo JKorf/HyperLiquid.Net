@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -8,13 +9,14 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Futures account info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFuturesAccount
     {
         /// <summary>
         /// Position info
         /// </summary>
         [JsonPropertyName("assetPositions")]
-        public IEnumerable<HyperLiquidPosition> Positions { get; set; } = [];
+        public HyperLiquidPosition[] Positions { get; set; } = [];
 
         /// <summary>
         /// Cross margin maintenance margin used
@@ -46,6 +48,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Margin info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidMarginSummary
     {
         /// <summary>
@@ -73,6 +76,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Position info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidPosition
     {
         /// <summary>
@@ -91,6 +95,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Position info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidPositionInfo
     {
         /// <summary>
@@ -154,6 +159,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Position leverage
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidPositionLeverage
     {
         /// <summary>
@@ -171,6 +177,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Position funding
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidPositionFunding
     {
         /// <summary>

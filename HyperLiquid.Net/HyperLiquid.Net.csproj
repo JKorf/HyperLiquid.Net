@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	  <TargetFrameworks>net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>HyperLiquid.Net</PackageId>
     <Authors>JKorf</Authors>
-    <PackageVersion>1.1.2</PackageVersion>
-    <AssemblyVersion>1.1.2</AssemblyVersion>
-    <FileVersion>1.1.2</FileVersion>
+    <PackageVersion>2.0.0-beta1</PackageVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0-beta1</FileVersion>
     <Description>HyperLiquid.Net is a client library for accessing the HyperLiquid DEX REST and Websocket API. All data is mapped to readable models and enum values. Additional features include an implementation for maintaining a client side order book, easy integration with other exchange client libraries and more.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>HyperLiquid;HyperLiquid.Net;HyperLiquid.xyz;HyperLiquid Client;HyperLiquid API;CryptoCurrency;CryptoCurrency Exchange</PackageTags>
@@ -23,6 +23,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>https://github.com/JKorf/HyperLiquid.Net?tab=readme-ov-file#release-notes</PackageReleaseNotes>
   </PropertyGroup>
+	<PropertyGroup Label="AOT" Condition=" '$(TargetFramework)' == 'NET8_0' Or '$(TargetFramework)' == 'NET9_0' ">
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
   <PropertyGroup Label="Deterministic Build" Condition="'$(Configuration)' == 'Release'">
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
@@ -44,15 +47,14 @@
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CryptoExchange.Net" Version="9.0.0-beta1" />
     <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="CryptoExchange.Net" Version="8.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Nethereum.Signer.EIP712" Version="4.28.0" />
   </ItemGroup>
 </Project>

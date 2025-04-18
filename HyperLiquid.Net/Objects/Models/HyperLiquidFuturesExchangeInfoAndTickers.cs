@@ -1,6 +1,7 @@
-﻿using CryptoExchange.Net.Attributes;
+using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Converters;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -9,7 +10,8 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Exchange and ticker info
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter))]
+    [JsonConverter(typeof(ArrayConverter<HyperLiquidFuturesExchangeInfoAndTickers, HyperLiquidSourceGenerationContext>))]
+    [SerializationModel]
     public record HyperLiquidFuturesExchangeInfoAndTickers
     {
         /// <summary>
@@ -22,12 +24,13 @@ namespace HyperLiquid.Net.Objects.Models
         /// Tickers
         /// </summary>
         [ArrayProperty(1), JsonConversion]
-        public IEnumerable<HyperLiquidFuturesTicker> Tickers { get; set; } = [];
+        public HyperLiquidFuturesTicker[] Tickers { get; set; } = [];
     }
 
     /// <summary>
     /// Ticker info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFuturesTicker
     {
         /// <summary>

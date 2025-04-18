@@ -9,6 +9,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientExchangeData"/>
     public interface IHyperLiquidRestClientSpotApiExchangeData : IHyperLiquidRestClientExchangeData
     {
         /// <summary>

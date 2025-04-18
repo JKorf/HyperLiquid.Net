@@ -14,6 +14,7 @@ using CryptoExchange.Net.SharedApis;
 using CryptoExchange.Net.Converters.MessageParsing;
 using HyperLiquid.Net.Objects.Models;
 using CryptoExchange.Net.Objects.Options;
+using HyperLiquid.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -23,18 +24,20 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public string ExchangeName => "HyperLiquid";
 
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
+        internal IHyperLiquidRestClient BaseClient { get; }
 
         #region constructor/destructor
-        internal HyperLiquidRestClientApi(ILogger logger, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
+        internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
             : base(logger, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
+            BaseClient = baseClient;
         }
         #endregion
 
         /// <inheritdoc />
-        protected override IStreamMessageAccessor CreateAccessor() => new SystemTextJsonStreamMessageAccessor();
+        protected override IStreamMessageAccessor CreateAccessor() => new SystemTextJsonStreamMessageAccessor(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
         /// <inheritdoc />
-        protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer();
+        protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
 
         /// <inheritdoc />
         protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials)
@@ -68,7 +71,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             return result.As(result.Data.Data!.Data);
         }
 
-        protected override Error? TryParseError(IEnumerable<KeyValuePair<string, IEnumerable<string>>> responseHeaders, IMessageAccessor accessor)
+        protected override Error? TryParseError(KeyValuePair<string, string[]>[] responseHeaders, IMessageAccessor accessor)
         {
             var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
             if (status == "err")

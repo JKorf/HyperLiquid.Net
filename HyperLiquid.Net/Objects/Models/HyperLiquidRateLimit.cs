@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
     /// <summary>
     /// Rate limit info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidRateLimit
     {
         /// <summary>

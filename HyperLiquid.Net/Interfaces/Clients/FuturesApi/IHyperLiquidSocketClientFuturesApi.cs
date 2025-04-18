@@ -12,6 +12,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures streams
     /// </summary>
+    /// <see cref="IHyperLiquidSocketClientApi"/>
     public interface IHyperLiquidSocketClientFuturesApi : IHyperLiquidSocketClientApi
     {
         /// <summary>
@@ -43,10 +44,10 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<IEnumerable<HyperLiquidUserFunding>>> onMessage, CancellationToken ct = default);
+        Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default);
 
         /// <summary>
-        /// Get the shared socket requests client. This interface is shared with other exhanges to allow for a common implementation for different exchanges.
+        /// Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
         /// </summary>
         public IHyperLiquidSocketClientFuturesApiShared SharedClient { get; }
     }

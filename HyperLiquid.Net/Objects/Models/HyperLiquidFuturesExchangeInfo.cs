@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -6,18 +7,20 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Futures exchange info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFuturesExchangeInfo
     {
         /// <summary>
         /// Symbols
         /// </summary>
         [JsonPropertyName("universe")]
-        public IEnumerable<HyperLiquidFuturesSymbol> Symbols { get; set; } = [];
+        public HyperLiquidFuturesSymbol[] Symbols { get; set; } = [];
     }
 
     /// <summary>
     /// Futures symbol info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFuturesSymbol
     {
         /// <summary>

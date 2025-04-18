@@ -1,10 +1,13 @@
-﻿using CryptoExchange.Net.Attributes;
+using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Attributes;
 
 namespace HyperLiquid.Net.Enums
 {
     /// <summary>
     /// Order status
     /// </summary>
+    [JsonConverter(typeof(EnumConverter<OrderStatus>))]
     public enum OrderStatus
     {
         /// <summary>
@@ -20,7 +23,7 @@ namespace HyperLiquid.Net.Enums
         /// <summary>
         /// Canceled
         /// </summary>
-        [Map("canceled")]
+        [Map("canceled", "reduceOnlyCanceled")]
         Canceled,
         /// <summary>
         /// Trigger
@@ -36,6 +39,15 @@ namespace HyperLiquid.Net.Enums
         /// Margin canceled
         /// </summary>
         [Map("marginCanceled")]
-        MarginCanceled
+        MarginCanceled,
+
+        /// <summary>
+        /// Waiting for main order to fill before placing this order
+        /// </summary>
+        WaitingFill,
+        /// <summary>
+        /// Waiting for trigger price to be reached before placing this order
+        /// </summary>
+        WaitingTrigger
     }
 }
