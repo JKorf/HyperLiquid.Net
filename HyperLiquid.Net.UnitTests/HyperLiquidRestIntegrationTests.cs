@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.UnitTests
             var result = await CreateClient().SpotApi.ExchangeData.GetOrderBookAsync("TSTTST", -1);
 
             Assert.That(result.Success, Is.False);
-            Assert.That(result.Error.Code, Is.EqualTo(500));
+            Assert.That(result.Error.Code, Is.EqualTo(422));
         }
 
         [Test]
