@@ -13,7 +13,7 @@ namespace HyperLiquid.Net.UnitTests
     [NonParallelizable]
     public class HyperLiquidRestIntegrationTests : RestIntegrationTest<HyperLiquidRestClient>
     {
-        public override bool Run { get; set; } = true;
+        public override bool Run { get; set; } = false;
 
         public override HyperLiquidRestClient GetClient(ILoggerFactory loggerFactory)
         {
