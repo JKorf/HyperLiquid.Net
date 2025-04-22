@@ -35,7 +35,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return result.AsExchangeResult<SharedBalance[]>(Exchange, null, default);
 
-            return result.AsExchangeResult<SharedBalance[]>(Exchange, TradingMode.Spot, [new SharedBalance("USDC", result.Data.Withdrawable, result.Data.Withdrawable + result.Data.MarginSummary.TotalMarginUsed + result.Data.CrossMarginSummary.TotalMarginUsed)]);
+            return result.AsExchangeResult<SharedBalance[]>(Exchange, SupportedTradingModes, [new SharedBalance("USDC", result.Data.Withdrawable, result.Data.Withdrawable + result.Data.MarginSummary.TotalMarginUsed + result.Data.CrossMarginSummary.TotalMarginUsed)]);
         }
 
         #endregion
@@ -95,7 +95,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 ct: ct
                 ).ConfigureAwait(false);
             if (!result)
-                return new ExchangeWebResult<SharedKline[]>(Exchange, TradingMode.Spot, result.As<SharedKline[]>(default));
+                return new ExchangeWebResult<SharedKline[]>(Exchange, request.Symbol.TradingMode, result.As<SharedKline[]>(default));
 
             // Get next token
             DateTimeToken? nextToken = null;
@@ -125,7 +125,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return result.AsExchangeResult<SharedOrderBook>(Exchange, null, default);
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
+            return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (symbol == null)
                 return result.AsExchangeError<SharedFuturesTicker>(Exchange, new ServerError("Symbol not found"));
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
+            return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
             {
                 FundingRate = symbol.FundingRate,
                 MarkPrice = symbol.MarkPrice
@@ -213,7 +213,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, null, default);
 
-            var response = result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, TradingMode.Spot, result.Data.Where(x => !x.IsDelisted).Select(s => new SharedFuturesSymbol(TradingMode.PerpetualLinear, s.Name, "USDC", s.Name + "/USDC", true)
+            var response = result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, SupportedTradingModes, result.Data.Where(x => !x.IsDelisted).Select(s => new SharedFuturesSymbol(TradingMode.PerpetualLinear, s.Name, "USDC", s.Name + "/USDC", true)
             {
                 MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.QuantityDecimals)),
                 MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
@@ -245,7 +245,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return result.AsExchangeResult<SharedFee>(Exchange, null, default);
 
             // Return
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFee(result.Data.MakerFeeRate * 100, result.Data.TakerFeeRate * 100));
+            return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedFee(result.Data.MakerFeeRate * 100, result.Data.TakerFeeRate * 100));
         }
         #endregion
 
@@ -779,7 +779,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return result.AsExchangeResult<SharedId>(Exchange, null, default);
 
             // Return
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(result.Data.OrderId.ToString()));
+            return result.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedId(result.Data.OrderId.ToString()));
         }
 
         EndpointOptions<CancelTpSlRequest> IFuturesTpSlRestClient.CancelFuturesTpSlOptions { get; } = new EndpointOptions<CancelTpSlRequest>(true)
