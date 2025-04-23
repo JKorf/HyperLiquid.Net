@@ -31,7 +31,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var symbol = request.Symbol.GetSymbol(FormatSymbol);
             var result = await SubscribeToSymbolUpdatesAsync(symbol, update =>
-            handler(update.AsExchangeEvent(Exchange, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.NotionalVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10))), ct).ConfigureAwait(false);
+            handler(update.AsExchangeEvent(Exchange, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.NotionalVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+            {
+                QuoteVolume = update.Data.NotionalVolume
+            })), ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);
         }
