@@ -1885,6 +1885,12 @@
             Get the HyperLiquid environment by name
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.HyperLiquidEnvironment.All">
+            <summary>
+            Available environment names
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:HyperLiquid.Net.HyperLiquidEnvironment.Live">
             <summary>
             Live environment
