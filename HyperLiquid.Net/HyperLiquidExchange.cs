@@ -7,6 +7,7 @@ using System;
 using CryptoExchange.Net.SharedApis;
 using System.Text.Json.Serialization;
 using HyperLiquid.Net.Converters;
+using CryptoExchange.Net.Converters;
 
 namespace HyperLiquid.Net
 {
@@ -53,7 +54,7 @@ namespace HyperLiquid.Net
         public static string BuilderAddress => "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower();
 
 
-        internal static JsonSerializerContext _serializerContext = new HyperLiquidSourceGenerationContext();
+        internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
 
         /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 
