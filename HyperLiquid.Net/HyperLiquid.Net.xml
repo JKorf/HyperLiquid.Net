@@ -1950,6 +1950,11 @@
             Address of the builder
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.HyperLiquidExchange.AssetAliases">
+            <summary>
+            Aliases for HyperLiquid assets
+            </summary>
+        </member>
         <member name="M:HyperLiquid.Net.HyperLiquidExchange.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
             <summary>
             Format a base and quote asset to an HyperLiquid recognized symbol 

@@ -34,7 +34,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!result)
                 return result.AsExchangeResult<SharedBalance[]>(Exchange, null, default);
 
-            return result.AsExchangeResult<SharedBalance[]>(Exchange, TradingMode.Spot, result.Data.Select(x => new SharedBalance(x.Asset, x.Total - x.Hold, x.Total)).ToArray());
+            return result.AsExchangeResult<SharedBalance[]>(Exchange, TradingMode.Spot, result.Data.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray());
         }
 
         #endregion
@@ -210,7 +210,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!result)
                 return result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, null, default);
 
-            var resultData = result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, TradingMode.Spot, result.Data.Symbols.Select(s => new SharedSpotSymbol(s.BaseAsset.Name, s.QuoteAsset.Name, s.Name, true)
+            var resultData = result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, TradingMode.Spot, result.Data.Symbols.Select(s => new SharedSpotSymbol(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.BaseAsset.Name), HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.QuoteAsset.Name), s.Name, true)
             {
                 MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
                 MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
@@ -415,7 +415,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 x.Timestamp)
             {
                 Fee = x.Fee,
-                FeeAsset = x.FeeToken,
+                FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
                 Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
             }).ToArray());
         }
@@ -462,8 +462,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 x.Timestamp)
             {
                 Fee = x.Fee,
-                FeeAsset = x.FeeToken,
-                //Role = x.IsMaker ? SharedRole.Maker : SharedRole.Taker
+                FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
+                Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
             }).ToArray(), nextToken);
         }
 
@@ -579,7 +579,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!assets)
                 return assets.AsExchangeResult<SharedAsset[]>(Exchange, null, default);
 
-            return assets.AsExchangeResult<SharedAsset[]>(Exchange, TradingMode.Spot, assets.Data.Assets.Select(x => new SharedAsset(x.Name)
+            return assets.AsExchangeResult<SharedAsset[]>(Exchange, TradingMode.Spot, assets.Data.Assets.Select(x => new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
             {
                 FullName = x.FullName
             }).ToArray());
@@ -596,11 +596,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!assets)
                 return assets.AsExchangeResult<SharedAsset>(Exchange, null, default);
 
-            var asset = assets.Data.Assets.SingleOrDefault(x => x.Name.Equals(request.Asset, StringComparison.InvariantCultureIgnoreCase));
+            var asset = assets.Data.Assets.SingleOrDefault(x => x.Name.Equals(HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset), StringComparison.InvariantCultureIgnoreCase));
             if (asset == null)
                 return assets.AsExchangeError<SharedAsset>(Exchange, new ServerError("Asset not found"));
 
-            return assets.AsExchangeResult(Exchange, TradingMode.Spot, new SharedAsset(asset.Name)
+            return assets.AsExchangeResult(Exchange, TradingMode.Spot, new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(asset.Name))
             {
                 FullName = asset.FullName
             });
@@ -639,7 +639,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             // Get data
             var withdrawal = await Account.TransferSpotAsync(
                 request.Address,
-                request.Asset,
+                HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset),
                 request.Quantity,
                 ct: ct).ConfigureAwait(false);
             if (!withdrawal)

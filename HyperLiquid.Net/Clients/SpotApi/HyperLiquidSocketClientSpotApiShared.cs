@@ -203,7 +203,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                             x.Timestamp)
                         {
                             Fee = x.Fee,
-                            FeeAsset = x.FeeToken,
+                            FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
                             Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker,
                         }
                     ).ToArray()));
@@ -224,7 +224,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var result = await SubscribeToUserUpdatesAsync(
                 null,
-                update => handler(update.AsExchangeEvent<SharedBalance[]>(Exchange, update.Data.SpotBalances.Balances.Select(x => new SharedBalance(x.Asset, x.Total - x.Hold, x.Total)).ToArray())),
+                update => handler(update.AsExchangeEvent<SharedBalance[]>(Exchange, update.Data.SpotBalances.Balances.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray())),
                 ct: ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);

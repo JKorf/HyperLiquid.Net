@@ -53,6 +53,17 @@ namespace HyperLiquid.Net
         /// </summary>
         public static string BuilderAddress => "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower();
 
+        /// <summary>
+        /// Aliases for HyperLiquid assets
+        /// </summary>
+        public static AssetAliasConfiguration AssetAliases { get; } = new AssetAliasConfiguration
+        {
+            Aliases = 
+            [
+                new AssetAlias("UBTC", "BTC"),
+                new AssetAlias("UETH", "ETH")
+            ]
+        };
 
         internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
 
@@ -66,6 +77,9 @@ namespace HyperLiquid.Net
         /// <returns></returns>
         public static string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverTime = null)
         {
+            baseAsset = AssetAliases.CommonToExchangeName(baseAsset);
+            quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset);
+
             if (tradingMode == TradingMode.Spot)
                 return baseAsset + "/" + quoteAsset;
 
