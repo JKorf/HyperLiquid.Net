@@ -39,6 +39,16 @@ namespace HyperLiquid.Net.Enums
         /// Sell spot order
         /// </summary>
         [Map("Sell")]
-        Sell
+        Sell,
+        /// <summary>
+        /// Long to short order
+        /// </summary>
+        [Map("Long > Short")]
+        LongToShort,
+        /// <summary>
+        /// Short to long order
+        /// </summary>
+        [Map("Short > Long")]
+        ShortToLong
     }
 }

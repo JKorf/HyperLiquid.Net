@@ -1555,6 +1555,16 @@
             Sell spot order
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.Direction.LongToShort">
+            <summary>
+            Long to short order
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.Direction.ShortToLong">
+            <summary>
+            Short to long order
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Enums.KlineInterval">
             <summary>
             Interval
