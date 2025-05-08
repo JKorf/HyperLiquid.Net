@@ -24,6 +24,16 @@ namespace HyperLiquid.Net.Enums
         /// Good till canceled
         /// </summary>
         [Map("Gtc")]
-        GoodTillCanceled
+        GoodTillCanceled,
+        /// <summary>
+        /// Frontend market
+        /// </summary>
+        [Map("FrontendMarket")]
+        FrontendMarket,
+        /// <summary>
+        /// Liquidation market
+        /// </summary>
+        [Map("LiquidationMarket")]
+        LiquidationMarket
     }
 }

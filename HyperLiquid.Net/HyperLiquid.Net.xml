@@ -1565,6 +1565,11 @@
             Short to long order
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.Direction.SpotDustConversion">
+            <summary>
+            Spot dust conversion
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Enums.KlineInterval">
             <summary>
             Interval
@@ -1793,6 +1798,16 @@
         <member name="F:HyperLiquid.Net.Enums.TimeInForce.GoodTillCanceled">
             <summary>
             Good till canceled
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.TimeInForce.FrontendMarket">
+            <summary>
+            Frontend market
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.TimeInForce.LiquidationMarket">
+            <summary>
+            Liquidation market
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Enums.TpSlGrouping">

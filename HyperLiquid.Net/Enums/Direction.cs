@@ -49,6 +49,11 @@ namespace HyperLiquid.Net.Enums
         /// Short to long order
         /// </summary>
         [Map("Short > Long")]
-        ShortToLong
+        ShortToLong,
+        /// <summary>
+        /// Spot dust conversion
+        /// </summary>
+        [Map("Spot Dust Conversion")]
+        SpotDustConversion
     }
 }

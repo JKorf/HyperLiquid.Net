@@ -355,8 +355,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     var maxSlippage = order.MaxSlippage ?? 5;
                     var price = order.Side == OrderSide.Buy ? order.Price * (1 + maxSlippage / 100m) : order.Price * (1 - maxSlippage / 100m);
-                    var decimalPlaces = CountDecimalDigits(order.Price ?? 0);
-                    orderParameters.AddString("p", Math.Round(price ?? 0, decimalPlaces).Normalize());
+                    price = ExchangeHelpers.RoundToSignificantDigits(price ?? 0, 5, RoundingType.Closest);
+                    orderParameters.AddString("p", price.Value.Normalize());
                     orderParameters.AddString("s", order.Quantity);
                     orderParameters.Add("r", order.ReduceOnly ?? false);
                     var limitParameters = new ParameterCollection();
