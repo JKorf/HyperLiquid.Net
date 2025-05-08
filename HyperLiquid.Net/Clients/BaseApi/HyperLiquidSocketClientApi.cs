@@ -24,6 +24,7 @@ using HyperLiquid.Net.Objects.Sockets;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using System.Text.Json;
+using HyperLiquid.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -43,6 +44,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         private static readonly MessagePath _symbolPath = MessagePath.Get().Property("data").Property("s");
         private static readonly MessagePath _itemSymbolPath = MessagePath.Get().Property("data").Index(0).Property("coin");
         private static readonly MessagePath _bookSymbolPath = MessagePath.Get().Property("data").Property("coin");
+
+        protected IHyperLiquidRestClient _restClient;
         #endregion
 
         #region constructor/destructor
@@ -54,6 +57,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
             base(logger, options.Environment.SocketClientAddress!, options, apiOptions)
         {
             RateLimiter = HyperLiquidExchange.RateLimiter.HyperLiquidSocket;
+
+            _restClient = new HyperLiquidRestClient(x =>
+            {
+                x.Environment = options.Environment;
+            });
 
             RegisterPeriodicQuery(
                 "Ping",
@@ -72,9 +80,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         /// <inheritdoc />
-        protected override IByteMessageAccessor CreateAccessor() => new SystemTextJsonByteMessageAccessor();
+        protected override IByteMessageAccessor CreateAccessor() => new SystemTextJsonByteMessageAccessor(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
         /// <inheritdoc />
-        protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer();
+        protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
 
         /// <inheritdoc />
         protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials)
@@ -83,7 +91,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
         {
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -108,7 +116,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
@@ -135,7 +143,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
@@ -155,20 +163,20 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<IEnumerable<HyperLiquidTrade>>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTrade[]>> onMessage, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(symbol).ConfigureAwait(false);
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
                 if (!spotName)
                     return new WebCallResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<IEnumerable<HyperLiquidTrade>>(_logger, "trades", "trades-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTrade[]>(_logger, "trades", "trades-" + coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
@@ -182,19 +190,19 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(string? address, Action<DataEvent<IEnumerable<HyperLiquidOrderStatus>>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidOrderStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<IEnumerable<HyperLiquidOrderStatus>>(_logger, "orderUpdates", "orderUpdates", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, "orderUpdates", "orderUpdates", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -264,14 +272,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(string? address, Action<DataEvent<IEnumerable<HyperLiquidUserTrade>>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserTrade[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -307,14 +315,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<IEnumerable<HyperLiquidTwapStatus>>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
@@ -350,14 +358,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<IEnumerable<HyperLiquidTwapOrderStatus>>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapOrderStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             ValidateAddress(address);
 
-            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync().ConfigureAwait(false);
+            var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_restClient).ConfigureAwait(false);
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 

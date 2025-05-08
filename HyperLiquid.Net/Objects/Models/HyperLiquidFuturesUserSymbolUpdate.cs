@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -6,6 +7,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// User symbol update
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFuturesUserSymbolUpdate
     {
         /// <summary>
@@ -38,6 +40,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Leverage
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidLeverage
     {
         /// <summary>

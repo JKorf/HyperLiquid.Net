@@ -1,4 +1,5 @@
-﻿using System;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -8,13 +9,14 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Fee info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfo
     {
         /// <summary>
         /// Daily user volume
         /// </summary>
         [JsonPropertyName("dailyUserVlm")]
-        public IEnumerable<HyperLiquidFeeInfoVolume> DailyUserVolume { get; set; } = Array.Empty<HyperLiquidFeeInfoVolume>();
+        public HyperLiquidFeeInfoVolume[] DailyUserVolume { get; set; } = Array.Empty<HyperLiquidFeeInfoVolume>();
         /// <summary>
         /// Fee schedule
         /// </summary>
@@ -55,6 +57,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Daily volume
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfoVolume
     {
         /// <summary>
@@ -82,6 +85,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Fee schedule
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfoSchedule
     {
         /// <summary>
@@ -109,23 +113,25 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Fee tier info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfoFeeTier
     {
         /// <summary>
         /// VIP tier
         /// </summary>
         [JsonPropertyName("vip")]
-        public IEnumerable<HyperLiquidFeeInfoFeeTierRate> VipTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRate>();
+        public HyperLiquidFeeInfoFeeTierRate[] VipTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRate>();
         /// <summary>
         /// Market maker tier
         /// </summary>
         [JsonPropertyName("mm")]
-        public IEnumerable<HyperLiquidFeeInfoFeeTierRateMarketMaker> MarketMakerTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRateMarketMaker>();
+        public HyperLiquidFeeInfoFeeTierRateMarketMaker[] MarketMakerTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRateMarketMaker>();
     }
 
     /// <summary>
     /// VIP tier rates
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfoFeeTierRate
     {
         /// <summary>
@@ -148,6 +154,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Market maker rate
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidFeeInfoFeeTierRateMarketMaker
     {
         /// <summary>

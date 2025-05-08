@@ -1,4 +1,5 @@
-﻿using System;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -9,6 +10,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// User update
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidUserUpdate
     {
         /// <summary>

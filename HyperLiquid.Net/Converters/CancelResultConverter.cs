@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace HyperLiquid.Net.Converters
 {
-    internal class CancelResultConverter : JsonConverter<IEnumerable<string>>
+    internal class CancelResultConverter : JsonConverter<string[]>
     {
-        public override IEnumerable<string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var resultList = new List<string>();
             reader.Read();
@@ -15,20 +16,20 @@ namespace HyperLiquid.Net.Converters
             {
                 if (reader.TokenType == JsonTokenType.String)
                 {
-                    resultList.Add(JsonSerializer.Deserialize<string>(ref reader, options)!);
+                    resultList.Add(JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<string>)options.GetTypeInfo(typeof(string)))!);
                     reader.Read();
                     continue;
                 }
 
-                var result = JsonSerializer.Deserialize<ErrorMessage>(ref reader, options);
+                var result = JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<ErrorMessage>)options.GetTypeInfo(typeof(ErrorMessage)));
                 resultList.Add(result!.Error);
                 reader.Read();
             }
 
-            return resultList;
+            return resultList.ToArray();
         }
 
-        public override void Write(Utf8JsonWriter writer, IEnumerable<string> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, string[] value, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
             foreach (var item in value)
@@ -37,7 +38,7 @@ namespace HyperLiquid.Net.Converters
             writer.WriteEndArray();
         }
 
-        class ErrorMessage
+        internal class ErrorMessage
         {
             [JsonPropertyName("error")]
             public string Error { get; set; } = string.Empty;

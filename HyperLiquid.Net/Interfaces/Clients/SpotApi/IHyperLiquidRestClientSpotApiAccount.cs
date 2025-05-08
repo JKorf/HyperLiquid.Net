@@ -12,6 +12,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
     /// </summary>
+    /// <see cref="IHyperLiquidRestClientAccount"/>
     public interface IHyperLiquidRestClientSpotApiAccount : IHyperLiquidRestClientAccount
     {
         /// <summary>
@@ -20,7 +21,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<IEnumerable<HyperLiquidBalance>>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user account ledger

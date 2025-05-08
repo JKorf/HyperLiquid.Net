@@ -5,6 +5,9 @@ using CryptoExchange.Net.RateLimiting.Interfaces;
 using CryptoExchange.Net.RateLimiting;
 using System;
 using CryptoExchange.Net.SharedApis;
+using System.Text.Json.Serialization;
+using HyperLiquid.Net.Converters;
+using CryptoExchange.Net.Converters;
 
 namespace HyperLiquid.Net
 {
@@ -51,6 +54,20 @@ namespace HyperLiquid.Net
         public static string BuilderAddress => "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower();
 
         /// <summary>
+        /// Aliases for HyperLiquid assets
+        /// </summary>
+        public static AssetAliasConfiguration AssetAliases { get; } = new AssetAliasConfiguration
+        {
+            Aliases = 
+            [
+                new AssetAlias("UBTC", "BTC"),
+                new AssetAlias("UETH", "ETH")
+            ]
+        };
+
+        internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
+
+        /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 
         /// </summary>
         /// <param name="baseAsset">Base asset</param>
@@ -60,6 +77,9 @@ namespace HyperLiquid.Net
         /// <returns></returns>
         public static string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverTime = null)
         {
+            baseAsset = AssetAliases.CommonToExchangeName(baseAsset);
+            quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset);
+
             if (tradingMode == TradingMode.Spot)
                 return baseAsset + "/" + quoteAsset;
 
@@ -82,6 +102,11 @@ namespace HyperLiquid.Net
         /// </summary>
         public event Action<RateLimitEvent> RateLimitTriggered;
 
+        /// <summary>
+        /// Event when the rate limit is updated. Note that it's only updated when a request is send, so there are no specific updates when the current usage is decaying.
+        /// </summary>
+        public event Action<RateLimitUpdateEvent> RateLimitUpdated;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         internal HyperLiquidRateLimiters()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -96,7 +121,9 @@ namespace HyperLiquid.Net
             HyperLiquidSocket = new RateLimitGate("HyperLiquid WebSocket")
                 .AddGuard(new RateLimitGuard(RateLimitGuard.PerHost, new LimitItemTypeFilter(RateLimitItemType.Request), 2000, TimeSpan.FromSeconds(60), RateLimitWindowType.Sliding)); // Limit of 2000 weight per minute
             HyperLiquidRest.RateLimitTriggered += (x) => RateLimitTriggered?.Invoke(x);
+            HyperLiquidRest.RateLimitUpdated += (x) => RateLimitUpdated?.Invoke(x);
             HyperLiquidSocket.RateLimitTriggered += (x) => RateLimitTriggered?.Invoke(x);
+            HyperLiquidSocket.RateLimitUpdated += (x) => RateLimitUpdated?.Invoke(x);
         }
 
 

@@ -1,7 +1,8 @@
-﻿using CryptoExchange.Net.Attributes;
+using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Interfaces;
+using HyperLiquid.Net.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -11,6 +12,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Order book
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidOrderBook
     {
         /// <summary>
@@ -33,24 +35,26 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Order book levels
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter))]
+    [JsonConverter(typeof(ArrayConverter<HyperLiquidOrderBookLevels, HyperLiquidSourceGenerationContext>))]
+    [SerializationModel]
     public record HyperLiquidOrderBookLevels
     {
         /// <summary>
         /// Bids
         /// </summary>
         [ArrayProperty(0), JsonConversion]
-        public IEnumerable<HyperLiquidOrderBookEntry> Bids { get; set; } = [];
+        public HyperLiquidOrderBookEntry[] Bids { get; set; } = [];
         /// <summary>
         /// Asks
         /// </summary>
         [ArrayProperty(1), JsonConversion]
-        public IEnumerable<HyperLiquidOrderBookEntry> Asks { get; set; } = [];
+        public HyperLiquidOrderBookEntry[] Asks { get; set; } = [];
     }
 
     /// <summary>
     /// Order book entry
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidOrderBookEntry : ISymbolOrderBookEntry
     {
         /// <summary>

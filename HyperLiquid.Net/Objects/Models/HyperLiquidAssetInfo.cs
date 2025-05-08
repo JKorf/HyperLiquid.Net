@@ -1,5 +1,6 @@
-﻿using CryptoExchange.Net.Converters;
+using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -9,6 +10,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Asset info
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidAssetInfo
     {
         /// <summary>
@@ -91,30 +93,32 @@ namespace HyperLiquid.Net.Objects.Models
         /// Non-circulating user balances
         /// </summary>
         [JsonPropertyName("nonCirculatingUserBalances")]
-        public IEnumerable<AddressBalance> NonCirculatingUserBalances { get; set; } = [];
+        public AddressBalance[] NonCirculatingUserBalances { get; set; } = [];
     }
 
     /// <summary>
     /// Genesis balances
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidAssetGenesis
     {
         /// <summary>
         /// User balances
         /// </summary>
         [JsonPropertyName("userBalances")]
-        public IEnumerable<AddressBalance> UserBalances { get; set; } = [];
+        public AddressBalance[] UserBalances { get; set; } = [];
         /// <summary>
         /// Existing token balances
         /// </summary>
         [JsonPropertyName("existingTokenBalances")]
-        public IEnumerable<AddressIndexBalance> ExistingAssetBalances { get; set; } = [];
+        public AddressIndexBalance[] ExistingAssetBalances { get; set; } = [];
     }
 
     /// <summary>
     /// Address balance
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter))]
+    [JsonConverter(typeof(ArrayConverter<AddressBalance, HyperLiquidSourceGenerationContext>))]
+    [SerializationModel]
     public record AddressBalance
     {
         /// <summary>
@@ -132,7 +136,8 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Address index balance reference
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter))]
+    [JsonConverter(typeof(ArrayConverter<AddressIndexBalance, HyperLiquidSourceGenerationContext>))]
+    [SerializationModel]
     public record AddressIndexBalance
     {
         /// <summary>

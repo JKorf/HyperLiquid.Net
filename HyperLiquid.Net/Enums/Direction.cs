@@ -1,10 +1,13 @@
-﻿using CryptoExchange.Net.Attributes;
+using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Attributes;
 
 namespace HyperLiquid.Net.Enums
 {
     /// <summary>
     /// Direction
     /// </summary>
+    [JsonConverter(typeof(EnumConverter<Direction>))]
     public enum Direction
     {
         /// <summary>
@@ -36,6 +39,21 @@ namespace HyperLiquid.Net.Enums
         /// Sell spot order
         /// </summary>
         [Map("Sell")]
-        Sell
+        Sell,
+        /// <summary>
+        /// Long to short order
+        /// </summary>
+        [Map("Long > Short")]
+        LongToShort,
+        /// <summary>
+        /// Short to long order
+        /// </summary>
+        [Map("Short > Long")]
+        ShortToLong,
+        /// <summary>
+        /// Spot dust conversion
+        /// </summary>
+        [Map("Spot Dust Conversion")]
+        SpotDustConversion
     }
 }

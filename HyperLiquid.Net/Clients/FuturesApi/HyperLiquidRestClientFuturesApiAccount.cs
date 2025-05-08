@@ -43,7 +43,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Funding History
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<HyperLiquidUserLedger<HyperLiquidUserFunding>>>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding[]>>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -56,7 +56,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             parameters.AddMilliseconds("startTime", startTime);
             parameters.AddOptionalMilliseconds("endTime", endTime);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
-            return await _baseClient.SendAsync<IEnumerable<HyperLiquidUserLedger<HyperLiquidUserFunding>>>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.SendAsync<HyperLiquidUserLedger<HyperLiquidUserFunding[]>>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

@@ -19,7 +19,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientSpotApi _baseClient;
-        private readonly string _chainId = "0xabc";
+        private readonly string _chainId = "0x66eee";
 
         internal HyperLiquidRestClientSpotApiAccount(HyperLiquidRestClientSpotApi baseClient): base(baseClient)
         {
@@ -29,7 +29,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Spot Balances
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<HyperLiquidBalance>>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -41,7 +41,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidBalances>(request, parameters, ct).ConfigureAwait(false);
-            return result.As<IEnumerable<HyperLiquidBalance>>(result.Data?.Balances);
+            return result.As<HyperLiquidBalance[]>(result.Data?.Balances);
         }
 
         #endregion
@@ -121,7 +121,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 
@@ -136,7 +136,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             decimal quantity,
             CancellationToken ct = default)
         {
-            var assetId = await HyperLiquidUtils.GetAssetNameAndIdAsync(asset).ConfigureAwait(false);
+            var assetId = await HyperLiquidUtils.GetAssetNameAndIdAsync(_baseClient.BaseClient, asset).ConfigureAwait(false);
             if (!assetId)
                 return new WebCallResult(assetId.Error!);
 
@@ -154,7 +154,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 
@@ -181,7 +181,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 
@@ -208,7 +208,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 
@@ -229,7 +229,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
-            return await _baseClient.SendAsync(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion
@@ -249,7 +250,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
-            return await _baseClient.SendAsync(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion
@@ -269,7 +271,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
-            return await _baseClient.SendAsync(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion
@@ -289,7 +292,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
-            return await _baseClient.SendAsync(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion
@@ -303,14 +307,15 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<WebCallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default)
         {
+            // NOTE; order of the parameters matters
             var actionParameters = new ParameterCollection()
             {
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "maxFeeRate", $"{maxFeePercentage.ToString(CultureInfo.InvariantCulture)}%" },
-                { "builder", builderAddress.ToLower() },
+                { "builder", builderAddress },
                 { "nonce", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value },
+                { "signatureChainId", _chainId },
                 { "type", "approveBuilderFee" },
-                { "signatureChainId", _chainId }
             };
 
             var parameters = new ParameterCollection()
@@ -321,7 +326,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             };
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            return await _baseClient.SendAsync(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System;
 using System.Text.Json.Serialization;
 
@@ -7,6 +8,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// TWAP order status
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidTwapOrderStatus
     {
         /// <summary>
@@ -29,6 +31,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// TWAP order status
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidTwapOrderStatusDesc
     {
         /// <summary>

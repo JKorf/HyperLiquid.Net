@@ -14,7 +14,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         ISpotOrderRestClient,
         IAssetsRestClient,
         IFeeRestClient,
-        IWithdrawRestClient
+        IWithdrawRestClient,
+        ISpotOrderClientIdRestClient,
+        IBookTickerRestClient
     {
     }
 }

@@ -1,5 +1,3 @@
-
-using CryptoExchange.Net.CommonObjects;
 using HyperLiquid.Net.Clients;
 
 // REST

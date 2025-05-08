@@ -1,13 +1,16 @@
-﻿using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
+    [SerializationModel]
     internal record HyperLiquidTwapOrderResultIntWrapper
     {
         [JsonPropertyName("status")]
         public HyperLiquidTwapOrderResultInt Status { get; set; } = default!;
     }
 
+    [SerializationModel]
     internal record HyperLiquidTwapOrderResultInt
     {
         [JsonPropertyName("running")]
@@ -19,6 +22,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Order result
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidTwapOrderResult
     {
         /// <summary>

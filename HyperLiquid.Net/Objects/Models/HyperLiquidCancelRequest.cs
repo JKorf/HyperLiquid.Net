@@ -1,8 +1,10 @@
-﻿namespace HyperLiquid.Net.Objects.Models
+using CryptoExchange.Net.Converters.SystemTextJson;
+namespace HyperLiquid.Net.Objects.Models
 {
     /// <summary>
     /// Cancel request
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidCancelRequest
     {
         /// <summary>
@@ -27,6 +29,7 @@
     /// <summary>
     /// Cancel request
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidCancelByClientOrderIdRequest
     {
         /// <summary>

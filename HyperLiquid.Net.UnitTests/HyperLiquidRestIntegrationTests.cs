@@ -6,13 +6,14 @@ using System;
 using System.Threading.Tasks;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Objects.Options;
+using HyperLiquid.Net.SymbolOrderBooks;
 
 namespace HyperLiquid.Net.UnitTests
 {
     [NonParallelizable]
     public class HyperLiquidRestIntegrationTests : RestIntegrationTest<HyperLiquidRestClient>
     {
-        public override bool Run { get; set; } = true;
+        public override bool Run { get; set; } = false;
 
         public override HyperLiquidRestClient GetClient(ILoggerFactory loggerFactory)
         {
@@ -34,10 +35,10 @@ namespace HyperLiquid.Net.UnitTests
             if (!ShouldRun())
                 return;
 
-            var result = await CreateClient().SpotApi.ExchangeData.GetOrderBookAsync("TSTTST", default);
+            var result = await CreateClient().SpotApi.ExchangeData.GetOrderBookAsync("TSTTST", -1);
 
             Assert.That(result.Success, Is.False);
-            Assert.That(result.Error.Code, Is.EqualTo(500));
+            Assert.That(result.Error.Code, Is.EqualTo(422));
         }
 
         [Test]
@@ -91,6 +92,12 @@ namespace HyperLiquid.Net.UnitTests
         {
             // All already tested by Spot calls
             return Task.CompletedTask;
+        }
+
+        [Test]
+        public async Task TestOrderBooks()
+        {
+            await TestOrderBook(new HyperLiquidSymbolOrderBook("HYPE/USDC"));
         }
     }
 }

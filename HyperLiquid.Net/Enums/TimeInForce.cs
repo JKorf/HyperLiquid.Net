@@ -1,10 +1,13 @@
-﻿using CryptoExchange.Net.Attributes;
+using System.Text.Json.Serialization;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Attributes;
 
 namespace HyperLiquid.Net.Enums
 {
     /// <summary>
     /// Time in force
     /// </summary>
+    [JsonConverter(typeof(EnumConverter<TimeInForce>))]
     public enum TimeInForce
     {
         /// <summary>
@@ -21,6 +24,16 @@ namespace HyperLiquid.Net.Enums
         /// Good till canceled
         /// </summary>
         [Map("Gtc")]
-        GoodTillCanceled
+        GoodTillCanceled,
+        /// <summary>
+        /// Frontend market
+        /// </summary>
+        [Map("FrontendMarket")]
+        FrontendMarket,
+        /// <summary>
+        /// Liquidation market
+        /// </summary>
+        [Map("LiquidationMarket")]
+        LiquidationMarket
     }
 }

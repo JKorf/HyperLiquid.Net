@@ -13,9 +13,10 @@ HyperLiquid.Net is a client library for accessing the [HyperLiquid DEX REST and 
 * Extensive logging
 * Support for different environments
 * Easy integration with other exchange client based on the CryptoExchange.Net base library
+* Native AOT support
 
 ## Supported Frameworks
-The library is targeting both `.NET Standard 2.0` and `.NET Standard 2.1` for optimal compatibility
+The library is targeting both `.NET Standard 2.0` and `.NET Standard 2.1` for optimal compatibility, as well as dotnet 8.0 and 9.0 to use the latest framework features.
 
 |.NET implementation|Version Support|
 |--|--|
@@ -141,6 +142,42 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.0.0-beta3 - 01 May 2025
+    * Updated CryptoExchange.Net version to 9.0.0-beta5
+    * Added property to retrieve all available API environments
+
+* Version 2.0.0-beta2 - 23 Apr 2025
+    * Updated CryptoExchange.Net to version 9.0.0-beta2
+    * Added Shared spot ticker QuoteVolume mapping
+    * Fixed incorrect DataTradeMode on responses
+
+* Version 2.0.0-beta1 - 22 Apr 2025
+    * Updated CryptoExchange.Net to version 9.0.0-beta1, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Added support for Native AOT compilation
+    * Added RateLimitUpdated event
+    * Added SharedSymbol response property to all Shared interfaces response models returning a symbol name
+    * Added GenerateClientOrderId method to FuturesApi and Spot Shared clients
+    * Added IBookTickerRestClient implementation to SpotApi and FuturesApi Shared clients
+    * Added IFuturesOrderClientIdClient implementation to FuturesApi Shared client
+    * Added IFuturesTpSlRestClient implementation to FuturesApi Shared client
+    * Added ISpotOrderClientIdClient implementation to FuturesApi Shared client
+    * Added TriggerPrice, IsTriggerOrder properties to SharedSpotOrder model
+    * Added TriggerPrice, IsTriggerOrder properties to SharedFuturesOrder model
+    * Added MaxLongLeverage, MaxShortLeverage to SharedFuturesSymbol model
+    * Added OptionalExchangeParameters and Supported properties to EndpointOptions
+    * Added better error handling for unknown symbols
+    * Added vaultAddress parameter to various endpoints
+    * Combined rest PlaceOrderAsync and PlaceTriggerOrderAsync methods for more flexibility
+    * Refactored Shared clients quantity parameters and responses to use SharedQuantity
+    * Updated all IEnumerable response and model types to array response types
+    * Removed Newtonsoft.Json dependency
+    * Removed Nethereum dependency
+    * Removed legacy AddHyperLiquid(restOptions, socketOptions) DI overload
+    * Fixed some typos
+    * Fixed symbol name conversion not respecting environment setting
+    * Fixed DivideByZero exception in Shared ticker requests if PreviousDayPrice is 0
+    * Fixed various signing issues and response parsing issues
+
 * Version 1.1.2 - 28 Mar 2025
     * Fix testnet support
 

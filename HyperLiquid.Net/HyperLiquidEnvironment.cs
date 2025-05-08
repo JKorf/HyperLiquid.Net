@@ -50,6 +50,12 @@ namespace HyperLiquid.Net
          };
 
         /// <summary>
+        /// Available environment names
+        /// </summary>
+        /// <returns></returns>
+        public static string[] All => [Live.Name, Testnet.Name];
+
+        /// <summary>
         /// Live environment
         /// </summary>
         public static HyperLiquidEnvironment Live { get; }

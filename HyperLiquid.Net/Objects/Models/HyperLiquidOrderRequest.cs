@@ -1,10 +1,12 @@
-﻿using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 
 namespace HyperLiquid.Net.Objects.Models
 {
     /// <summary>
     /// Place order request
     /// </summary>
+    [SerializationModel]
     public record HyperLiquidOrderRequest
     {
         /// <summary>
@@ -26,7 +28,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// <summary>
         /// Order price
         /// </summary>
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
         /// <summary>
         /// Quantity
         /// </summary>
