@@ -117,7 +117,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Address balance
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter<AddressBalance, HyperLiquidSourceGenerationContext>))]
+    [JsonConverter(typeof(ArrayConverter<AddressBalance>))]
     [SerializationModel]
     public record AddressBalance
     {
@@ -136,7 +136,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Address index balance reference
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter<AddressIndexBalance, HyperLiquidSourceGenerationContext>))]
+    [JsonConverter(typeof(ArrayConverter<AddressIndexBalance>))]
     [SerializationModel]
     public record AddressIndexBalance
     {

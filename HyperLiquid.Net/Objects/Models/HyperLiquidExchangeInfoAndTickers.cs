@@ -10,7 +10,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Exchange and ticker info
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter<HyperLiquidExchangeInfoAndTickers, HyperLiquidSourceGenerationContext>))]
+    [JsonConverter(typeof(ArrayConverter<HyperLiquidExchangeInfoAndTickers>))]
     [SerializationModel]
     public record HyperLiquidExchangeInfoAndTickers
     {

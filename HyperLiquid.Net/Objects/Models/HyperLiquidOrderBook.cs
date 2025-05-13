@@ -35,7 +35,7 @@ namespace HyperLiquid.Net.Objects.Models
     /// <summary>
     /// Order book levels
     /// </summary>
-    [JsonConverter(typeof(ArrayConverter<HyperLiquidOrderBookLevels, HyperLiquidSourceGenerationContext>))]
+    [JsonConverter(typeof(ArrayConverter<HyperLiquidOrderBookLevels>))]
     [SerializationModel]
     public record HyperLiquidOrderBookLevels
     {
