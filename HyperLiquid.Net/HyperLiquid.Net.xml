@@ -4747,6 +4747,11 @@
             User
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserUpdate.OpenOrders">
+            <summary>
+            Open orders
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserUpdate.SpotBalances">
             <summary>
             Spot balances

@@ -34,6 +34,11 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         /// <summary>
+        /// Open orders
+        /// </summary>
+        [JsonPropertyName("openOrders")]
+        public HyperLiquidOrder[] OpenOrders { get; set; } = default!;
+        /// <summary>
         /// Spot balances
         /// </summary>
         [JsonPropertyName("spotState")]
