@@ -2,6 +2,7 @@
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Objects.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ namespace HyperLiquid.Net.Utils
     /// </summary>
     public static class HyperLiquidUtils
     {
-        private static HyperLiquidAsset[]? _spotAssetInfo;
-        private static HyperLiquidSymbol[]? _spotSymbolInfo;
-        private static HyperLiquidFuturesSymbol[]? _futuresSymbolInfo;
+        private static Dictionary<string, HyperLiquidAsset[]> _spotAssetInfo = new Dictionary<string, HyperLiquidAsset[]>();
+        private static Dictionary<string, HyperLiquidSymbol[]> _spotSymbolInfo = new Dictionary<string, HyperLiquidSymbol[]>();
+        private static Dictionary<string, HyperLiquidFuturesSymbol[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesSymbol[]>();
 
-        private static DateTime _lastSpotUpdateTime;
-        private static DateTime _lastFuturesUpdateTime;
+        private static Dictionary<string, DateTime> _lastSpotUpdateTime = new Dictionary<string, DateTime>();
+        private static Dictionary<string, DateTime> _lastFuturesUpdateTime = new Dictionary<string, DateTime>();
 
         private static readonly SemaphoreSlim _semaphoreSpot = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreFutures = new SemaphoreSlim(1, 1);
@@ -34,15 +35,17 @@ namespace HyperLiquid.Net.Utils
 
             try
             {
-                if (DateTime.UtcNow - _lastFuturesUpdateTime < TimeSpan.FromHours(1))
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                _lastFuturesUpdateTime.TryGetValue(envName, out var lastUpdateTime);
+                if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
                 var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
-                _futuresSymbolInfo = symbolInfo.Data;
-                _lastFuturesUpdateTime = DateTime.UtcNow;
+                _futuresSymbolInfo[envName] = symbolInfo.Data;
+                _lastFuturesUpdateTime[envName] = DateTime.UtcNow;
                 return CallResult.SuccessResult;
             }
             finally
@@ -59,16 +62,18 @@ namespace HyperLiquid.Net.Utils
             await _semaphoreSpot.WaitAsync().ConfigureAwait(false);
             try
             {
-                if (DateTime.UtcNow - _lastSpotUpdateTime < TimeSpan.FromHours(1))
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                _lastSpotUpdateTime.TryGetValue(envName, out var lastUpdateTime);
+                if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
                 var symbolInfo = await client.SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
-                _spotSymbolInfo = symbolInfo.Data.Symbols;
-                _spotAssetInfo = symbolInfo.Data.Assets;
-                _lastSpotUpdateTime = DateTime.UtcNow;
+                _spotSymbolInfo[envName] = symbolInfo.Data.Symbols;
+                _spotAssetInfo[envName] = symbolInfo.Data.Assets;
+                _lastSpotUpdateTime[envName] = DateTime.UtcNow;
                 return CallResult.SuccessResult;
             }
             finally
@@ -94,7 +99,8 @@ namespace HyperLiquid.Net.Utils
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.Name == symbolName);
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
                     return new CallResult<int>(new ServerError("Symbol not found"));
 
@@ -106,7 +112,8 @@ namespace HyperLiquid.Net.Utils
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var symbol = _futuresSymbolInfo!.SingleOrDefault(x => x.Name == symbolName);
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
                     return new CallResult<int>(new ServerError("Symbol not found"));
 
@@ -117,11 +124,9 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static CallResult<string> GetSymbolNameFromExchangeName(string id)
+        public static CallResult<string> GetSymbolNameFromExchangeName(string envName, string id)
         {
-            var symbol = _spotSymbolInfo?.SingleOrDefault(x => x.ExchangeName == id);
+            var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -136,11 +141,12 @@ namespace HyperLiquid.Net.Utils
         /// <returns></returns>
         public static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(IHyperLiquidRestClient client, string id)
         {
+            var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
             var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.ExchangeName == id);
+            var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -153,11 +159,12 @@ namespace HyperLiquid.Net.Utils
         /// <returns></returns>
         public static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(IHyperLiquidRestClient client, string name)
         {
+            var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
             var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var symbol = _spotSymbolInfo!.SingleOrDefault(x => x.Name == name);
+            var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == name);
             if (symbol == null)
                 return new CallResult<string>(new ServerError("Symbol not found"));
 
@@ -167,14 +174,12 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        public static Dictionary<string, string> GetSymbolNameFromExchangeName(IEnumerable<string> ids)
+        public static Dictionary<string, string> GetSymbolNameFromExchangeName(string envName, IEnumerable<string> ids)
         {
             var result = new Dictionary<string, string>();
             foreach (var id in ids)
             {
-                var symbol = _spotSymbolInfo?.SingleOrDefault(x => x.ExchangeName == id);
+                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
                 if (symbol == null)
                     continue;
 
@@ -192,11 +197,12 @@ namespace HyperLiquid.Net.Utils
         /// <returns></returns>
         public static async Task<CallResult<string>> GetAssetNameAndIdAsync(IHyperLiquidRestClient client, string asset)
         {
+            var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
             var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
             if (!update)
                 return new CallResult<string>(update.Error!);
 
-            var assetInfo = _spotAssetInfo!.SingleOrDefault(x => x.Name == asset);
+            var assetInfo = _spotAssetInfo[envName].SingleOrDefault(x => x.Name == asset);
             if (assetInfo == null)
                 return new CallResult<string>(new ServerError("Asset not found"));
 

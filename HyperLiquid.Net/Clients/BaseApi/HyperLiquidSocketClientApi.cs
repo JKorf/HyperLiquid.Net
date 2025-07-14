@@ -47,6 +47,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         private static readonly MessagePath _bookSymbolPath = MessagePath.Get().Property("data").Property("coin");
 
         protected IHyperLiquidRestClient _restClient;
+
+        internal new HyperLiquidSocketOptions ClientOptions => (HyperLiquidSocketOptions)base.ClientOptions;
         #endregion
 
         #region constructor/destructor
@@ -98,7 +100,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, "allMids", "allMids", null, x =>
             {
-                var mappingResult = HyperLiquidUtils.GetSymbolNameFromExchangeName(x.Data.Mids.Keys);
+                var mappingResult = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, x.Data.Mids.Keys);
                 onMessage(x.As(x.Data.Mids.ToDictionary(x =>
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(x.Key))
@@ -213,7 +215,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.Order.ExchangeSymbol))
                     {
-                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(order.Order.ExchangeSymbol);
+                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, order.Order.ExchangeSymbol);
                         if (symbolName == null)
                             continue;
 
@@ -295,7 +297,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                     {
-                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(order.ExchangeSymbol);
+                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, order.ExchangeSymbol);
                         if (symbolName == null)
                             continue;
 
@@ -338,7 +340,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                     {
-                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(order.ExchangeSymbol);
+                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, order.ExchangeSymbol);
                         if (symbolName == null)
                             continue;
 
@@ -381,7 +383,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.TwapInfo.ExchangeSymbol))
                     {
-                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(order.TwapInfo.ExchangeSymbol);
+                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, order.TwapInfo.ExchangeSymbol);
                         if (symbolName == null)
                             continue;
 

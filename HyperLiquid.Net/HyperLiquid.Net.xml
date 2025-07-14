@@ -4953,12 +4953,10 @@
             <param name="symbolName">Symbol name</param>
             <returns></returns>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeName(System.String)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeName(System.String,System.String)">
             <summary>
             Get a symbol name from an exchange symbol name
             </summary>
-            <param name="id"></param>
-            <returns></returns>
         </member>
         <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
@@ -4974,12 +4972,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeName(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeName(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Get a symbol name from an exchange symbol name
             </summary>
-            <param name="ids"></param>
-            <returns></returns>
         </member>
         <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetAssetNameAndIdAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
