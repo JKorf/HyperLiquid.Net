@@ -25,6 +25,7 @@ using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using System.Text.Json;
 using HyperLiquid.Net.Interfaces.Clients;
+using System.Net.WebSockets;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -80,7 +81,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         /// <inheritdoc />
-        protected override IByteMessageAccessor CreateAccessor() => new SystemTextJsonByteMessageAccessor(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
+        protected override IByteMessageAccessor CreateAccessor(WebSocketMessageType type) => new SystemTextJsonByteMessageAccessor(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
         /// <inheritdoc />
         protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer(SerializerOptions.WithConverters(HyperLiquidExchange._serializerContext));
 

@@ -95,7 +95,7 @@
             ctor
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.CreateAccessor">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.CreateAccessor(System.Net.WebSockets.WebSocketMessageType)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.CreateSerializer">
