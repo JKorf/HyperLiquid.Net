@@ -144,6 +144,11 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.2.0 - 15 Jul 2025
+    * Updated CryptoExchange.Net to version 9.2.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Added OpenOrders to socketClient.FuturesApi.SubscribeToUserUpdatesAsync update model
+    * Fixed caching issue when using multiple environment in a single application
+
 * Version 2.1.1 - 10 Jun 2025
     * Fixed HyperLiquidSymbolOrderBook Synced status being set before the book was actually synced
     * Fixed signing issue placing orders with trailing zero's in the quantity
