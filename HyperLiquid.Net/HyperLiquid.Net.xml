@@ -2005,7 +2005,8 @@
         </member>
         <member name="P:HyperLiquid.Net.HyperLiquidExchange.SignRequestDelegate">
             <summary>
-            Delegate for signing a request. Should only be overridden in situations where default signing doesn't work, for example on OSX where the default signing method isn't supported
+            Delegate for signing a request. Should only be overridden in situations where default signing doesn't work, for example on OSX where the default signing method isn't supported.<br/>
+            First parameter is the request string to sign, second parameter is the secret to sign it with.
             </summary>
         </member>
         <member name="M:HyperLiquid.Net.HyperLiquidExchange.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
