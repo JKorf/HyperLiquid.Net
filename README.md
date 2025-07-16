@@ -163,6 +163,11 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.3.0 - 16 Jul 2025
+    * Added support for providing custom signing method
+    * Updated error response parsing for single failed orders
+    * Fixed incorrect signatureChainId for mainnet
+
 * Version 2.2.0 - 15 Jul 2025
     * Updated CryptoExchange.Net to version 9.2.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
     * Added OpenOrders to socketClient.FuturesApi.SubscribeToUserUpdatesAsync update model
