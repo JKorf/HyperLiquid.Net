@@ -122,7 +122,12 @@ namespace HyperLiquid.Net
 
                 var msg = EncodeEip721(_domain, _messageTypes, phantomAgent);
                 var keccakSigned = BytesToHexString(SignKeccak(msg));
-                var signature = SignRequest(keccakSigned, _credentials.Secret);
+
+                Dictionary<string, object> signature;
+                if (HyperLiquidExchange.SignRequestDelegate != null)                
+                    signature = HyperLiquidExchange.SignRequestDelegate(keccakSigned, _credentials.Secret);                
+                else
+                    signature = SignRequest(keccakSigned, _credentials.Secret);                
 
                 bodyParameters["signature"] = signature;
             }

@@ -2003,6 +2003,11 @@
             Aliases for HyperLiquid assets
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.HyperLiquidExchange.SignRequestDelegate">
+            <summary>
+            Delegate for signing a request. Should only be overridden in situations where default signing doesn't work, for example on OSX where the default signing method isn't supported
+            </summary>
+        </member>
         <member name="M:HyperLiquid.Net.HyperLiquidExchange.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
             <summary>
             Format a base and quote asset to an HyperLiquid recognized symbol 

@@ -8,6 +8,7 @@ using CryptoExchange.Net.SharedApis;
 using System.Text.Json.Serialization;
 using HyperLiquid.Net.Converters;
 using CryptoExchange.Net.Converters;
+using System.Collections.Generic;
 
 namespace HyperLiquid.Net
 {
@@ -64,6 +65,12 @@ namespace HyperLiquid.Net
                 new AssetAlias("UETH", "ETH")
             ]
         };
+
+        /// <summary>
+        /// Delegate for signing a request. Should only be overridden in situations where default signing doesn't work, for example on OSX where the default signing method isn't supported.<br/>
+        /// First parameter is the request string to sign, second parameter is the secret to sign it with.
+        /// </summary>
+        public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
         internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
 
