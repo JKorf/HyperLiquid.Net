@@ -110,6 +110,25 @@ When using multiple of these API's the [CryptoClients.Net](https://github.com/JK
 [![Nuget version](https://img.shields.io/discord/847020490588422145?style=for-the-badge)](https://discord.gg/MSpeEtSY8t)  
 A Discord server is available [here](https://discord.gg/MSpeEtSY8t). For discussion and/or questions around the CryptoExchange.Net and implementation libraries, feel free to join.
 
+## OSX Support
+The signing method used in the library is not natively supported on OSX. Because of this a custom signing method has to be provided or a `PlatformNotSupported` exception will be thrown while trying to sign a request.
+
+A custom signing method can be provided using `HyperLiquidExchange.SignRequestDelegate = CustomSigningMethod;`.  
+To run on OSX the `Nethereum.Signer.EIP712` package can be installed with the following custom signing method:
+```csharp
+Dictionary<string, object> Sign(string request, string secret)
+{
+    var messageBytes = Convert.FromHexString(request);
+    var sign = new MessageSigner().SignAndCalculateV(messageBytes, new EthECKey(secret));
+    return new Dictionary<string, object>()
+            {
+                { "r", "0x" + Convert.ToHexString(sign.R).ToLowerInvariant() },
+                { "s", "0x" + Convert.ToHexString(sign.S).ToLowerInvariant() },
+                { "v", (int)sign.V[0] }
+            };
+}
+```
+
 ## Supported functionality
 
 ### Rest
