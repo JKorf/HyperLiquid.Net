@@ -19,7 +19,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientSpotApi _baseClient;
-        private readonly string _chainId = "0x66eee";
+        private readonly string _chainIdTestnet = "0x66eee";
+        private readonly string _chainIdMainnet = "0xa4b1";
 
         internal HyperLiquidRestClientSpotApiAccount(HyperLiquidRestClientSpotApi baseClient): base(baseClient)
         {
@@ -113,7 +114,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "usdSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "destination", destinationAddress }
             };
             actionParameters.AddString("amount", quantity);
@@ -145,7 +146,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "spotSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "destination", destinationAddress },
                 { "token", assetId.Data }
             };
@@ -173,7 +174,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "withdraw3" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "destination", destinationAddress },
             };
             actionParameters.AddString("amount", quantity);
@@ -200,7 +201,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "usdClassTransfer" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId }
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
             };
             actionParameters.AddString("amount", quantity);
             actionParameters.Add("toPerp", direction == TransferDirection.SpotToFutures);
@@ -223,7 +224,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "cDeposit" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "wei", wei }
             };
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
@@ -244,7 +245,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "cWithdraw" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "wei", wei }
             };
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
@@ -314,7 +315,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "maxFeeRate", $"{maxFeePercentage.ToString(CultureInfo.InvariantCulture)}%" },
                 { "builder", builderAddress },
                 { "nonce", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value },
-                { "signatureChainId", _chainId },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "type", "approveBuilderFee" },
             };
 
