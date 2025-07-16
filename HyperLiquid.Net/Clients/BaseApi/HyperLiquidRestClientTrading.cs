@@ -440,7 +440,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     result.Add(new CallResult<HyperLiquidOrderResult>(order.WaitingForTrigger! with { Status = OrderStatus.WaitingTrigger }));
             }
 
-            if (result.All(x => !x.Success))
+            if (result.Count > 1 && result.All(x => !x.Success))
                 return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(new ServerError("All orders failed"), result.ToArray());
 
             return intResult.As<CallResult<HyperLiquidOrderResult>[]>(result.ToArray());
