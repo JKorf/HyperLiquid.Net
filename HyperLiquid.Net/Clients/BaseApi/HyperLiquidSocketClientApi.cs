@@ -64,6 +64,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _restClient = new HyperLiquidRestClient(x =>
             {
                 x.Environment = options.Environment;
+                x.Proxy = options.Proxy;
             });
 
             RegisterPeriodicQuery(
