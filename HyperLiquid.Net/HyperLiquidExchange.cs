@@ -74,7 +74,6 @@ namespace HyperLiquid.Net
         /// </summary>
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
-        //internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
         internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>(), new FundingHistoryConverter());
 
         /// <summary>
@@ -87,8 +86,11 @@ namespace HyperLiquid.Net
         /// <returns></returns>
         public static string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverTime = null)
         {
-            baseAsset = AssetAliases.CommonToExchangeName(baseAsset);
-            quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset);
+            if (tradingMode == TradingMode.Spot)
+            {
+                baseAsset = AssetAliases.CommonToExchangeName(baseAsset);
+                quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset);
+            }
 
             if (tradingMode == TradingMode.Spot)
                 return baseAsset + "/" + quoteAsset;
