@@ -163,6 +163,14 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.4.0 - 23 Jul 2025
+    * Updated CryptoExchange.Net to version 9.3.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Updated websocket message matching
+    * Fixed proxy not getting carried over when making market data requests for caching
+    * Fixed deserialization issue in restClient.FuturesApi.ExchangeData.GetFundingRateHistoryAsync
+    * Fixed restClient.FuturesApi.Account.GetFundingHistoryAsync returning deserialization error when there is no data
+    * Fixed futures BTC and ETH symbols getting formatted to UBTC and UETH in shared implementation
+
 * Version 2.3.0 - 16 Jul 2025
     * Added support for providing custom signing method
     * Updated error response parsing for single failed orders
