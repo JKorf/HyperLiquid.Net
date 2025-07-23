@@ -9,6 +9,8 @@ using System.Text.Json.Serialization;
 using HyperLiquid.Net.Converters;
 using CryptoExchange.Net.Converters;
 using System.Collections.Generic;
+using System.Text.Json;
+using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace HyperLiquid.Net
 {
@@ -72,7 +74,8 @@ namespace HyperLiquid.Net
         /// </summary>
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
-        internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
+        //internal static JsonSerializerContext _serializerContext = JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>();
+        internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>(), new FundingHistoryConverter());
 
         /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 

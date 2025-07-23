@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+    [JsonSerializable(typeof(object[]))]
     [JsonSerializable(typeof(Dictionary<string, decimal>))]
     [JsonSerializable(typeof(List<ParameterCollection>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidOrderResultIntWrapper>))]
