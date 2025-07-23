@@ -13,18 +13,9 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
     /// <inheritdoc />
     internal class HyperLiquidSubscription<T> : Subscription<HyperLiquidSocketUpdate<HyperLiquidSubscribeRequest>, HyperLiquidSocketUpdate<HyperLiquidUnsubscribeRequest>>
     {
-        /// <inheritdoc />
-        public override HashSet<string> ListenerIdentifiers { get; set; }
-
         private readonly string _topic;
         private readonly Dictionary<string, object> _parameters;
         private readonly Action<DataEvent<T>> _handler;
-
-        /// <inheritdoc />
-        public override Type? GetMessageType(IMessageAccessor message)
-        {
-            return typeof(HyperLiquidSocketUpdate<T>);
-        }
 
         /// <summary>
         /// ctor
@@ -34,7 +25,8 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             _handler = handler;
             _topic = topic;
             _parameters = parameters ?? new();
-            ListenerIdentifiers = new HashSet<string>([listenId]);
+
+            MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
         }
 
         /// <inheritdoc />
@@ -68,10 +60,9 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         }
 
         /// <inheritdoc />
-        public override CallResult DoHandleMessage(SocketConnection connection, DataEvent<object> message)
+        public CallResult DoHandleMessage(SocketConnection connection, DataEvent<HyperLiquidSocketUpdate<T>> message)
         {
-            var update = (HyperLiquidSocketUpdate<T>)message.Data;
-            _handler.Invoke(message.As(update.Data!, _topic, null, SocketUpdateType.Update));
+            _handler.Invoke(message.As(message.Data.Data!, _topic, null, SocketUpdateType.Update));
             return CallResult.SuccessResult;
         }
     }

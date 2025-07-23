@@ -7,11 +7,10 @@ namespace HyperLiquid.Net.Objects.Sockets
 {
     internal class HyperLiquidPingQuery : Query<HyperLiquidPong>
     {
-        public override HashSet<string> ListenerIdentifiers { get; set; } = new HashSet<string> { "pong" };
-
         public HyperLiquidPingQuery() : base(new HyperLiquidPing(), false)
         {
             RequestTimeout = TimeSpan.FromSeconds(5);
+            MessageMatcher = MessageMatcher.Create<HyperLiquidPong>("pong");
         }
     }
 }
