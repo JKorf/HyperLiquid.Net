@@ -24,7 +24,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// Premium
         /// </summary>
         [JsonPropertyName("premium")]
-        public decimal Premium { get; set; }
+        public decimal? Premium { get; set; }
         /// <summary>
         /// Timestamp
         /// </summary>
