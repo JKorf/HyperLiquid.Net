@@ -1030,6 +1030,31 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidMarginTable">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidMarginTableArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidMarginTableEntry">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidMarginTableTier">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidMarginTableTierArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidOpenOrder">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -3804,6 +3829,11 @@
             Symbols
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesExchangeInfo.MarginTables">
+            <summary>
+            Margin tables
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesSymbol">
             <summary>
             Futures symbol info
@@ -3832,6 +3862,16 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesSymbol.IsDelisted">
             <summary>
             Is delisted
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesSymbol.MarginTableId">
+            <summary>
+            Margin table id
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesSymbol.MarginTable">
+            <summary>
+            Margin table
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesSymbol.Index">
@@ -4012,6 +4052,51 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidKline.Symbol">
             <summary>
             Symbol
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTable">
+            <summary>
+            Margin table
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTable.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTable.Table">
+            <summary>
+            Table info
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableEntry">
+            <summary>
+            Table entry
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableEntry.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableEntry.MarginTiers">
+            <summary>
+            Margin tiers
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableTier">
+            <summary>
+            Margin tier
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableTier.LowerBound">
+            <summary>
+            Lower bound
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidMarginTableTier.MaxLeverage">
+            <summary>
+            Max leverage
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder">

@@ -15,6 +15,11 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("universe")]
         public HyperLiquidFuturesSymbol[] Symbols { get; set; } = [];
+        /// <summary>
+        /// Margin tables
+        /// </summary>
+        [JsonPropertyName("marginTables")]
+        public HyperLiquidMarginTable[] MarginTables { get; set; } = [];
     }
 
     /// <summary>
@@ -48,6 +53,16 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("isDelisted")]
         public bool IsDelisted { get; set; }
+        /// <summary>
+        /// Margin table id
+        /// </summary>
+        [JsonPropertyName("marginTableId")]
+        public int MarginTableId { get; set; }
+        /// <summary>
+        /// Margin table
+        /// </summary>
+        [JsonIgnore]
+        public HyperLiquidMarginTableEntry MarginTable { get; set; } = default!;
         /// <summary>
         /// Index
         /// </summary>

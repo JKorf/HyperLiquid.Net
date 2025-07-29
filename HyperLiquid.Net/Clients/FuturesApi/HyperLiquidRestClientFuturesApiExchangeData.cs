@@ -38,7 +38,26 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return result.As<HyperLiquidFuturesSymbol[]>(default);
 
             for (var i = 0; i < result.Data.Symbols.Count(); i++)
-                result.Data.Symbols.ElementAt(i).Index = i;
+            {
+                var symbol = result.Data.Symbols.ElementAt(i);
+                symbol.Index = i;
+                if (symbol.MarginTableId < 50)
+                {
+                    symbol.MarginTable = new HyperLiquidMarginTableEntry
+                    {
+                        MarginTiers = [
+                            new HyperLiquidMarginTableTier {
+                                LowerBound = 0,
+                                MaxLeverage = symbol.MarginTableId
+                            }
+                        ]
+                    };
+                }
+                else
+                {
+                    symbol.MarginTable = result.Data.MarginTables.Single(x => x.Id == symbol.MarginTableId).Table;
+                }
+            }
 
             return result.As<HyperLiquidFuturesSymbol[]>(result.Data?.Symbols);
         }
