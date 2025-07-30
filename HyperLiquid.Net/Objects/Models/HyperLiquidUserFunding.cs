@@ -14,7 +14,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// Timestamp
         /// </summary>
         [JsonPropertyName("time")]
-        public DateTime Timestamp { get; set; }
+        public DateTime? Timestamp { get; set; }
         /// <summary>
         /// Symbol name
         /// </summary>

@@ -30,7 +30,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="endTime">Filter by end time</param>
         /// <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding[]>>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
     }
 }

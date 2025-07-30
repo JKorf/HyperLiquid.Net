@@ -74,6 +74,19 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.FuturesApi.ExchangeData.GetSymbolsAtMaxOpenInterestAsync(), "GetSymbolsAtMaxOpenInterest");
         }
 
+        [Test]
+        public async Task ValidateFuturesAccountCalls()
+        {
+            var client = new HyperLiquidRestClient(opts =>
+            {
+                opts.AutoTimestamp = false;
+                opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
+            });
+            var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
+            await tester.ValidateAsync(client => client.FuturesApi.Account.GetFundingHistoryAsync(DateTime.UtcNow), "GetFundingHistory", ignoreProperties: ["type", "nSamples"]);
+            
+        }
+
         private bool IsAuthenticated(WebCallResult result)
         {
             return result.RequestBody?.Contains("signature") == true;

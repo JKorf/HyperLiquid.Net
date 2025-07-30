@@ -1,0 +1,6 @@
+POST
+/info
+false
+[
+	{"time":1750172400033,"hash":"0x0000000000000000000000000000000000000000000000000000000000000000","delta":{"type":"funding","coin":"HYPE","usdc":"-0.044263","szi":"30.0","fundingRate":"0.0000369155","nSamples":null}}
+]

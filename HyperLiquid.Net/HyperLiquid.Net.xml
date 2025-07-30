@@ -414,12 +414,6 @@
         <member name="P:HyperLiquid.Net.Clients.SpotApi.HyperLiquidSocketClientSpotApi.SharedClient">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Converters.FundingHistoryConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Converters.FundingHistoryConverter.Write(System.Text.Json.Utf8JsonWriter,HyperLiquid.Net.Objects.Models.HyperLiquidUserLedger{HyperLiquid.Net.Objects.Models.HyperLiquidUserFunding[]},System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc />
-        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.Boolean">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -1411,6 +1405,11 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserLedgerHyperLiquidSpotTransfer">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserLedgerHyperLiquidUserFunding">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>

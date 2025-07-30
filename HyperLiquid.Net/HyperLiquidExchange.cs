@@ -74,7 +74,7 @@ namespace HyperLiquid.Net
         /// </summary>
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
-        internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>(), new FundingHistoryConverter());
+        internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>());
 
         /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 

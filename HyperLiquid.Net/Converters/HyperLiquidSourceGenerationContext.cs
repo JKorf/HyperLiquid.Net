@@ -22,7 +22,7 @@ namespace HyperLiquid.Net.Converters
 
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidTrade[]>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOrderStatus[]>))]
-    [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidUserFunding[]>))]
+    [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidUserFunding>[]))]
     [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidDeposit[]>))]
     [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidWithdrawal[]>))]
     [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidInternalTransfer[]>))]
