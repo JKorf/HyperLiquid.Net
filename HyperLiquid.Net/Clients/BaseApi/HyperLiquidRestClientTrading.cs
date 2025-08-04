@@ -348,7 +348,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     orderParameters.AddString("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
                     var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.GoodTillCanceled);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else if (order.OrderType == OrderType.Market)
@@ -360,7 +360,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     orderParameters.AddString("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
                     var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.ImmediateOrCancel);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else
