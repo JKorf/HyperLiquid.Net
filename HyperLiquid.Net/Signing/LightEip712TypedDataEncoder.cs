@@ -7,7 +7,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace HyperLiquid.Net.Signing
 {
@@ -167,6 +166,11 @@ namespace HyperLiquid.Net.Signing
                                 }
 
                                 var abiValueEncoded = AbiValueEncodeInt(memberValue.TypeName, value);
+                                writer.Write(abiValueEncoded);
+                            }
+                            else if (memberValue.TypeName == "bool")
+                            {
+                                var abiValueEncoded = AbiValueEncodeInt("uint8", (bool)memberValue.Value ? 1 : 0);
                                 writer.Write(abiValueEncoded);
                             }
                             else
