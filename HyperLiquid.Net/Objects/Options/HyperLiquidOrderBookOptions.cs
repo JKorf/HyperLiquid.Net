@@ -22,6 +22,17 @@ namespace HyperLiquid.Net.Objects.Options
         /// After how much time we should consider the connection dropped if no data is received for this time after the initial subscriptions
         /// </summary>
         public TimeSpan? InitialDataTimeout { get; set; }
+        
+        /// <summary>
+        /// Optional nSigFigs parameter in the order book subscription (see api docs)
+        /// </summary>
+        public int? NSigFigs { get; set; }
+        
+        /// <summary>
+        /// Optional mantissa parameter in the order book subscription (see api docs)
+        /// </summary>
+        public int? Mantissa { get; set; }
+
 
         internal HyperLiquidOrderBookOptions Copy()
         {

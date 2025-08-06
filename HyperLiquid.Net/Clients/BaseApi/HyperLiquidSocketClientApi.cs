@@ -141,7 +141,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -154,10 +154,18 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, "l2Book", "l2Book-" + coin, new Dictionary<string, object>
+            var parameters = new Dictionary<string, object>
             {
                 { "coin", coin }
-            },
+            };
+            
+            if (nSigFigs.HasValue)
+                parameters.Add("nSigFigs", nSigFigs.Value);
+            
+            if (mantissa.HasValue)
+                parameters.Add("mantissa", mantissa.Value);
+            
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, "l2Book", "l2Book-" + coin, parameters,
             x =>
             {
                 x.Data.Symbol = symbol;

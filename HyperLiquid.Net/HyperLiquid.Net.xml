@@ -110,7 +110,7 @@
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.SubscribeToKlineUpdatesAsync(System.String,HyperLiquid.Net.Enums.KlineInterval,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidKline}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.SubscribeToOrderBookUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderBook}},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.SubscribeToOrderBookUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderBook}},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.SubscribeToTradeUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTrade[]}},System.Threading.CancellationToken)">
@@ -2360,13 +2360,15 @@
             <param name="ct">Cancellation token for closing this subscription</param>
             <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToOrderBookUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderBook}},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToOrderBookUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderBook}},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Subscribe to order book updates
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="onMessage">The data handler</param>
+            <param name="nSigFigs">Number of significant figures to use for price, if not provided will use the default from the options</param>
+            <param name="mantissa">Mantissa to use for price, if not provided will use the default from the options</param>
             <param name="ct">Cancellation token for closing this subscription</param>
             <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
         </member>
@@ -4905,6 +4907,16 @@
         <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidOrderBookOptions.InitialDataTimeout">
             <summary>
             After how much time we should consider the connection dropped if no data is received for this time after the initial subscriptions
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidOrderBookOptions.NSigFigs">
+            <summary>
+            Optional nSigFigs parameter in the order book subscription (see api docs)
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidOrderBookOptions.Mantissa">
+            <summary>
+            Optional mantissa parameter in the order book subscription (see api docs)
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions">

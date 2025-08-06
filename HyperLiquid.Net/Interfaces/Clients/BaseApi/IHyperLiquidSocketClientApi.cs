@@ -41,9 +41,11 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="onMessage">The data handler</param>
+        /// <param name="nSigFigs">Number of significant figures to use for price, if not provided will use the default from the options</param>
+        /// <param name="mantissa">Mantissa to use for price, if not provided will use the default from the options</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, CancellationToken ct = default);
+        Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to trade updates
