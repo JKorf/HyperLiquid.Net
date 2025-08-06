@@ -1,0 +1,4 @@
+POST
+/info
+false
+{"marginSummary":{"accountValue":"83.307638","totalNtlPos":"75.652","totalRawUsd":"7.655638","totalMarginUsed":"7.525754"},"crossMarginSummary":{"accountValue":"75.781884","totalNtlPos":"0.0","totalRawUsd":"75.781884","totalMarginUsed":"0.0"},"crossMaintenanceMarginUsed":"0.0","withdrawable":"75.781884","assetPositions":[{"type":"oneWay","position":{"coin":"HYPE","szi":"2.0","leverage":{"type":"isolated","value":10,"rawUsd":"-68.126246"},"entryPx":"37.829","positionValue":"75.652","unrealizedPnl":"-0.006","returnOnEquity":"-0.0007930424","liquidationPx":"35.8559189474","marginUsed":"7.525754","maxLeverage":10,"cumFunding":{"allTime":"4.966798","sinceOpen":"0.0","sinceChange":"0.0"}}}],"time":1754467216357}

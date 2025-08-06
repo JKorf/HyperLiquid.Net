@@ -3798,6 +3798,11 @@
             Value
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPositionLeverage.RawUsd">
+            <summary>
+            Raw USD
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidPositionFunding">
             <summary>
             Position funding

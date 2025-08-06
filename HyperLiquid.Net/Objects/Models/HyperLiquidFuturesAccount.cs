@@ -106,7 +106,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// <summary>
         /// Funding info
         /// </summary>
-        [JsonPropertyName("funding")]
+        [JsonPropertyName("cumFunding")]
         public HyperLiquidPositionFunding? Funding { get; set; }
         /// <summary>
         /// Average entry price
@@ -172,6 +172,11 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("value")]
         public int Value { get; set; }
+        /// <summary>
+        /// Raw USD
+        /// </summary>
+        [JsonPropertyName("rawUsd")]
+        public decimal? RawUsd { get; set; }
     }
 
     /// <summary>
