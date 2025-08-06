@@ -130,8 +130,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="direction">Direction</param>
         /// <param name="vaultAddress">Vault address</param>
         /// <param name="usd">USD to withdraw or deposit</param>
+        /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, CancellationToken ct = default);
+        Task<WebCallResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, DateTime? expireAfter = null, CancellationToken ct = default);
 
         /// <summary>
         /// Approve a builder address of the library to charge the fee percentage as defined in the BuilderFeePercentage client options field

@@ -61,28 +61,28 @@
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOrderHistoryAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelAfterAsync(System.Nullable{System.TimeSpan},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelAfterAsync(System.Nullable{System.TimeSpan},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.EditOrderAsync(System.String,System.Nullable{System.Int64},System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.EditOrderAsync(System.String,System.Nullable{System.Int64},System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.EditOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidEditOrderRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.EditOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidEditOrderRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceTwapOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,System.Decimal,System.Boolean,System.Int32,System.Boolean,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.PlaceTwapOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,System.Decimal,System.Boolean,System.Int32,System.Boolean,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelTwapOrderAsync(System.String,System.Int64,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.CancelTwapOrderAsync(System.String,System.Int64,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi">
@@ -194,10 +194,10 @@
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidSocketClientFuturesApi">
@@ -374,7 +374,7 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.DelegateOrUndelegateStakeFromValidatorAsync(HyperLiquid.Net.Enums.DelegateDirection,System.String,System.Int64,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.DepositOrWithdrawFromVaultAsync(HyperLiquid.Net.Enums.DepositWithdrawDirection,System.String,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.DepositOrWithdrawFromVaultAsync(HyperLiquid.Net.Enums.DepositWithdrawDirection,System.String,System.Int64,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">
@@ -2197,7 +2197,7 @@
             <param name="address">Address to request order for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderAsync(System.String,System.Int64,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderAsync(System.String,System.Int64,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel an order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
@@ -2205,18 +2205,20 @@
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="orderId">Order id</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel multiple orders
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
             </summary>
             <param name="requests">Cancel requests</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderByClientOrderIdAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderByClientOrderIdAsync(System.String,System.String,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel order by client order id
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
@@ -2224,18 +2226,20 @@
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="clientOrderId">Client order id</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel multiple orders by client order id
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
             </summary>
             <param name="requests">Cancel requests</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Nullable{System.Decimal},System.Nullable{HyperLiquid.Net.Enums.TpSlType},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Nullable{System.Decimal},System.Nullable{HyperLiquid.Net.Enums.TpSlType},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place a new order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
@@ -2252,9 +2256,10 @@
             <param name="tpSlGrouping">Trigger order grouping</param>
             <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place multiple new orders in a single call
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
@@ -2262,18 +2267,20 @@
             <param name="orders">Orders to place</param>
             <param name="tpSlGrouping">Take profit / Stop loss grouping</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelAfterAsync(System.Nullable{System.TimeSpan},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelAfterAsync(System.Nullable{System.TimeSpan},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel all orders after the provided timeout has passed. Can be called at an interval to act as deadman switch. Pass null to cancel an existing timeout. This will cancel both Spot and Futures orders. This functionality is only available after achieving a certain trading volume.
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /></para>
             </summary>
             <param name="timeout">Timeout after which to cancel all order, or null to cancel the countdown</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrderAsync(System.String,System.Nullable{System.Int64},System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrderAsync(System.String,System.Nullable{System.Int64},System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Edit an existing order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-an-order" /></para>
@@ -2289,18 +2296,20 @@
             <param name="reduceOnly">Reduce only</param>
             <param name="newClientOrderId">The new client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidEditOrderRequest},System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidEditOrderRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Edit multiple orders in a single call
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /></para>
             </summary>
             <param name="requests">Edit requests</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceTwapOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,System.Decimal,System.Boolean,System.Int32,System.Boolean,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceTwapOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,System.Decimal,System.Boolean,System.Int32,System.Boolean,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place a Time Weighted Average Price order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-a-twap-order" /></para>
@@ -2312,9 +2321,10 @@
             <param name="minutes">Time of the TWAP in minutes</param>
             <param name="randomize">Randomize</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelTwapOrderAsync(System.String,System.Int64,System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelTwapOrderAsync(System.String,System.Int64,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel a Time Weighted Average Price order
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-a-twap-order" /></para>
@@ -2322,6 +2332,7 @@
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="twapId">TWAP order id</param>
             <param name="vaultAddress">Vault address</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi">
@@ -2528,7 +2539,7 @@
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Set leverage for a symbol
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /></para>
@@ -2536,15 +2547,17 @@
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="leverage">New leverage</param>
             <param name="marginType">Margin type</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Add or remove margin from isolated position
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /></para>
             </summary>
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="updateValue">Change value</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi">
@@ -2813,7 +2826,7 @@
             <param name="wei">Quantity</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DepositOrWithdrawFromVaultAsync(HyperLiquid.Net.Enums.DepositWithdrawDirection,System.String,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DepositOrWithdrawFromVaultAsync(HyperLiquid.Net.Enums.DepositWithdrawDirection,System.String,System.Int64,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Deposit or withdraw from vault
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#deposit-or-withdraw-from-a-vault" /></para>
@@ -2821,6 +2834,7 @@
             <param name="direction">Direction</param>
             <param name="vaultAddress">Vault address</param>
             <param name="usd">USD to withdraw or deposit</param>
+            <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">
@@ -4912,6 +4926,11 @@
             <summary>
             The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to null/0. Can be between 0.001% and 0.1%.<br />
             If set to a non-null value the address has to be whitelisted using <see cref="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">restClient.SpotApi.Account.ApproveBuilderFeeAsync</see>
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions.ExpiresAfter">
+            <summary>
+            If set requests will only be accepted by the server if they're received within (RequestTime + ExpiresAfter) timespan
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions.SpotOptions">

@@ -281,7 +281,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Deposit Or Withdraw From Vault
 
         /// <inheritdoc />
-        public async Task<WebCallResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, CancellationToken ct = default)
+        public async Task<WebCallResult> DepositOrWithdrawFromVaultAsync(
+            DepositWithdrawDirection direction,
+            string vaultAddress,
+            long usd,
+            DateTime? expiresAfter = null,
+            CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
@@ -291,6 +296,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "usd", usd }
             };
             parameters.AddMilliseconds("nonce", DateTime.UtcNow);
+
+            _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
             var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);

@@ -8,6 +8,8 @@ using HyperLiquid.Net.Utils;
 using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
+using System;
+using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
@@ -27,7 +29,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Set Leverage
 
         /// <inheritdoc />
-        public async Task<WebCallResult> SetLeverageAsync(string symbol, int leverage, MarginType marginType, CancellationToken ct = default)
+        public async Task<WebCallResult> SetLeverageAsync(
+            string symbol,
+            int leverage,
+            MarginType marginType,
+            DateTime? expiresAfter = null,
+            CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
@@ -43,6 +50,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             actionParameters.Add("leverage", leverage);
             parameters.Add("action", actionParameters);
 
+            _baseClient.AddExpiresAfter(parameters, expiresAfter);
+
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
             return result.AsDataless();
@@ -53,7 +62,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Update Isolated Margin
 
         /// <inheritdoc />
-        public async Task<WebCallResult> UpdateIsolatedMarginAsync(string symbol, decimal updateValue, CancellationToken ct = default)
+        public async Task<WebCallResult> UpdateIsolatedMarginAsync(
+            string symbol,
+            decimal updateValue,
+            DateTime? expiresAfter = null,
+            CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
@@ -68,6 +81,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
             actionParameters.Add("ntli", updateValue);
             parameters.Add("action", actionParameters);
+
+            _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
             var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);

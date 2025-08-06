@@ -1,4 +1,5 @@
 using CryptoExchange.Net.Objects.Options;
+using System;
 
 namespace HyperLiquid.Net.Objects.Options
 {
@@ -31,6 +32,11 @@ namespace HyperLiquid.Net.Objects.Options
         public decimal? BuilderFeePercentage { get; set; }
         
         /// <summary>
+        /// If set requests will only be accepted by the server if they're received within (RequestTime + ExpiresAfter) timespan
+        /// </summary>
+        public TimeSpan? ExpiresAfter { get; set; }
+
+        /// <summary>
         /// Spot API options
         /// </summary>
         public RestApiOptions SpotOptions { get; private set; } = new RestApiOptions();
@@ -41,7 +47,9 @@ namespace HyperLiquid.Net.Objects.Options
 
         internal HyperLiquidRestOptions Set(HyperLiquidRestOptions targetOptions)
         {
-            targetOptions = base.Set<HyperLiquidRestOptions>(targetOptions);            
+            targetOptions = base.Set<HyperLiquidRestOptions>(targetOptions);
+            targetOptions.BuilderFeePercentage = BuilderFeePercentage;
+            targetOptions.ExpiresAfter = ExpiresAfter;
             targetOptions.SpotOptions = SpotOptions.Set(targetOptions.SpotOptions);
             targetOptions.FuturesOptions = FuturesOptions.Set(targetOptions.FuturesOptions);
             return targetOptions;

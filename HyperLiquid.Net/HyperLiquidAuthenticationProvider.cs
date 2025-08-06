@@ -118,7 +118,11 @@ namespace HyperLiquid.Net
                     vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;
                 }
 
-                var hash = GenerateActionHash(action, nonce, vaultAddress);
+                long? expiresAfter = null;
+                if (bodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj))
+                    expiresAfter = (long)expiresAfterObj;                
+
+                var hash = GenerateActionHash(action, nonce, vaultAddress, expiresAfter);
                 var phantomAgent = new Dictionary<string, object>()
                 {
                     { "source", ((HyperLiquidRestClientApi)apiClient).ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "b" : "a" },
@@ -385,7 +389,7 @@ namespace HyperLiquid.Net
         }
 
 
-        private byte[] GenerateActionHash(object action, long nonce, string? vaultAddress)
+        private byte[] GenerateActionHash(object action, long nonce, string? vaultAddress, long? expireAfter)
         {
             var packer = new PackConverter();
             var dataHex = BytesToHexString(packer.Pack(action));
@@ -395,6 +399,9 @@ namespace HyperLiquid.Net
                 signHex += "00";
             else
                 signHex += "01" + vaultAddress;
+
+            if (expireAfter != null)
+                signHex += "00" + $"00000{(ulong)expireAfter:x}";
 
             var signBytes = ConvertHexStringToByteArray(signHex);
             return SignKeccak(signBytes);

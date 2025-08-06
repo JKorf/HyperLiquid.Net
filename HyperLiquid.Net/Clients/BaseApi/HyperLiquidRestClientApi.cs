@@ -71,6 +71,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
             return result.As(result.Data.Data!.Data);
         }
 
+        internal void AddExpiresAfter(ParameterCollection parameters, DateTime? requestExpiresAfter)
+        {
+            if (requestExpiresAfter != null)
+                parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(requestExpiresAfter));
+            else if (ClientOptions.ExpiresAfter != null)
+                parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
+        }
+
         protected override Error? TryParseError(KeyValuePair<string, string[]>[] responseHeaders, IMessageAccessor accessor)
         {
             var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
