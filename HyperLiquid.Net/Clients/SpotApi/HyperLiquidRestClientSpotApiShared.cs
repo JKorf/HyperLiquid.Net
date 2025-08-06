@@ -420,7 +420,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             }).ToArray());
         }
 
-        PaginatedEndpointOptions<GetUserTradesRequest> ISpotOrderRestClient.GetSpotUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(SharedPaginationSupport.Descending, true, 2000, true)
+        PaginatedEndpointOptions<GetUserTradesRequest> ISpotOrderRestClient.GetSpotUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(SharedPaginationSupport.Ascending, true, 2000, true)
         {
             RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 per request / 10000 results in total are returned from the API"
         };
@@ -437,8 +437,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             // Get data
             var orders = await Trading.GetUserTradesByTimeAsync(
-                startTime: request.StartTime ?? DateTime.UtcNow.AddDays(-7),
-                endTime: fromTimestamp ?? request.EndTime,
+                startTime: fromTimestamp ?? request.StartTime ?? DateTime.UtcNow.AddDays(-7),
+                endTime: request.EndTime ?? DateTime.UtcNow,
                 ct: ct
                 ).ConfigureAwait(false);
             if (!orders)
@@ -449,7 +449,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             // Get next token
             DateTimeToken? nextToken = null;
             if (orders.Data.Count() == 2000)
-                nextToken = new DateTimeToken(orders.Data.Min(o => o.Timestamp).AddMilliseconds(-1));
+                nextToken = new DateTimeToken(orders.Data.Max(o => o.Timestamp).AddMilliseconds(1));
 
             return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, TradingMode.Spot, data.Select(x => new SharedUserTrade(
                 ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 

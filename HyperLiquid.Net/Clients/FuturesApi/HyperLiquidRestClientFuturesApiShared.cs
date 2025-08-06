@@ -544,7 +544,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             }).ToArray());
         }
 
-        PaginatedEndpointOptions<GetUserTradesRequest> IFuturesOrderRestClient.GetFuturesUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(SharedPaginationSupport.Descending, true, 1000, true);
+        PaginatedEndpointOptions<GetUserTradesRequest> IFuturesOrderRestClient.GetFuturesUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(SharedPaginationSupport.Ascending, true, 2000, true);
         async Task<ExchangeWebResult<SharedUserTrade[]>> IFuturesOrderRestClient.GetFuturesUserTradesAsync(GetUserTradesRequest request, INextPageToken? pageToken, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetFuturesUserTradesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
@@ -558,8 +558,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             // Get data
             var orders = await Trading.GetUserTradesByTimeAsync(
-                startTime: request.StartTime ?? DateTime.UtcNow.AddDays(-7),
-                endTime: fromTimestamp ?? request.EndTime,
+                startTime: fromTimestamp ?? request.StartTime ?? DateTime.UtcNow.AddDays(-7),
+                endTime: request.EndTime ?? DateTime.UtcNow,
                 ct: ct
                 ).ConfigureAwait(false);
             if (!orders)
@@ -570,7 +570,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             // Get next token
             DateTimeToken? nextToken = null;
             if (orders.Data.Count() == 2000)
-                nextToken = new DateTimeToken(orders.Data.Min(o => o.Timestamp).AddMilliseconds(-1));
+                nextToken = new DateTimeToken(orders.Data.Max(o => o.Timestamp).AddMilliseconds(1));
 
             return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, TradingMode.PerpetualLinear, data.Select(x => new SharedUserTrade(
                 ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
