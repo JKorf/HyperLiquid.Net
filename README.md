@@ -164,6 +164,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.7.0 - 06 Aug 2025
+    * Added expiresAfter parameter to endpoints
+    * Added ExpiresAfter Rest client option to set expiresAfter parameter for all endpoints
+    * Fixed mapping of Funding on Position model, added RawUsd property to Leverage model
+    * Fixed Shared UserTrade pagination
+    * Fixed signing of requests containing bool parameters
+
 * Version 2.6.0 - 04 Aug 2025
     * Updated CryptoExchange.Net to version 9.4.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
     * Preserve user TimeInForce parameter is set for market orders, only default to ImmediateOrCancel if not passed
