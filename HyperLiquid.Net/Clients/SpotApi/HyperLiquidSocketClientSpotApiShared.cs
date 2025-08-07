@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToOrderBookUpdatesAsync(symbol, update => handler(update.AsExchangeEvent(Exchange, new SharedOrderBook(update.Data.Levels.Asks, update.Data.Levels.Bids))), ct).ConfigureAwait(false);
+            var result = await SubscribeToOrderBookUpdatesAsync(symbol, update => handler(update.AsExchangeEvent(Exchange, new SharedOrderBook(update.Data.Levels.Asks, update.Data.Levels.Bids))), ct: ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);
         }
