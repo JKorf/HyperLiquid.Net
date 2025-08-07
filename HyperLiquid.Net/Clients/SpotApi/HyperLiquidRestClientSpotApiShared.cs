@@ -124,6 +124,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!result)
                 return result.AsExchangeResult<SharedOrderBook>(Exchange, null, default);
 
+            if (result.Data == null)
+                return result.AsExchangeError<SharedOrderBook>(Exchange, new ServerError("No response"));
+
             return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
         }
 
@@ -185,6 +188,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var resultTicker = await ExchangeData.GetOrderBookAsync(symbol, ct: ct).ConfigureAwait(false);
             if (!resultTicker)
                 return resultTicker.AsExchangeResult<SharedBookTicker>(Exchange, null, default);
+
+            if (resultTicker.Data == null)
+                return resultTicker.AsExchangeError<SharedBookTicker>(Exchange, new ServerError("No response"));
 
             return resultTicker.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedBookTicker(
                 ExchangeSymbolCache.ParseSymbol(_topicId, symbol),

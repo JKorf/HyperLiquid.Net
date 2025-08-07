@@ -73,7 +73,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             parameters.AddOptional("mantissa", mantissa);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidOrderBook>(request, parameters, ct).ConfigureAwait(false);
-            if (result.Error?.Code == 500 && result.Error?.Message == "null")
+            if (result.Error?.Code == 500 && result.Error?.Message == "Unknown request error")
                 return result.AsError<HyperLiquidOrderBook>(new ServerError("Symbol not found"));
             
             return result;
@@ -111,7 +111,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidKline[]>(request, parameters, ct).ConfigureAwait(false);
-            if (result.Error?.Code == 500 && result.Error?.Message == "null")
+            if (result.Error?.Code == 500 && result.Error?.Message == "Unknown request error")
                 return result.AsError<HyperLiquidKline[]>(new ServerError("Symbol not found"));
 
             return result;
