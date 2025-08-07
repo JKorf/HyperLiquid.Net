@@ -22,8 +22,8 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         private readonly bool _clientOwner;
         private readonly IHyperLiquidSocketClient _socketClient;
         private readonly TimeSpan _initialDataTimeout;
-        private readonly int? NSigFigs;
-        private readonly int? Mantissa;
+        private readonly int? _nSigFigs;
+        private readonly int? _mantissa;
 
         /// <summary>
         /// Create a new order book instance
@@ -58,8 +58,8 @@ namespace HyperLiquid.Net.SymbolOrderBooks
             _sequencesAreConsecutive = options?.Limit == null;
 
             Levels = options?.Limit;
-            NSigFigs = options?.NSigFigs;
-            Mantissa = options?.Mantissa;
+            _nSigFigs = options?.NSigFigs;
+            _mantissa = options?.Mantissa;
             _initialDataTimeout = options?.InitialDataTimeout ?? TimeSpan.FromSeconds(30);
             _clientOwner = socketClient == null;
             _socketClient = socketClient ?? new HyperLiquidSocketClient();
@@ -69,7 +69,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         protected override async Task<CallResult<UpdateSubscription>> DoStartAsync(CancellationToken ct)
         {
             // Uses SpotApi but can also be used for futures
-            var sub = await _socketClient.SpotApi.SubscribeToOrderBookUpdatesAsync(Symbol, HandleUpdate, nSigFigs: NSigFigs, mantissa: Mantissa, ct: ct).ConfigureAwait(false);
+            var sub = await _socketClient.SpotApi.SubscribeToOrderBookUpdatesAsync(Symbol, HandleUpdate, nSigFigs: _nSigFigs, mantissa: _mantissa,  ct: ct).ConfigureAwait(false);
             if (!sub)
                 return sub;
 

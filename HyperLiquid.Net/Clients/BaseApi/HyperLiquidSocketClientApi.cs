@@ -159,11 +159,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 { "coin", coin }
             };
             
-            if (nSigFigs.HasValue)
-                parameters.Add("nSigFigs", nSigFigs.Value);
-            
-            if (mantissa.HasValue)
-                parameters.Add("mantissa", mantissa.Value);
+            parameters.AddOptionalParameter("nSigFigs", nSigFigs);
+            parameters.AddOptionalParameter("mantissa", mantissa);
             
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, "l2Book", "l2Book-" + coin, parameters,
             x =>
