@@ -363,5 +363,21 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Get User Role
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "userRole" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 60, false);
+            return await _baseClient.SendAsync<HyperLiquidUserRole>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
     }
 }

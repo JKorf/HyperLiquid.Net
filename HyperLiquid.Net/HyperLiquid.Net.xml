@@ -386,6 +386,9 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.GetSubAccountsAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.GetUserRoleAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiExchangeData">
             <inheritdoc />
         </member>
@@ -508,6 +511,11 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.TwapStatus">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.UserRole">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -1442,6 +1450,11 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserRole">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserTrade">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -1949,6 +1962,36 @@
         <member name="F:HyperLiquid.Net.Enums.TwapStatus.Error">
             <summary>
             Error
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Enums.UserRole">
+            <summary>
+            User role
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.UserRole.Missing">
+            <summary>
+            Missing
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.UserRole.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.UserRole.Agent">
+            <summary>
+            Agent
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.UserRole.Vault">
+            <summary>
+            Vault
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.UserRole.SubAccount">
+            <summary>
+            Sub account
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.ExtensionMethods.HyperLiquidExtensionMethods">
@@ -2874,7 +2917,13 @@
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
-            <returns></returns>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetUserRoleAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get user role
+            </summary>
+            <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+            <param name="ct">Cancellation token</param>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData">
             <summary>
@@ -4803,6 +4852,16 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserLedger`1.Timestamp">
             <summary>
             Timestamp
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidUserRole">
+            <summary>
+            User role info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserRole.Role">
+            <summary>
+            Role of the user
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade">
