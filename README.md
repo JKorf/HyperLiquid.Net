@@ -164,6 +164,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.8.0 - 08 Aug 2025
+    * Added restClient.SpotApi.Account.GetSubAccountsAsync endpoint
+    * Added restClient.SpotApi.Account.GetUserRoleAsync endpoint
+    * Added nSigFigs, mantissa parameters to SubscribeToOrderBookUpdatesAsync subscription
+    * Added nSigFix, mantissa parameters support to HyperLiquidSymbolOrderBook implementation
+    * Fixed some null response checking
+
 * Version 2.7.0 - 06 Aug 2025
     * Added expiresAfter parameter to endpoints
     * Added ExpiresAfter Rest client option to set expiresAfter parameter for all endpoints
