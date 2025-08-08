@@ -17,6 +17,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(CancelResultConverter.ErrorMessage))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidDefault>))]
     [JsonSerializable(typeof(HyperLiquidMarginTableEntry))]
+    [JsonSerializable(typeof(HyperLiquidSubAccount[]))]
 
     // End manual defined attributes
 

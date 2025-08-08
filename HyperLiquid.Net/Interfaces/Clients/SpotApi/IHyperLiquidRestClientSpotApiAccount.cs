@@ -149,5 +149,13 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="maxFeePercentage">Max fee percentage the builder can charge</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get sub account list
+        /// </summary>
+        /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default);
     }
 }

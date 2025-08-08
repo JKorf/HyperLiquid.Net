@@ -383,6 +383,9 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.GetSubAccountsAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiExchangeData">
             <inheritdoc />
         </member>
@@ -1250,6 +1253,16 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSpotTransferArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubAccount">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubAccountArray">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -2854,6 +2867,14 @@
             <param name="builderAddress">The address of the builder in hex format, for example 0x0000000000000000000000000000000000000000</param>
             <param name="maxFeePercentage">Max fee percentage the builder can charge</param>
             <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetSubAccountsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get sub account list
+            </summary>
+            <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+            <param name="ct">Cancellation token</param>
+            <returns></returns>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData">
             <summary>
@@ -4547,6 +4568,36 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidEvmContract.EvmExtraWeiDecimals">
             <summary>
             Extra decimals
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount">
+            <summary>
+            Sub account
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount.SubAccountAddress">
+            <summary>
+            Public address of the sub account
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount.MasterAddress">
+            <summary>
+            Public address of the master account
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount.SpotBalances">
+            <summary>
+            Spot balances
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubAccount.FuturesInfo">
+            <summary>
+            Futures account info
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidTrade">

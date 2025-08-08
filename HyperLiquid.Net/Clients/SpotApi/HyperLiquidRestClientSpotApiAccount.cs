@@ -339,5 +339,29 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+
+        #region Get Sub account list
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "subAccounts" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidSubAccount[]>(request, parameters, ct).ConfigureAwait(false);
+            if (!result)
+                return result;
+
+            if (result.Data == null)
+                return result.As(new HyperLiquidSubAccount[0]);
+
+            return result;
+        }
+
+        #endregion
+
     }
 }
