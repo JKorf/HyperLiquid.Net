@@ -164,6 +164,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.8.1 - 11 Aug 2025
+    * Fixed deserialization error in SetLeverageAsync, UpdateIsolatedMarginAsync and EditOrderAsync endpoints
+
 * Version 2.8.0 - 08 Aug 2025
     * Added restClient.SpotApi.Account.GetSubAccountsAsync endpoint
     * Added restClient.SpotApi.Account.GetUserRoleAsync endpoint
