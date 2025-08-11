@@ -19,6 +19,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidMarginTableEntry))]
     [JsonSerializable(typeof(HyperLiquidSubAccount[]))]
     [JsonSerializable(typeof(HyperLiquidUserRole))]
+    [JsonSerializable(typeof(HyperLiquidResponse))]
 
     // End manual defined attributes
 

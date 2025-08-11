@@ -1,0 +1,4 @@
+POST
+/exchange
+true
+{"status": "ok", "response": {"type": "default"}}
