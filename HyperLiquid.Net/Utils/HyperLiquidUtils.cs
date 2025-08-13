@@ -1,4 +1,5 @@
 ﻿using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Errors;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Models;
@@ -102,7 +103,7 @@ namespace HyperLiquid.Net.Utils
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
                 var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
-                    return new CallResult<int>(new ServerError("Symbol not found"));
+                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
                 return new CallResult<int>(symbol.Index + 10000);
             }
@@ -115,7 +116,7 @@ namespace HyperLiquid.Net.Utils
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
                 var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
-                    return new CallResult<int>(new ServerError("Symbol not found"));
+                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
                 return new CallResult<int>(symbol.Index);
             }
@@ -128,7 +129,7 @@ namespace HyperLiquid.Net.Utils
         {
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
-                return new CallResult<string>(new ServerError("Symbol not found"));
+                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return new CallResult<string>(symbol.Name);
         }
@@ -148,7 +149,7 @@ namespace HyperLiquid.Net.Utils
 
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
-                return new CallResult<string>(new ServerError("Symbol not found"));
+                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return new CallResult<string>(symbol.Name);
         }
@@ -166,7 +167,7 @@ namespace HyperLiquid.Net.Utils
 
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == name);
             if (symbol == null)
-                return new CallResult<string>(new ServerError("Symbol not found"));
+                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return new CallResult<string>(symbol.ExchangeName);
         }
@@ -204,7 +205,7 @@ namespace HyperLiquid.Net.Utils
 
             var assetInfo = _spotAssetInfo[envName].SingleOrDefault(x => x.Name == asset);
             if (assetInfo == null)
-                return new CallResult<string>(new ServerError("Asset not found"));
+                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
 
             return new CallResult<string>(assetInfo.Name + ":" + assetInfo.AssetId);
         }

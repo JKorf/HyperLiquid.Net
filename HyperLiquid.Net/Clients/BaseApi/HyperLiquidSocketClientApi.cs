@@ -26,6 +26,7 @@ using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using System.Text.Json;
 using HyperLiquid.Net.Interfaces.Clients;
 using System.Net.WebSockets;
+using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -73,7 +74,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 x => new HyperLiquidPingQuery(),
                 (connection, result) =>
                 {
-                    if (result.Error?.Message.Equals("Query timeout") == true)
+                    if (result.Error?.ErrorType == ErrorType.Timeout)
                     {
                         // Ping timeout, reconnect
                         _logger.LogWarning("[Sckt {SocketId}] Ping response timeout, reconnecting", connection.SocketId);
@@ -99,7 +100,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, "allMids", "allMids", null, x =>
+            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, this, "allMids", "allMids", null, x =>
             {
                 var mappingResult = HyperLiquidUtils.GetSymbolNameFromExchangeName(ClientOptions.Environment.Name, x.Data.Mids.Keys);
                 onMessage(x.As(x.Data.Mids.ToDictionary(x =>
@@ -127,7 +128,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, "candle", "candle-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, this, "candle", "candle-" + coin, new Dictionary<string, object>
             {
                 { "coin", coin },
                 { "interval", EnumConverter.GetString(interval) }
@@ -162,7 +163,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             parameters.AddOptionalParameter("nSigFigs", nSigFigs);
             parameters.AddOptionalParameter("mantissa", mantissa);
             
-            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, "l2Book", "l2Book-" + coin, parameters,
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, this, "l2Book", "l2Book-" + coin, parameters,
             x =>
             {
                 x.Data.Symbol = symbol;
@@ -185,7 +186,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidTrade[]>(_logger, "trades", "trades-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTrade[]>(_logger, this, "trades", "trades-" + coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
@@ -211,7 +212,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, "orderUpdates", "orderUpdates", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, this, "orderUpdates", "orderUpdates", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -249,7 +250,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             ValidateAddress(address);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidLedgerUpdate>(_logger, "userNonFundingLedgerUpdates", "userNonFundingLedgerUpdates", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidLedgerUpdate>(_logger, this, "userNonFundingLedgerUpdates", "userNonFundingLedgerUpdates", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -269,7 +270,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             ValidateAddress(address);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, "webData2", "webData2", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, this, "webData2", "webData2", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -293,7 +294,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, "userFills", "userFills", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, this, "userFills", "userFills", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -336,7 +337,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, "userTwapSliceFills", "userTwapSliceFills", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, this, "userTwapSliceFills", "userTwapSliceFills", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -379,7 +380,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, "userTwapHistory", "userTwapHistory", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, this, "userTwapHistory", "userTwapHistory", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },

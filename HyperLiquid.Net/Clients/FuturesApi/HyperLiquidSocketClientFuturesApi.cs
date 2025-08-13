@@ -36,7 +36,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidFuturesTicker>> onMessage, CancellationToken ct = default)
         {
-            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, "activeAssetCtx", "activeAssetCtx-" + symbol, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, this, "activeAssetCtx", "activeAssetCtx-" + symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
             },
@@ -55,7 +55,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, "activeAssetData", "activeAssetData-" + symbol, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, this, "activeAssetData", "activeAssetData-" + symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
                 { "user", addressSub },
@@ -78,7 +78,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return new CallResult<UpdateSubscription>(result.Error!);
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, "userFundings", "userFundings", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, this, "userFundings", "userFundings", new Dictionary<string, object>
             {
                 { "user", addressSub },
             },

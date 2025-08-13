@@ -9,6 +9,8 @@ using HyperLiquid.Net.Objects.Models;
 using System.Linq;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
+using CryptoExchange.Net.Objects.Errors;
+using System.Net;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
@@ -105,8 +107,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
-            if (result.Error?.Code == 500 && result.Error?.Message == "null")
-                return result.AsError<HyperLiquidFundingRate[]>(new ServerError("Symbol not found"));
+            if (result.ResponseStatusCode == (HttpStatusCode)500 && result.Error?.ErrorType == ErrorType.Unknown)
+                return result.AsError<HyperLiquidFundingRate[]>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return result;
         }

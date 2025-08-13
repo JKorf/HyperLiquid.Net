@@ -7,12 +7,14 @@ using System;
 using System.Collections.Generic;
 using HyperLiquid.Net.Objects.Internal;
 using System.Linq;
+using CryptoExchange.Net.Clients;
 
 namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
 {
     /// <inheritdoc />
     internal class HyperLiquidSubscription<T> : Subscription<HyperLiquidSocketUpdate<HyperLiquidSubscribeRequest>, HyperLiquidSocketUpdate<HyperLiquidUnsubscribeRequest>>
     {
+        private readonly SocketApiClient _client;
         private readonly string _topic;
         private readonly Dictionary<string, object> _parameters;
         private readonly Action<DataEvent<T>> _handler;
@@ -20,8 +22,9 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         /// <summary>
         /// ctor
         /// </summary>
-        public HyperLiquidSubscription(ILogger logger, string topic, string listenId, Dictionary<string, object>? parameters, Action<DataEvent<T>> handler, bool auth) : base(logger, auth)
+        public HyperLiquidSubscription(ILogger logger, SocketApiClient client, string topic, string listenId, Dictionary<string, object>? parameters, Action<DataEvent<T>> handler, bool auth) : base(logger, auth)
         {
+            _client = client;
             _handler = handler;
             _topic = topic;
             _parameters = parameters ?? new();
@@ -36,7 +39,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             foreach(var kvp in _parameters)
                 subscription.Add(kvp.Key, kvp.Value);
 
-            return new HyperLiquidQuery<HyperLiquidSubscribeRequest>(new HyperLiquidSubscribeRequest
+            return new HyperLiquidQuery<HyperLiquidSubscribeRequest>(_client, new HyperLiquidSubscribeRequest
             {
                 Subscription = subscription
             }, 
@@ -51,7 +54,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             foreach (var kvp in _parameters)
                 subscription.Add(kvp.Key, kvp.Value);
 
-            return new HyperLiquidQuery<HyperLiquidSubscribeRequest>(new HyperLiquidUnsubscribeRequest
+            return new HyperLiquidQuery<HyperLiquidSubscribeRequest>(_client, new HyperLiquidUnsubscribeRequest
             {
                 Subscription = subscription
             },

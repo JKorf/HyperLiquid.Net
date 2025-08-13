@@ -6,15 +6,18 @@ using HyperLiquid.Net.Objects.Internal;
 using System;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Converters.MessageParsing;
+using CryptoExchange.Net.Clients;
 
 namespace HyperLiquid.Net.Objects.Sockets
 {
     internal class HyperLiquidQuery<T> : Query<HyperLiquidSocketUpdate<T>>
     {
         private string? _errorString;
+        private readonly SocketApiClient _client;
 
-        public HyperLiquidQuery(HyperLiquidSocketRequest request, string listenId, string errorListenId, bool authenticated, int weight = 1) : base(request, authenticated, weight)
+        public HyperLiquidQuery(SocketApiClient client, HyperLiquidSocketRequest request, string listenId, string errorListenId, bool authenticated, int weight = 1) : base(request, authenticated, weight)
         {
+            _client = client;
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>([listenId, errorListenId], HandleMessage);
         }
 
@@ -38,7 +41,7 @@ namespace HyperLiquid.Net.Objects.Sockets
             {
                 var err = _errorString;
                 _errorString = null;
-                return message.ToCallResult<HyperLiquidSocketUpdate<T>>(new ServerError(err));
+                return message.ToCallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo(err)));
             }
 
             return message.ToCallResult();
