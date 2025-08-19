@@ -8,6 +8,7 @@ using System;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Enums;
 using CryptoExchange.Net;
+using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.Clients.SpotApi
 {
@@ -62,7 +63,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         {
             var interval = (Enums.KlineInterval)request.Interval;
             if (!Enum.IsDefined(typeof(Enums.KlineInterval), interval))
-                return new ExchangeWebResult<SharedKline[]>(Exchange, new ArgumentError("Interval not supported"));
+                return new ExchangeWebResult<SharedKline[]>(Exchange, ArgumentError.Invalid(nameof(GetKlinesRequest.Interval), "Interval not supported"));
 
             var validationError = ((IKlineRestClient)this).GetKlinesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
@@ -125,7 +126,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return result.AsExchangeResult<SharedOrderBook>(Exchange, null, default);
 
             if (result.Data == null)
-                return result.AsExchangeError<SharedOrderBook>(Exchange, new ServerError("No response"));
+                return result.AsExchangeError<SharedOrderBook>(Exchange, new ServerError(ErrorInfo.Unknown with { Message = "No response" }));
 
             return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
         }
@@ -148,7 +149,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             
             var symbol = result.Data.Tickers.SingleOrDefault(x => x.Symbol == symbolName);
             if (symbol == null)
-                return result.AsExchangeError<SharedSpotTicker>(Exchange, new ServerError("Symbol not found"));
+                return result.AsExchangeError<SharedSpotTicker>(Exchange, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3))
             {
@@ -190,7 +191,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return resultTicker.AsExchangeResult<SharedBookTicker>(Exchange, null, default);
 
             if (resultTicker.Data == null)
-                return resultTicker.AsExchangeError<SharedBookTicker>(Exchange, new ServerError("No response"));
+                return resultTicker.AsExchangeError<SharedBookTicker>(Exchange, new ServerError(new ErrorInfo(ErrorType.Unknown, "No response")));
 
             return resultTicker.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedBookTicker(
                 ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
@@ -290,7 +291,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeWebResult<SharedSpotOrder>(Exchange, validationError);
 
             if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedSpotOrder>(Exchange, new ArgumentError("Invalid order id"));
+                return new ExchangeWebResult<SharedSpotOrder>(Exchange, ArgumentError.Invalid(nameof(GetOrderRequest.OrderId), "Invalid order id"));
 
             var order = await Trading.GetOrderAsync(orderId, ct: ct).ConfigureAwait(false);
             if (!order)
@@ -403,7 +404,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeWebResult<SharedUserTrade[]>(Exchange, validationError);
 
             if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedUserTrade[]>(Exchange, new ArgumentError("Invalid order id"));
+                return new ExchangeWebResult<SharedUserTrade[]>(Exchange, ArgumentError.Invalid(nameof(GetOrderTradesRequest.OrderId), "Invalid order id"));
 
             var orders = await Trading.GetUserTradesAsync(ct: ct).ConfigureAwait(false);
             if (!orders)
@@ -481,7 +482,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeWebResult<SharedId>(Exchange, validationError);
 
             if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedId>(Exchange, new ArgumentError("Invalid order id"));
+                return new ExchangeWebResult<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
 
             var order = await Trading.CancelOrderAsync(request.Symbol!.GetSymbol(FormatSymbol), orderId, ct: ct).ConfigureAwait(false);
             if (!order)
@@ -604,7 +605,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var asset = assets.Data.Assets.SingleOrDefault(x => x.Name.Equals(HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset), StringComparison.InvariantCultureIgnoreCase));
             if (asset == null)
-                return assets.AsExchangeError<SharedAsset>(Exchange, new ServerError("Asset not found"));
+                return assets.AsExchangeError<SharedAsset>(Exchange, new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
 
             return assets.AsExchangeResult(Exchange, TradingMode.Spot, new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(asset.Name))
             {

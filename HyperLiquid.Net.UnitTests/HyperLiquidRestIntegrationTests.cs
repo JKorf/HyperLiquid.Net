@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.SymbolOrderBooks;
+using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -38,7 +39,7 @@ namespace HyperLiquid.Net.UnitTests
             var result = await CreateClient().SpotApi.ExchangeData.GetOrderBookAsync("TSTTST", -1);
 
             Assert.That(result.Success, Is.False);
-            Assert.That(result.Error.Code, Is.EqualTo(422));
+            Assert.That(result.Error.ErrorType, Is.EqualTo(ErrorType.UnknownSymbol));
         }
 
         [Test]

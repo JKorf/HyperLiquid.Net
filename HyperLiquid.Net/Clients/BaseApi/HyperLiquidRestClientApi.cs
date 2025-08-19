@@ -15,6 +15,7 @@ using CryptoExchange.Net.Converters.MessageParsing;
 using HyperLiquid.Net.Objects.Models;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients;
+using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -25,6 +26,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
         internal IHyperLiquidRestClient BaseClient { get; }
+
+        protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
 
         #region constructor/destructor
         internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
@@ -66,7 +69,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return result.As<T>(default);
 
             if (!result.Data.Status.Equals("ok"))
-                return result.AsError<T>(new ServerError(result.Data.Status));
+                return result.AsError<T>(new ServerError(ErrorInfo.Unknown with { Message = result.Data.Status }));
 
             return result.As(result.Data.Data!.Data);
         }
@@ -83,7 +86,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
             if (status == "err")
-                return new ServerError(accessor.GetValue<string>(MessagePath.Get().Property("response"))!);
+            {
+                var errorCode = accessor.GetValue<string>(MessagePath.Get().Property("response"))!;
+                return new ServerError(errorCode, new ErrorInfo(ErrorType.Unknown, errorCode));
+            }
 
             return null;
         }

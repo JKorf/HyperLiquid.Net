@@ -12,6 +12,7 @@ using System.Linq;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using CryptoExchange.Net;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -224,7 +225,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return result.As<HyperLiquidOrderStatus>(default);
 
             if (result.Data.Status != "order")
-                return result.AsError<HyperLiquidOrderStatus>(new ServerError(result.Data.Status));
+                return result.AsError<HyperLiquidOrderStatus>(new ServerError(new ErrorInfo(ErrorType.Unknown, result.Data.Status)));
 
             if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(result.Data.Order!.Order.ExchangeSymbol))
             {
@@ -434,7 +435,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             foreach (var order in intResult.Data.Statuses)
             {
                 if (order.Error != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(order.Error)));
+                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
                 else if (order.ResultResting != null)
                     result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultResting with { Status = OrderStatus.Open }));
                 else if (order.ResultFilled != null)
@@ -446,7 +447,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             }
 
             if (result.Count > 1 && result.All(x => !x.Success))
-                return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(new ServerError("All orders failed"), result.ToArray());
+                return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(new ServerError(new ErrorInfo(ErrorType.AllOrdersFailed, "All orders failed")), result.ToArray());
 
             return intResult.As<CallResult<HyperLiquidOrderResult>[]>(result.ToArray());
         }
@@ -528,7 +529,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (order.Equals("success"))
                     result.Add(CallResult.SuccessResult);
                 else
-                    result.Add(new CallResult(new ServerError(order)));
+                    result.Add(new CallResult(new ServerError(_baseClient.GetErrorInfo(order))));
             }
 
             return resultInt.As<CallResult[]>(result.ToArray());
@@ -611,7 +612,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (order.Equals("success"))
                     result.Add(CallResult.SuccessResult);
                 else
-                    result.Add(new CallResult(new ServerError(order)));
+                    result.Add(new CallResult(new ServerError(_baseClient.GetErrorInfo(order))));
             }
 
             return resultInt.As<CallResult[]>(result.ToArray());
@@ -785,7 +786,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             foreach (var order in intResult.Data.Statuses)
             {
                 if (order.Error != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(order.Error)));
+                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo(order.Error))));
                 else if (order.ResultResting != null)
                     result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultResting with { Status = OrderStatus.Open }));
                 else
@@ -844,7 +845,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return result.As<HyperLiquidTwapOrderResult>(default);
 
             if (result.Data.Status.Error != null)
-                return result.AsError<HyperLiquidTwapOrderResult>(new ServerError(result.Data.Status.Error));
+                return result.AsError<HyperLiquidTwapOrderResult>(new ServerError(_baseClient.GetErrorInfo(result.Data.Status.Error)));
 
             return result.As(result.Data.Status.ResultRunning!);
         }
@@ -888,7 +889,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 return result.AsDataless();
 
             if (result.Data.Status != "success")
-                return result.AsDatalessError(new ServerError(result.Data.Status));
+                return result.AsDatalessError(new ServerError(_baseClient.GetErrorInfo(result.Data.Status)));
 
             return result.AsDataless();
         }

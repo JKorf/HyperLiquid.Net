@@ -46,7 +46,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, "activeAssetCtx", "activeSpotAssetCtx-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", "activeSpotAssetCtx-" + coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
