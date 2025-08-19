@@ -1,15 +1,15 @@
-﻿using System;
+﻿using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Clients;
+using CryptoExchange.Net.Objects;
+using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Signing;
+using HyperLiquid.Net.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Clients;
-using CryptoExchange.Net.Objects;
-using HyperLiquid.Net.Utils;
-using System.Security.Cryptography;
 using System.Numerics;
-using HyperLiquid.Net.Clients.BaseApi;
-using HyperLiquid.Net.Signing;
+using System.Security.Cryptography;
 
 namespace HyperLiquid.Net
 {
@@ -61,26 +61,14 @@ namespace HyperLiquid.Net
         {
         }
 
-        public override void AuthenticateRequest(
-            RestApiClient apiClient,
-            Uri uri,
-            HttpMethod method,
-            ref IDictionary<string, object>? uriParameters,
-            ref IDictionary<string, object>? bodyParameters,
-            ref Dictionary<string, string>? headers,
-            bool auth,
-            ArrayParametersSerialization arraySerialization,
-            HttpMethodParameterPosition parameterPosition,
-            RequestBodyFormat requestBodyFormat)
+        public override void ProcessRequest(RestApiClient apiClient, RestRequestConfiguration request)
         {
-            headers = new Dictionary<string, string>() { };
-
-            if (!auth)
+            if (!request.Authenticated)
                 return;
 
-            var action = (Dictionary<string, object>)bodyParameters!["action"];
+            var action = (Dictionary<string, object>)request.BodyParameters["action"];
             var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
-            bodyParameters!.Add("nonce", nonce);
+            request.BodyParameters!.Add("nonce", nonce);
             if (action.TryGetValue("signatureChainId", out var chainId))
             {
                 // User action
@@ -106,21 +94,21 @@ namespace HyperLiquid.Net
                 else
                     signature = SignRequest(keccakSigned, _credentials.Secret);
 
-                bodyParameters["signature"] = signature;
+                request.BodyParameters["signature"] = signature;
             }
             else
             {
                 // Exchange action
                 string? vaultAddress = null;
-                if (bodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj)) 
+                if (request.BodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj))
                 {
                     vaultAddress = (string)vaultAddressObj;
                     vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;
                 }
 
                 long? expiresAfter = null;
-                if (bodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj))
-                    expiresAfter = (long)expiresAfterObj;                
+                if (request.BodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj))
+                    expiresAfter = (long)expiresAfterObj;
 
                 var hash = GenerateActionHash(action, nonce, vaultAddress, expiresAfter);
                 var phantomAgent = new Dictionary<string, object>()
@@ -133,14 +121,15 @@ namespace HyperLiquid.Net
                 var keccakSigned = BytesToHexString(SignKeccak(msg));
 
                 Dictionary<string, object> signature;
-                if (HyperLiquidExchange.SignRequestDelegate != null)                
-                    signature = HyperLiquidExchange.SignRequestDelegate(keccakSigned, _credentials.Secret);                
+                if (HyperLiquidExchange.SignRequestDelegate != null)
+                    signature = HyperLiquidExchange.SignRequestDelegate(keccakSigned, _credentials.Secret);
                 else
-                    signature = SignRequest(keccakSigned, _credentials.Secret);                
+                    signature = SignRequest(keccakSigned, _credentials.Secret);
 
-                bodyParameters["signature"] = signature;
+                request.BodyParameters["signature"] = signature;
             }
         }
+
 
         private Dictionary<string, object> GetSignatureTypes(string name, Dictionary<string, object> parameters)
         {
@@ -426,6 +415,7 @@ namespace HyperLiquid.Net
         {
             return InternalSha3Keccack.CalculateHash(data);
         }
+
 
         #region Nethereum signing method, here to use when we need to debug message signing issues
 

@@ -4,7 +4,7 @@ namespace HyperLiquid.Net
 {
     internal static class HyperLiquidErrors
     {
-        internal static ErrorCollection Errors { get; } = new ErrorCollection([
+        internal static ErrorMapping Errors { get; } = new ErrorMapping([
                             
             ],
             [
@@ -41,6 +41,10 @@ namespace HyperLiquid.Net
 
                     if (msg.StartsWith("Order price cannot be more than "))
                         return new ErrorInfo(ErrorType.InvalidPrice, false, "Order price deviates too far from current price", code);
+                    
+                    if (msg.StartsWith("Order would increase open interest while open interest is capped") ||
+                        msg.StartsWith("Order would cause position to exceed margin tier limit at current leverage"))
+                        return new ErrorInfo(ErrorType.MaxPosition, false, "Max position size exceeded", code);
 
                     return new ErrorInfo(ErrorType.Unknown, false, msg, code);
                 })

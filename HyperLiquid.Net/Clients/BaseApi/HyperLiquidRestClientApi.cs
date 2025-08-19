@@ -27,7 +27,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
         internal IHyperLiquidRestClient BaseClient { get; }
 
-        protected override ErrorCollection ErrorMapping => HyperLiquidErrors.Errors;
+        protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
 
         #region constructor/destructor
         internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
