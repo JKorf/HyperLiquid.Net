@@ -164,6 +164,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.9.0 - 20 Aug 2025
+    * Updated CryptoExchange.Net to version 9.5.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Added improved error parsing
+
 * Version 2.8.1 - 11 Aug 2025
     * Fixed deserialization error in SetLeverageAsync, UpdateIsolatedMarginAsync and EditOrderAsync endpoints
 
