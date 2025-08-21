@@ -41,7 +41,7 @@ namespace HyperLiquid.Net.Objects.Sockets
             {
                 var err = _errorString;
                 _errorString = null;
-                return message.ToCallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo(err)));
+                return message.ToCallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo("Subscription", err)));
             }
 
             return message.ToCallResult();

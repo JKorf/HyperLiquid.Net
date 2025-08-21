@@ -47,6 +47,15 @@ namespace HyperLiquid.Net
                         return new ErrorInfo(ErrorType.MaxPosition, false, "Max position size exceeded", code);
 
                     return new ErrorInfo(ErrorType.Unknown, false, msg, code);
+                }),
+                new ErrorEvaluator("Subscription", (code, msg) => {
+                    if (!(msg?.Length > 0))
+                        return new ErrorInfo(ErrorType.Unknown, false, "Unknown error", code);
+
+                    if (msg.StartsWith("Invalid subscription "))
+                        return new ErrorInfo(ErrorType.UnknownSymbol, false, "Invalid symbol", code);
+
+                    return new ErrorInfo(ErrorType.Unknown, false, msg, code);
                 })
                 ]
             );

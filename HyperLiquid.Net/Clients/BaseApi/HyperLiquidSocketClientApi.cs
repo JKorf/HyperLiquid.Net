@@ -49,6 +49,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         protected IHyperLiquidRestClient _restClient;
 
+        protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
+
         internal new HyperLiquidSocketOptions ClientOptions => (HyperLiquidSocketOptions)base.ClientOptions;
         #endregion
 
