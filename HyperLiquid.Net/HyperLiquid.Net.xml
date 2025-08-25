@@ -308,6 +308,9 @@
         <member name="M:HyperLiquid.Net.Clients.HyperLiquidUserClientProvider.InitializeUserClient(System.String,CryptoExchange.Net.Authentication.ApiCredentials,HyperLiquid.Net.HyperLiquidEnvironment)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.HyperLiquidUserClientProvider.ClearUserClients(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:HyperLiquid.Net.Clients.HyperLiquidUserClientProvider.GetRestClient(System.String,CryptoExchange.Net.Authentication.ApiCredentials,HyperLiquid.Net.HyperLiquidEnvironment)">
             <inheritdoc />
         </member>
@@ -2741,6 +2744,11 @@
             <param name="credentials">The credentials for the user</param>
             <param name="environment">The environment to use</param>
         </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidUserClientProvider.ClearUserClients(System.String)">
+            <summary>
+            Reset the cached clients for a user. This can be useful when a user changes API credentials.
+            </summary>
+        </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidUserClientProvider.GetRestClient(System.String,CryptoExchange.Net.Authentication.ApiCredentials,HyperLiquid.Net.HyperLiquidEnvironment)">
             <summary>
             Get the Rest client for a specific user. In case the client does not exist yet it will be created and the <paramref name="credentials"/> should be provided, unless <see cref="M:HyperLiquid.Net.Interfaces.Clients.IHyperLiquidUserClientProvider.InitializeUserClient(System.String,CryptoExchange.Net.Authentication.ApiCredentials,HyperLiquid.Net.HyperLiquidEnvironment)" /> has been called prior for this user.
@@ -5106,7 +5114,7 @@
         <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.GetSubQuery(CryptoExchange.Net.Sockets.SocketConnection)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.GetUnsubQuery">
+        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.GetUnsubQuery(CryptoExchange.Net.Sockets.SocketConnection)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.DoHandleMessage(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Internal.HyperLiquidSocketUpdate{`0}})">

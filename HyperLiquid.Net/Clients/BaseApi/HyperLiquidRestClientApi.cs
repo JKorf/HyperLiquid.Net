@@ -82,7 +82,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
         }
 
-        protected override Error? TryParseError(KeyValuePair<string, string[]>[] responseHeaders, IMessageAccessor accessor)
+        protected override Error? TryParseError(RequestDefinition request, KeyValuePair<string, string[]>[] responseHeaders, IMessageAccessor accessor)
         {
             var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
             if (status == "err")

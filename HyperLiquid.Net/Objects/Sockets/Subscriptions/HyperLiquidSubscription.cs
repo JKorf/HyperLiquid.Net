@@ -33,7 +33,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         }
 
         /// <inheritdoc />
-        public override Query? GetSubQuery(SocketConnection connection)
+        protected override Query? GetSubQuery(SocketConnection connection)
         {
             var subscription = new Dictionary<string, object>{ { "type", _topic } };
             foreach(var kvp in _parameters)
@@ -48,7 +48,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         }
 
         /// <inheritdoc />
-        public override Query? GetUnsubQuery()
+        protected override Query? GetUnsubQuery(SocketConnection connection)
         {
             var subscription = new Dictionary<string, object> { { "type", _topic } };
             foreach (var kvp in _parameters)
