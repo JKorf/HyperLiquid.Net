@@ -210,8 +210,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         private SharedOrderStatus ParseOrderStatus(Enums.OrderStatus status)
         {
             if (status == Enums.OrderStatus.Open) return SharedOrderStatus.Open;
-            if (status == Enums.OrderStatus.Canceled || status == Enums.OrderStatus.Rejected || status == Enums.OrderStatus.MarginCanceled) return SharedOrderStatus.Canceled;
-            return SharedOrderStatus.Filled;
+            if (status == Enums.OrderStatus.Filled) return SharedOrderStatus.Filled;
+            return SharedOrderStatus.Canceled;
         }
         #endregion
 

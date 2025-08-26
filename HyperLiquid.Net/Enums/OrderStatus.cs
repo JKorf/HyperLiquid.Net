@@ -40,6 +40,36 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("marginCanceled")]
         MarginCanceled,
+        /// <summary>
+        /// Rejected; insufficient balance
+        /// </summary>
+        [Map("insufficientSpotBalanceRejected")]
+        RejectedInsufficientBalance,
+        /// <summary>
+        /// Rejected; IOC 
+        /// </summary>
+        [Map("iocCancelRejected")]
+        RejectedIOC,
+        /// <summary>
+        /// Rejected; price rejected 
+        /// </summary>
+        [Map("badAloPxRejected")]
+        RejectedBadPrice,
+        /// <summary>
+        /// Rejected; insufficient margin
+        /// </summary>
+        [Map("perpMarginRejected")]
+        RejectedInsufficientMargin,
+        /// <summary>
+        /// Rejected; order value too small
+        /// </summary>
+        [Map("minTradeNtlRejected")]
+        RejectedMinValue,
+        /// <summary>
+        /// Rejected; sibling filled/canceled
+        /// </summary>
+        [Map("siblingFilledCanceled")]
+        RejectedSiblingFilledCanceled,
 
         /// <summary>
         /// Waiting for main order to fill before placing this order

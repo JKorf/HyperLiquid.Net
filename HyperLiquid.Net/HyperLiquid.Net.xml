@@ -1802,6 +1802,36 @@
             Margin canceled
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedInsufficientBalance">
+            <summary>
+            Rejected; insufficient balance
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedIOC">
+            <summary>
+            Rejected; IOC 
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedBadPrice">
+            <summary>
+            Rejected; price rejected 
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedInsufficientMargin">
+            <summary>
+            Rejected; insufficient margin
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedMinValue">
+            <summary>
+            Rejected; order value too small
+            </summary>
+        </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.RejectedSiblingFilledCanceled">
+            <summary>
+            Rejected; sibling filled/canceled
+            </summary>
+        </member>
         <member name="F:HyperLiquid.Net.Enums.OrderStatus.WaitingFill">
             <summary>
             Waiting for main order to fill before placing this order

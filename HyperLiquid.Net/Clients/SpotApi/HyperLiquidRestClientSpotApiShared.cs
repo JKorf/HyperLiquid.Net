@@ -511,8 +511,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
         private SharedOrderStatus ParseOrderStatus(Enums.OrderStatus status)
         {
             if (status == Enums.OrderStatus.Open) return SharedOrderStatus.Open;
-            if (status == Enums.OrderStatus.Canceled || status == Enums.OrderStatus.Rejected || status == Enums.OrderStatus.MarginCanceled) return SharedOrderStatus.Canceled;
-            return SharedOrderStatus.Filled;
+            if (status == OrderStatus.Filled) return SharedOrderStatus.Filled;
+            return SharedOrderStatus.Canceled;
         }
 
         private SharedOrderType ParseOrderType(Enums.OrderType type)
