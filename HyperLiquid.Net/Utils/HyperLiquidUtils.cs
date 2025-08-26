@@ -123,6 +123,45 @@ namespace HyperLiquid.Net.Utils
         }
 
         /// <summary>
+        /// Get the quantity decimal places for a symbol
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbolName"></param>
+        /// <returns></returns>
+        public static async Task<CallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(IHyperLiquidRestClient client, string symbolName)
+        {
+            if (symbolName == "UnitTest")
+                return new CallResult<int>(1);
+
+            if (SymbolIsExchangeSpotSymbol(symbolName))
+            {
+                var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
+                if (!update)
+                    return new CallResult<int>(update.Error!);
+
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                if (symbol == null)
+                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                return new CallResult<int>(symbol.BaseAsset.QuantityDecimals);
+            }
+            else
+            {
+                var update = await UpdateFuturesSymbolInfoAsync(client).ConfigureAwait(false);
+                if (!update)
+                    return new CallResult<int>(update.Error!);
+
+                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                if (symbol == null)
+                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                return new CallResult<int>(symbol.QuantityDecimals);
+            }
+        }
+
+        /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
         public static CallResult<string> GetSymbolNameFromExchangeName(string envName, string id)

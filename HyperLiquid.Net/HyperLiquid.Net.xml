@@ -5237,6 +5237,14 @@
             <param name="symbolName">Symbol name</param>
             <returns></returns>
         </member>
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetQuantityDecimalPlacesForSymbolAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
+            <summary>
+            Get the quantity decimal places for a symbol
+            </summary>
+            <param name="client"></param>
+            <param name="symbolName"></param>
+            <returns></returns>
+        </member>
         <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.GetSymbolNameFromExchangeName(System.String,System.String)">
             <summary>
             Get a symbol name from an exchange symbol name

@@ -358,9 +358,18 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 else if (order.OrderType == OrderType.Market)
                 {
                     var maxSlippage = order.MaxSlippage ?? 5;
-                    var price = order.Side == OrderSide.Buy ? order.Price * (1 + maxSlippage / 100m) : order.Price * (1 - maxSlippage / 100m);
-                    price = ExchangeHelpers.RoundToSignificantDigits(price ?? 0, 5, RoundingType.Closest);
-                    orderParameters.AddString("p", price.Value.Normalize());
+                    var price = (order.Side == OrderSide.Buy ? order.Price * (1 + maxSlippage / 100m) : order.Price * (1 - maxSlippage / 100m)) ?? 0;
+                    var quantityDecimals = await HyperLiquidUtils.GetQuantityDecimalPlacesForSymbolAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
+                    if (!quantityDecimals)
+                        return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(quantityDecimals.Error);
+
+                    // Price can be a max of 5 significant figures
+                    // but no more than (Spot:8, Futures:6) - quantityDecimals decimal places for the symbol
+                    var decimalMax = symbolId.Data < 10000 ? 6 : 8; // Spot symbols have id >= 10000
+                    price = ExchangeHelpers.RoundToSignificantDigits(price, 5, RoundingType.Closest);
+                    price = ExchangeHelpers.RoundDown(price, decimalMax - quantityDecimals.Data);
+
+                    orderParameters.AddString("p", price.Normalize());
                     orderParameters.AddString("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
                     var limitParameters = new ParameterCollection();
