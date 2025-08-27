@@ -164,6 +164,12 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.10.1 - 27 Aug 2025
+    * Added error statuses to OrderStatus enum
+    * Updated market price calculation to respect quantity decimals limitation for symbols
+    * Fixed certain subscription not matching subscription response messages due to capitalization
+    * Fixed Shared order updates incorrectly having status filled when actually rejected
+
 * Version 2.10.0 - 25 Aug 2025
     * Updated CryptoExchange.Net version to 9.6.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
     * Added ClearUserClients method to user client provider
