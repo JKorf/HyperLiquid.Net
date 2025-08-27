@@ -58,7 +58,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, this, "activeAssetData", "activeAssetData-" + symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
-                { "user", addressSub },
+                { "user", addressSub.ToLowerInvariant() },
             },
             x =>
             {
@@ -80,7 +80,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, this, "userFundings", "userFundings", new Dictionary<string, object>
             {
-                { "user", addressSub },
+                { "user", addressSub.ToLowerInvariant() },
             },
             x =>
             {
