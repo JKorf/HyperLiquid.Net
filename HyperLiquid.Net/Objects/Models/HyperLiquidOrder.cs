@@ -57,7 +57,7 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("side")]
         public OrderSide OrderSide { get; set; }
         /// <summary>
-        /// Order type
+        /// Order type. Note that Limit is returned for Market orders
         /// </summary>
         [JsonPropertyName("orderType")]
         public OrderType OrderType { get; set; }
