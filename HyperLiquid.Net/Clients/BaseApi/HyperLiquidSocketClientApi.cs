@@ -46,6 +46,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         private static readonly MessagePath _symbolPath = MessagePath.Get().Property("data").Property("s");
         private static readonly MessagePath _itemSymbolPath = MessagePath.Get().Property("data").Index(0).Property("coin");
         private static readonly MessagePath _bookSymbolPath = MessagePath.Get().Property("data").Property("coin");
+        private static readonly MessagePath _klineIntervalPath = MessagePath.Get().Property("data").Property("i");
 
         protected IHyperLiquidRestClient _restClient;
 
@@ -130,10 +131,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, this, "candle", "candle-" + coin, new Dictionary<string, object>
+            var intervalStr = EnumConverter.GetString(interval);
+            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, this, "candle", $"candle-{coin}-{intervalStr}", new Dictionary<string, object>
             {
                 { "coin", coin },
-                { "interval", EnumConverter.GetString(interval) }
+                { "interval", intervalStr }
             },
             x =>
             {
@@ -478,6 +480,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             if (channel == "l2Book" || channel == "activeSpotAssetCtx" || channel == "activeAssetCtx" || channel == "activeAssetData")
                 return channel + "-" + message.GetValue<string>(_bookSymbolPath);
+
+            if (channel == "candle")
+                return channel + "-" + message.GetValue<string>(_symbolPath) + "-" + message.GetValue<string>(_klineIntervalPath);
 
             var symbol = message.GetValue<string>(_symbolPath);
             if (symbol != null)
