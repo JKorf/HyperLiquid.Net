@@ -4267,9 +4267,14 @@
             Order side
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder.QuantityRemaining">
+            <summary>
+            Remaining unexecuted order quantity
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder.Quantity">
             <summary>
-            Order quantity
+            Original order quantity
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder.Timestamp">

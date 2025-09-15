@@ -42,9 +42,14 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("side")]
         public OrderSide OrderSide { get; set; }
         /// <summary>
-        /// Order quantity
+        /// Remaining unexecuted order quantity
         /// </summary>
         [JsonPropertyName("sz")]
+        public decimal QuantityRemaining { get; set; }
+        /// <summary>
+        /// Original order quantity
+        /// </summary>
+        [JsonPropertyName("origSz")]
         public decimal Quantity { get; set; }
         /// <summary>
         /// Order timestamp
