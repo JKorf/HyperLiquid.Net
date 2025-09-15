@@ -4334,7 +4334,7 @@
         </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOrder.OrderType">
             <summary>
-            Order type
+            Order type. Note that Limit is returned for Market orders
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOrder.TimeInForce">
