@@ -164,6 +164,12 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.12.0 - 15 Sep 2025
+    * Added comments that OrderType will be returned as Limit for Market order socket updates
+    * Fixed open orders quantity mapping
+    * Fixed socket kline subscription message routing for different intervals
+    * Fixed signing error when placing order with a trigger price containing trailing zero
+
 * Version 2.11.0 - 01 Sep 2025
     * Updated CryptoExchange.Net version to 9.7.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
     * HTTP REST requests will now use HTTP version 2.0 by default
