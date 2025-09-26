@@ -4247,6 +4247,11 @@
             Symbol type
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder.ClientOrderId">
+            <summary>
+            Client order id
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOpenOrder.ExchangeSymbol">
             <summary>
             Symbol as returned by the API
