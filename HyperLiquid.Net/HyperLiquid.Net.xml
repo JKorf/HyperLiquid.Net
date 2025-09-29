@@ -371,7 +371,7 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.WithdrawAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.TransferInternalAsync(HyperLiquid.Net.Enums.TransferDirection,System.Decimal,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.TransferInternalAsync(HyperLiquid.Net.Enums.TransferDirection,System.Decimal,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.DepositIntoStakingAsync(System.Int64,System.Threading.CancellationToken)">
@@ -2951,13 +2951,14 @@
             <param name="quantity">Quantity of USD to send</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferInternalAsync(HyperLiquid.Net.Enums.TransferDirection,System.Decimal,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferInternalAsync(HyperLiquid.Net.Enums.TransferDirection,System.Decimal,System.String,System.Threading.CancellationToken)">
             <summary>
             Transfer USD between Spot and Futures account
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#transfer-from-spot-account-to-perp-account-and-vice-versa" /></para>
             </summary>
             <param name="direction">Transfer direction</param>
             <param name="quantity">Quantity of USD to send</param>
+            <param name="subAccount">Subaccount address</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DepositIntoStakingAsync(System.Int64,System.Threading.CancellationToken)">

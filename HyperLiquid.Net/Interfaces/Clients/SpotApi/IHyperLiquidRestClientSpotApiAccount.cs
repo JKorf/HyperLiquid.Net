@@ -91,10 +91,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="direction">Transfer direction</param>
         /// <param name="quantity">Quantity of USD to send</param>
+        /// <param name="subAccount">Subaccount address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> TransferInternalAsync(
             TransferDirection direction,
             decimal quantity,
+            string? subAccount = null,
             CancellationToken ct = default);
 
         /// <summary>
