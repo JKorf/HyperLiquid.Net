@@ -22,6 +22,11 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonIgnore]
         public SymbolType SymbolType { get; set; }
         /// <summary>
+        /// Client order id
+        /// </summary>
+        [JsonPropertyName("cloid")]
+        public string? ClientOrderId { get; set; }
+        /// <summary>
         /// Symbol as returned by the API
         /// </summary>
         [JsonPropertyName("coin")]
