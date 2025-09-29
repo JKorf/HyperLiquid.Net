@@ -60,5 +60,25 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         }
 
         #endregion
+
+        #region Get User Symbol
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "activeAssetData" },
+                { "coin", symbol },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidFuturesUserSymbolUpdate>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

@@ -86,6 +86,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidFuturesSymbol[]))]
     [JsonSerializable(typeof(HyperLiquidFuturesExchangeInfoAndTickers[]))]
     [JsonSerializable(typeof(HyperLiquidFuturesTicker[]))]
+    [JsonSerializable(typeof(HyperLiquidFuturesUserSymbolUpdate))]
     [JsonSerializable(typeof(HyperLiquidFuturesUserSymbolUpdate[]))]
     [JsonSerializable(typeof(HyperLiquidLeverage[]))]
     [JsonSerializable(typeof(HyperLiquidKline[]))]

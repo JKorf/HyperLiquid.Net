@@ -32,5 +32,13 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
+        /// <summary>
+        /// Get user active symbols
+        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-active-asset-data" /></para>
+        /// </summary>
+        /// <param name="symbol">The symbol, for example `ETH`</param>
+        /// <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default);
     }
 }
