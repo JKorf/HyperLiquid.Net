@@ -165,6 +165,15 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.13.0 - 30 Sep 2025
+    * Updated CryptoExchange.Net version to 9.8.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Added ITrackerFactory to TrackerFactory implementation
+    * Added ContractAddress mapping in Shared IAssetClient implementation
+    * Added restClient.FuturesApi.Account.GetUserSymbolAsync endpoint
+    * Added ClientOrderId to HyperLiquidOpenOrder response model
+    * Added socketClient.FuturesApi.SubscribeToUserEventUpdatesAsync subscription
+    * Added subAccount parameter to restClient.SpotApi.Account.TransferInternalAsync endpoint
+
 * Version 2.12.0 - 15 Sep 2025
     * Added comments that OrderType will be returned as Limit for Market order socket updates
     * Fixed open orders quantity mapping
