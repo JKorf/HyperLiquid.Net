@@ -331,10 +331,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
             string? address,
-            Action<DataEvent<HyperLiquidUserTrade[]>> onTradeUpdate,
-            Action<DataEvent<HyperLiquidUserFunding>> onFundingUpdate,
-            Action<DataEvent<HyperLiquidLiquidationUpdate>> onLiquidationUpdate,
-            Action<DataEvent<HyperLiquidNonUserCancelation[]>> onNonUserCancelation,
+            Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,
+            Action<DataEvent<HyperLiquidUserFunding>>? onFundingUpdate = null,
+            Action<DataEvent<HyperLiquidLiquidationUpdate>>? onLiquidationUpdate = null,
+            Action<DataEvent<HyperLiquidNonUserCancelation[]>>? onNonUserCancelation = null,
             CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
