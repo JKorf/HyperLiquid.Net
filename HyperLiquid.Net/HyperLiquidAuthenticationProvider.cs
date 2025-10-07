@@ -155,11 +155,10 @@ namespace HyperLiquid.Net
         {
             var messageBytes = ConvertHexStringToByteArray(request);
             var bSecret = secret.HexToByteArray();
-            var t = new byte[32];
-            bSecret.CopyTo(t, Math.Max(0, t.Length - bSecret.Length));
+
             ECParameters eCParameters = new ECParameters()
             {
-                D = t,
+                D = FixSize(bSecret, 32),
                 Curve = ECCurve.CreateFromFriendlyName("secp256k1"),
                 Q =
                 {
@@ -191,6 +190,27 @@ namespace HyperLiquid.Net
                     { "v", 27 + v}
                 };
             }
+        }
+
+        private static byte[] FixSize(byte[] input, int expectedSize)
+        {
+            if (input.Length == expectedSize)
+                return input;
+
+            byte[] tmp;
+            if (input.Length < expectedSize)
+            {
+                tmp = new byte[expectedSize];
+                Buffer.BlockCopy(input, 0, tmp, expectedSize - input.Length, input.Length);
+                return tmp;
+            }
+
+            if (input.Length > expectedSize + 1 || input[0] != 0)
+                throw new InvalidOperationException();
+
+            tmp = new byte[expectedSize];
+            Buffer.BlockCopy(input, 1, tmp, 0, expectedSize);
+            return tmp;
         }
 
         public static (byte[] r, byte[] s, bool flip) NormalizeSignature(byte[] signature)
