@@ -96,7 +96,32 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("tid")]
         public long TradeId { get; set; }
+        /// <summary>
+        /// Liquidation info
+        /// </summary>
+        [JsonPropertyName("tid")]
+        public HyperLiquidLiquidationInfo? Liquidation { get; set; }
     }
 
-
+    /// <summary>
+    /// Liquidation info
+    /// </summary>
+    public record HyperLiquidLiquidationInfo
+    {
+        /// <summary>
+        /// Liquidated user
+        /// </summary>
+        [JsonPropertyName("liquidatedUser")]
+        public string LiquidatedUser { get; set; } = string.Empty;
+        /// <summary>
+        /// Mark price
+        /// </summary>
+        [JsonPropertyName("markPx")]
+        public decimal MarkPrice { get; set; }
+        /// <summary>
+        /// Liquidation method
+        /// </summary>
+        [JsonPropertyName("method")]
+        public string Method { get; set; } = string.Empty;
+    }
 }

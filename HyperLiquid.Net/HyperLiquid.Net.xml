@@ -1029,6 +1029,11 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidLiquidationInfo">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidLiquidationPosition">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -5096,6 +5101,31 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade.TradeId">
             <summary>
             Trade id
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade.Liquidation">
+            <summary>
+            Liquidation info
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationInfo">
+            <summary>
+            Liquidation info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationInfo.LiquidatedUser">
+            <summary>
+            Liquidated user
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationInfo.MarkPrice">
+            <summary>
+            Mark price
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationInfo.Method">
+            <summary>
+            Liquidation method
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidUserUpdate">
