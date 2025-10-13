@@ -99,7 +99,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// <summary>
         /// Liquidation info
         /// </summary>
-        [JsonPropertyName("tid")]
+        [JsonPropertyName("liquidation")]
         public HyperLiquidLiquidationInfo? Liquidation { get; set; }
     }
 
