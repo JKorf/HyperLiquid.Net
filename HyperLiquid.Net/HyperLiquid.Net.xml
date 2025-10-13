@@ -1698,6 +1698,11 @@
             Spot dust conversion
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.Direction.AutoDeleveraging">
+            <summary>
+            Auto deleveraging
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Enums.KlineInterval">
             <summary>
             Interval
