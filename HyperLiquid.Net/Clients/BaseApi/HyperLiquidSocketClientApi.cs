@@ -329,6 +329,42 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
+            string? address,
+            Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,
+            Action<DataEvent<HyperLiquidUserFunding>>? onFundingUpdate = null,
+            Action<DataEvent<HyperLiquidLiquidationUpdate>>? onLiquidationUpdate = null,
+            Action<DataEvent<HyperLiquidNonUserCancelation[]>>? onNonUserCancelation = null,
+            CancellationToken ct = default)
+        {
+            if (address == null && AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            ValidateAddress(address);
+
+            var addressSub = address ?? AuthenticationProvider!.ApiKey;
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserEventUpdate>(_logger, this, "userEvents", "userEvents", new Dictionary<string, object>
+            {
+                { "user", addressSub.ToLowerInvariant() },
+            },
+            x =>
+            {
+                if (x.Data.Trades?.Any() == true)
+                    onTradeUpdate?.Invoke(x.As(x.Data.Trades));
+
+                if (x.Data.Funding != null)
+                    onFundingUpdate?.Invoke(x.As(x.Data.Funding));
+
+                if (x.Data.Liquidation != null)
+                    onLiquidationUpdate?.Invoke(x.As(x.Data.Liquidation));
+
+                if (x.Data.NonUserCancelations?.Any() == true)
+                    onNonUserCancelation?.Invoke(x.As(x.Data.NonUserCancelations));
+            }, false);
+            return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
@@ -474,6 +510,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     return id;
                 }
             }
+            
+            if (channel == "user")
+                return "userEvents";
 
             if (channel == "trades")
                 return channel + "-" + message.GetValue<string>(_itemSymbolPath);

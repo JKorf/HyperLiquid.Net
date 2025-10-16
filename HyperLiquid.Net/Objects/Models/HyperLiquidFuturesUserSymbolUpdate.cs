@@ -35,6 +35,11 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("availableToTrade")]
         public decimal[] AvailableToTrade { get; set; } = [];
+        /// <summary>
+        /// Mark price
+        /// </summary>
+        [JsonPropertyName("markPx")]
+        public decimal? MarkPrice { get; set; }
     }
 
     /// <summary>

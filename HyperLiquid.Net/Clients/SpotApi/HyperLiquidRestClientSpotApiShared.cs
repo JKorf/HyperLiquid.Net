@@ -588,7 +588,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             return assets.AsExchangeResult<SharedAsset[]>(Exchange, TradingMode.Spot, assets.Data.Assets.Select(x => new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
             {
-                FullName = x.FullName
+                FullName = x.FullName,
+                Networks = [new SharedAssetNetwork("HyperLiquid") {
+                    ContractAddress = x.AssetId
+                }]
             }).ToArray());
         }
 
@@ -609,7 +612,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             return assets.AsExchangeResult(Exchange, TradingMode.Spot, new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(asset.Name))
             {
-                FullName = asset.FullName
+                FullName = asset.FullName,
+                Networks = [new SharedAssetNetwork("HyperLiquid") {
+                    ContractAddress = asset.AssetId
+                }]
             });
         }
 

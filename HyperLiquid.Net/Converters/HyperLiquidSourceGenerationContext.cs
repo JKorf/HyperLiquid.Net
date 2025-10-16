@@ -23,6 +23,7 @@ namespace HyperLiquid.Net.Converters
 
     // End manual defined attributes
 
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidUserEventUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidTrade[]>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOrderStatus[]>))]
     [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidUserFunding>[]))]
@@ -86,6 +87,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidFuturesSymbol[]))]
     [JsonSerializable(typeof(HyperLiquidFuturesExchangeInfoAndTickers[]))]
     [JsonSerializable(typeof(HyperLiquidFuturesTicker[]))]
+    [JsonSerializable(typeof(HyperLiquidFuturesUserSymbolUpdate))]
     [JsonSerializable(typeof(HyperLiquidFuturesUserSymbolUpdate[]))]
     [JsonSerializable(typeof(HyperLiquidLeverage[]))]
     [JsonSerializable(typeof(HyperLiquidKline[]))]

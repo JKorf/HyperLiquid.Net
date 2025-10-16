@@ -78,6 +78,25 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         Task<CallResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserTrade[]>> onMessage, CancellationToken ct = default);
 
         /// <summary>
+        /// Subscribe to user non-order updates
+        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// </summary>
+        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="onTradeUpdate">User trade data handler</param>
+        /// <param name="onFundingUpdate">User funding update handler</param>
+        /// <param name="onLiquidationUpdate">User liquidation update handler</param>
+        /// <param name="onNonUserCancelation">Non-user order cancelation update</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
+            string? address,
+            Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,
+            Action<DataEvent<HyperLiquidUserFunding>>? onFundingUpdate = null,
+            Action<DataEvent<HyperLiquidLiquidationUpdate>>? onLiquidationUpdate = null,
+            Action<DataEvent<HyperLiquidNonUserCancelation[]>>? onNonUserCancelation = null,
+            CancellationToken ct = default);
+
+        /// <summary>
         /// Subscribe to user ledger updates (excluding funding updates)will provided updates for both Spot and Futures changes
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
         /// </summary>

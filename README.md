@@ -82,6 +82,7 @@ CryptoExchange.Net also allows for [easy access to different exchange API's](htt
 
 |Exchange|Repository|Nuget|
 |--|--|--|
+|Aster|[JKorf/Aster.Net](https://github.com/JKorf/Aster.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Aster.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Aster.Net)|
 |Binance|[JKorf/Binance.Net](https://github.com/JKorf/Binance.Net)|[![Nuget version](https://img.shields.io/nuget/v/Binance.net.svg?style=flat-square)](https://www.nuget.org/packages/Binance.Net)|
 |BingX|[JKorf/BingX.Net](https://github.com/JKorf/BingX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.BingX.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.BingX.Net)|
 |Bitfinex|[JKorf/Bitfinex.Net](https://github.com/JKorf/Bitfinex.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bitfinex.net.svg?style=flat-square)](https://www.nuget.org/packages/Bitfinex.Net)|
@@ -165,6 +166,22 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.13.2 - 13 Oct 2025
+    * Added liquidation info to HyperLiquidUserTrade response model
+    * Added AutoDeleveraging value to Direction enum
+
+* Version 2.13.1 - 07 Oct 2025
+    * Fixed signing issue for specific private keys
+
+* Version 2.13.0 - 30 Sep 2025
+    * Updated CryptoExchange.Net version to 9.8.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
+    * Added ITrackerFactory to TrackerFactory implementation
+    * Added ContractAddress mapping in Shared IAssetClient implementation
+    * Added restClient.FuturesApi.Account.GetUserSymbolAsync endpoint
+    * Added ClientOrderId to HyperLiquidOpenOrder response model
+    * Added socketClient.FuturesApi.SubscribeToUserEventUpdatesAsync subscription
+    * Added subAccount parameter to restClient.SpotApi.Account.TransferInternalAsync endpoint
+
 * Version 2.12.0 - 15 Sep 2025
     * Added comments that OrderType will be returned as Limit for Market order socket updates
     * Fixed open orders quantity mapping

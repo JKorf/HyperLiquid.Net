@@ -54,6 +54,11 @@ namespace HyperLiquid.Net.Enums
         /// Spot dust conversion
         /// </summary>
         [Map("Spot Dust Conversion")]
-        SpotDustConversion
+        SpotDustConversion,
+        /// <summary>
+        /// Auto deleveraging
+        /// </summary>
+        [Map("Auto-Deleveraging")]
+        AutoDeleveraging
     }
 }

@@ -194,6 +194,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         public async Task<WebCallResult> TransferInternalAsync(
             TransferDirection direction,
             decimal quantity,
+            string? subAccount = null,
             CancellationToken ct = default)
         {
             var parameters = new ParameterCollection();
@@ -203,7 +204,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
             };
-            actionParameters.AddString("amount", quantity);
+            var quantityField = quantity.ToString(CultureInfo.InvariantCulture);
+            if (subAccount != null)
+                quantityField += " subaccount:" + subAccount;
+            actionParameters.Add("amount", quantityField);
             actionParameters.Add("toPerp", direction == TransferDirection.SpotToFutures);
             actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);

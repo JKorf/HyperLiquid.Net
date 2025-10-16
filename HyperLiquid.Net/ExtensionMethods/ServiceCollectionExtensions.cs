@@ -103,6 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ICryptoSocketClient, CryptoSocketClient>();
             services.AddTransient<IHyperLiquidOrderBookFactory, HyperLiquidOrderBookFactory>();
             services.AddTransient<IHyperLiquidTrackerFactory, HyperLiquidTrackerFactory>();
+            services.AddTransient<ITrackerFactory, HyperLiquidTrackerFactory>();
             services.AddSingleton<IHyperLiquidUserClientProvider, HyperLiquidUserClientProvider>(x =>
             new HyperLiquidUserClientProvider(
                 x.GetRequiredService<HttpClient>(),
