@@ -96,7 +96,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "type", "maxBuilderFee" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey },
-                { "builder", builderAddress ?? HyperLiquidExchange.BuilderAddress }
+                { "builder", builderAddress ?? _baseClient.ClientOptions.BuilderAddress }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<int>(request, parameters, ct).ConfigureAwait(false);
@@ -314,7 +314,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         /// <inheritdoc />
         public Task<WebCallResult> ApproveBuilderFeeAsync(CancellationToken ct = default)
-            => ApproveBuilderFeeAsync(HyperLiquidExchange.BuilderAddress, _baseClient.ClientOptions.BuilderFeePercentage ?? 0.1m);
+            => ApproveBuilderFeeAsync(_baseClient.ClientOptions.BuilderAddress, _baseClient.ClientOptions.BuilderFeePercentage ?? 0.1m);
 
         /// <inheritdoc />
         public async Task<WebCallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default)
