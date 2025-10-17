@@ -361,7 +361,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 SharedQuantityType.BaseAsset,
                 SharedQuantityType.BaseAsset);
 
-        string IFuturesOrderRestClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(32);
+        string IFuturesOrderRestClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
 
         PlaceFuturesOrderOptions IFuturesOrderRestClient.PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderOptions(false)
         {

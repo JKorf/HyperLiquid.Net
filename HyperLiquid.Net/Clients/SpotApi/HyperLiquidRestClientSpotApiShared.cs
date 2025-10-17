@@ -244,7 +244,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 SharedQuantityType.BaseAsset,
                 SharedQuantityType.BaseAsset);
 
-        string ISpotOrderRestClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(32);
+        string ISpotOrderRestClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
 
         PlaceSpotOrderOptions ISpotOrderRestClient.PlaceSpotOrderOptions { get; } = new PlaceSpotOrderOptions()
         {
