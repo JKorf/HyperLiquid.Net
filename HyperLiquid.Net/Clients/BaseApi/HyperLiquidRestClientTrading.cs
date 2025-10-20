@@ -411,14 +411,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
             else
                 actionParameters.Add("grouping", "na");
 
-            if (_baseClient.ClientOptions.BuilderFeePercentage > 0)
+            if (_baseClient.ClientOptions.BuilderFeePercentage > 0 && _baseClient.ClientOptions.BuilderAddress != null)
             {
                 // Convert from percentage to 1/10 basis point
                 var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
                 actionParameters.Add("builder",
                     new ParameterCollection
                     {
-                        { "b", "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower() },
+                        { "b", _baseClient.ClientOptions.BuilderAddress.ToLower() },
                         { "f", tenthPoints }
                     }
                 );
