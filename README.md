@@ -167,6 +167,11 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.15.0 - 27 Oct 2025
+    * Added ReduceOnlyRejected order status enum mapping
+    * Added vaultAddress parameter to sestClient.FuturesApi.Trading.SetLeverageAsync and UpdateIsolatedMarginAsync
+    * Moved builder address to client options
+
 * Version 2.14.0 - 16 Oct 2025
     * Updated CryptoExchange.Net version to 9.10.0, see https://github.com/JKorf/CryptoExchange.Net/releases/
     * Added ITransferRestClient.TransferAsync implementation
