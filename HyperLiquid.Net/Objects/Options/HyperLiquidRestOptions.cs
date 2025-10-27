@@ -30,7 +30,12 @@ namespace HyperLiquid.Net.Objects.Options
         /// If set to a non-null value the address has to be whitelisted using <see cref="Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">restClient.SpotApi.Account.ApproveBuilderFeeAsync</see>
         /// </summary>
         public decimal? BuilderFeePercentage { get; set; }
-        
+
+        /// <summary>
+        /// Address of the builder
+        /// </summary>
+        public string BuilderAddress { get; set; } = "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower();
+
         /// <summary>
         /// If set requests will only be accepted by the server if they're received within (RequestTime + ExpiresAfter) timespan
         /// </summary>
