@@ -52,11 +52,6 @@ namespace HyperLiquid.Net
         public static ExchangeType Type { get; } = ExchangeType.DEX;
 
         /// <summary>
-        /// Address of the builder
-        /// </summary>
-        public static string BuilderAddress => "0x64134a9577A857BcC5dAfa42E1647E1439e5F8E7".ToLower();
-
-        /// <summary>
         /// Aliases for HyperLiquid assets
         /// </summary>
         public static AssetAliasConfiguration AssetAliases { get; } = new AssetAliasConfiguration

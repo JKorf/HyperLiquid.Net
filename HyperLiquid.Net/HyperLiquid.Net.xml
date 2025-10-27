@@ -2163,11 +2163,6 @@
             Type of exchange
             </summary>
         </member>
-        <member name="P:HyperLiquid.Net.HyperLiquidExchange.BuilderAddress">
-            <summary>
-            Address of the builder
-            </summary>
-        </member>
         <member name="P:HyperLiquid.Net.HyperLiquidExchange.AssetAliases">
             <summary>
             Aliases for HyperLiquid assets
@@ -5227,6 +5222,11 @@
             <summary>
             The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to null/0. Can be between 0.001% and 0.1%.<br />
             If set to a non-null value the address has to be whitelisted using <see cref="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">restClient.SpotApi.Account.ApproveBuilderFeeAsync</see>
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions.BuilderAddress">
+            <summary>
+            Address of the builder
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions.ExpiresAfter">
