@@ -1873,6 +1873,11 @@
             Rejected; sibling filled/canceled
             </summary>
         </member>
+        <member name="F:HyperLiquid.Net.Enums.OrderStatus.ReduceOnlyRejected">
+            <summary>
+            Reduce only rejected
+            </summary>
+        </member>
         <member name="F:HyperLiquid.Net.Enums.OrderStatus.WaitingFill">
             <summary>
             Waiting for main order to fill before placing this order

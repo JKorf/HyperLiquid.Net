@@ -70,6 +70,11 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("siblingFilledCanceled")]
         RejectedSiblingFilledCanceled,
+        /// <summary>
+        /// Reduce only rejected
+        /// </summary>
+        [Map("reduceOnlyRejected")]
+        ReduceOnlyRejected,
 
         /// <summary>
         /// Waiting for main order to fill before placing this order
