@@ -33,6 +33,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             string symbol,
             int leverage,
             MarginType marginType,
+            string? vaultAddress = null,
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
         {
@@ -49,6 +50,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             actionParameters.Add("isCross", marginType == MarginType.Cross);
             actionParameters.Add("leverage", leverage);
             parameters.Add("action", actionParameters);
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
@@ -65,6 +68,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public async Task<WebCallResult> UpdateIsolatedMarginAsync(
             string symbol,
             decimal updateValue,
+            string? vaultAddress = null,
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
         {
@@ -81,6 +85,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
             actionParameters.Add("ntli", updateValue);
             parameters.Add("action", actionParameters);
+            if (vaultAddress != null)
+                parameters.Add("vaultAddress", vaultAddress);
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 

@@ -20,9 +20,16 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="symbol">Symbol name, for example "ETH"</param>
         /// <param name="leverage">New leverage</param>
         /// <param name="marginType">Margin type</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> SetLeverageAsync(string symbol, int leverage, MarginType marginType, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<WebCallResult> SetLeverageAsync(
+            string symbol,
+            int leverage,
+            MarginType marginType,
+            string? vaultAddress = null, 
+            DateTime? expireAfter = null,
+            CancellationToken ct = default);
 
         /// <summary>
         /// Add or remove margin from isolated position
@@ -30,8 +37,14 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </summary>
         /// <param name="symbol">Symbol name, for example "ETH"</param>
         /// <param name="updateValue">Change value</param>
+        /// <param name="vaultAddress">Vault address</param>
         /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> UpdateIsolatedMarginAsync(string symbol, decimal updateValue, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<WebCallResult> UpdateIsolatedMarginAsync(
+            string symbol,
+            decimal updateValue,
+            string? vaultAddress = null, 
+            DateTime? expireAfter = null, 
+            CancellationToken ct = default);
     }
 }

@@ -200,10 +200,10 @@
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidSocketClientFuturesApi">
@@ -2704,7 +2704,7 @@
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Set leverage for a symbol
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /></para>
@@ -2712,16 +2712,18 @@
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="leverage">New leverage</param>
             <param name="marginType">Margin type</param>
+            <param name="vaultAddress">Vault address</param>
             <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Add or remove margin from isolated position
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /></para>
             </summary>
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="updateValue">Change value</param>
+            <param name="vaultAddress">Vault address</param>
             <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
             <param name="ct">Cancellation token</param>
         </member>
