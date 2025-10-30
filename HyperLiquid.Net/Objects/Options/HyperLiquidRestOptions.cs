@@ -54,6 +54,7 @@ namespace HyperLiquid.Net.Objects.Options
         {
             targetOptions = base.Set<HyperLiquidRestOptions>(targetOptions);
             targetOptions.BuilderFeePercentage = BuilderFeePercentage;
+            targetOptions.BuilderAddress = BuilderAddress;
             targetOptions.ExpiresAfter = ExpiresAfter;
             targetOptions.SpotOptions = SpotOptions.Set(targetOptions.SpotOptions);
             targetOptions.FuturesOptions = FuturesOptions.Set(targetOptions.FuturesOptions);
