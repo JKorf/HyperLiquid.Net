@@ -3685,6 +3685,16 @@
             User add rate
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFeeInfo.TakerFeeRateSpot">
+            <summary>
+            User cross rate
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFeeInfo.MakerFeeRateSpot">
+            <summary>
+            User add rate
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFeeInfo.ActiveReferralDiscount">
             <summary>
             Active referral discount

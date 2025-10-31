@@ -636,7 +636,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return result.AsExchangeResult<SharedFee>(Exchange, null, default);
 
             // Return
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFee(result.Data.MakerFeeRate * 100, result.Data.TakerFeeRate * 100));
+            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFee(result.Data.MakerFeeRateSpot * 100, result.Data.TakerFeeRateSpot * 100));
         }
         #endregion
 

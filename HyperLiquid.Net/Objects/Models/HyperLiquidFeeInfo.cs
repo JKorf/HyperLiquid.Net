@@ -33,6 +33,16 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("userAddRate")]
         public decimal MakerFeeRate { get; set; }
         /// <summary>
+        /// User cross rate
+        /// </summary>
+        [JsonPropertyName("userSpotCrossRate")]
+        public decimal TakerFeeRateSpot { get; set; }
+        /// <summary>
+        /// User add rate
+        /// </summary>
+        [JsonPropertyName("userSpotAddRate")]
+        public decimal MakerFeeRateSpot { get; set; }
+        /// <summary>
         /// Active referral discount
         /// </summary>
         [JsonPropertyName("activeReferralDiscount")]
