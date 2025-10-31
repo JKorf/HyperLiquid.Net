@@ -678,7 +678,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
         {
-            if (orderId == null == (clientOrderId == null))
+            if ((orderId == null) == (clientOrderId == null))
                 throw new ArgumentException("Either orderId or clientOrderId should be provided");
 
             if (orderType == OrderType.Market)
@@ -695,7 +695,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var orderTypeParameters = new ParameterCollection();
             orderParameters.AddString("p", price.Normalize());
             
-            orderParameters.AddString("s", quantity);
+            orderParameters.AddString("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly ?? false);
             var limitParameters = new ParameterCollection();
             limitParameters.AddEnum("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
@@ -737,7 +737,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in requests)
             {
-                if (order.OrderId == null == (order.ClientOrderId == null))
+                if ((order.OrderId == null) == (order.ClientOrderId == null))
                     throw new ArgumentException("Either OrderId or ClientOrderId should be provided per order");
 
                 if (order.OrderType == OrderType.Market)
@@ -753,8 +753,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 var orderParameters = new ParameterCollection();
                 orderParameters.Add("a", symbolId.Data);
                 orderParameters.Add("b", order.Side == OrderSide.Buy);
-                orderParameters.AddString("p", order.Price);
-                orderParameters.AddString("s", order.Quantity);
+                orderParameters.AddString("p", order.Price.Normalize());
+                orderParameters.AddString("s", order.Quantity.Normalize());
                 orderParameters.Add("r", order.ReduceOnly ?? false);
 
                 var orderTypeParameters = new ParameterCollection();
@@ -828,7 +828,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var orderParameters = new ParameterCollection();
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", orderSide == OrderSide.Buy);
-            orderParameters.AddString("s", quantity);
+            orderParameters.AddString("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly);
             orderParameters.Add("m", minutes);
             orderParameters.Add("t", randomize);
@@ -904,13 +904,5 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         #endregion
-
-        private int CountDecimalDigits(decimal n)
-        {
-            return n.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                    .SkipWhile(c => c != '.')
-                    .Skip(1)
-                    .Count();
-        }
     }
 }
