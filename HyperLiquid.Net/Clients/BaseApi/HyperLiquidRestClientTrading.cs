@@ -674,6 +674,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TimeInForce? timeInForce = null,
             bool? reduceOnly = null,
             string? newClientOrderId = null,
+            decimal? triggerPrice = null,
+            TpSlType? tpSlType = null,
+            TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
@@ -691,15 +694,32 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var orderParameters = new ParameterCollection();
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", side == OrderSide.Buy);
-
-            var orderTypeParameters = new ParameterCollection();
             orderParameters.AddString("p", price.Normalize());
-            
             orderParameters.AddString("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly ?? false);
-            var limitParameters = new ParameterCollection();
-            limitParameters.AddEnum("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
-            orderTypeParameters.Add("limit", limitParameters);
+
+            var orderTypeParameters = new ParameterCollection();            
+            if (orderType == OrderType.Limit)
+            {
+                var limitParameters = new ParameterCollection();
+                limitParameters.AddEnum("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
+                orderTypeParameters.Add("limit", limitParameters);
+            }
+            else
+            {
+                if (triggerPrice == null)
+                    throw new ArgumentNullException(nameof(triggerPrice), "Stop order should have a trigger price");
+
+                if (tpSlType == null)
+                    throw new ArgumentNullException(nameof(tpSlType), "Stop order should have a TpSlType");
+
+                var triggerParameters = new ParameterCollection();
+                triggerParameters.Add("isMarket", orderType == OrderType.StopMarket);
+                triggerParameters.AddString("triggerPx", triggerPrice.Value.Normalize());
+                triggerParameters.AddEnum("tpsl", tpSlType.Value);
+                orderTypeParameters.Add("trigger", triggerParameters);
+            }
+
             orderParameters.Add("t", orderTypeParameters);
             orderParameters.AddOptional("c", newClientOrderId);
 
