@@ -198,8 +198,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 foreach (var trade in x.Data)
                     trade.Symbol = symbol;
+
                 onMessage(x.WithSymbol(symbol).WithDataTimestamp(x.Data.Max(x => x.Timestamp)));
-            }, false);
+            }, false, true);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
