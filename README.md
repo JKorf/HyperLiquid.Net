@@ -167,6 +167,16 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 2.16.0 - 03 Nov 2025
+    * Updated CryptoExchange.Net to version 9.12.0
+    * Added ClientOrderId mapping to Shared websocket API order updates
+    * Added TakerFeeRateSpot, MakerFeeRateSpot properties to HyperLiquidFeeInfo model, fixed Shared Spot GetFeesAsync values
+    * Added support for using SharedSymbol.UsdOrStable in Shared APIs
+    * Updated EditOrderAsync endpoint with tp/sl parameters
+    * Fixed various endpoints decimal parameters trailing zeros not getting stripped resulting in error response
+    * Fixed exception when initial trade snapshot has no items in TradeTracker
+    * Removed some unhelpful verbose logs
+
 * Version 2.15.0 - 27 Oct 2025
     * Added ReduceOnlyRejected order status enum mapping
     * Added vaultAddress parameter to sestClient.FuturesApi.Trading.SetLeverageAsync and UpdateIsolatedMarginAsync

@@ -59,7 +59,9 @@ namespace HyperLiquid.Net
             Aliases = 
             [
                 new AssetAlias("UBTC", "BTC"),
-                new AssetAlias("UETH", "ETH")
+                new AssetAlias("UETH", "ETH"),
+
+                new AssetAlias("USDC", SharedSymbol.UsdOrStable.ToUpperInvariant(), AliasType.OnlyToExchange)
             ]
         };
 
@@ -83,8 +85,8 @@ namespace HyperLiquid.Net
         {
             if (tradingMode == TradingMode.Spot)
             {
-                baseAsset = AssetAliases.CommonToExchangeName(baseAsset);
-                quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset);
+                baseAsset = AssetAliases.CommonToExchangeName(baseAsset.ToUpperInvariant());
+                quoteAsset = AssetAliases.CommonToExchangeName(quoteAsset.ToUpperInvariant());
             }
 
             if (tradingMode == TradingMode.Spot)

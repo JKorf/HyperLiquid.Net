@@ -189,6 +189,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="reduceOnly">Reduce only</param>
         /// <param name="newClientOrderId">The new client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
         /// <param name="vaultAddress">Vault address</param>
+        /// <param name="triggerPrice">Trigger order trigger price</param>
+        /// <param name="tpSlType">Trigger order type</param>
+        /// <param name="tpSlGrouping">Trigger order grouping</param>
         /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> EditOrderAsync(
@@ -202,6 +205,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TimeInForce? timeInForce = null,
             bool? reduceOnly = null,
             string? newClientOrderId = null,
+            decimal? triggerPrice = null,
+            TpSlType? tpSlType = null,
+            TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
             CancellationToken ct = default);
