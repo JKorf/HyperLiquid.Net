@@ -22,6 +22,9 @@ namespace HyperLiquid.Net.Clients
         private readonly HttpClient _httpClient;
         private readonly ILoggerFactory? _loggerFactory;
 
+        /// <inheritdoc />
+        public string ExchangeName => HyperLiquidExchange.ExchangeName;
+
         /// <summary>
         /// ctor
         /// </summary>

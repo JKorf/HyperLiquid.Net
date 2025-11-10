@@ -17,6 +17,9 @@ namespace HyperLiquid.Net.SymbolOrderBooks
     {
         private readonly IServiceProvider _serviceProvider;
 
+        /// <inheritdoc />
+        public string ExchangeName => HyperLiquidExchange.ExchangeName;
+
         /// <summary>
         /// ctor
         /// </summary>

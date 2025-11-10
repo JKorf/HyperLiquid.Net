@@ -8,7 +8,7 @@ namespace HyperLiquid.Net.Interfaces
     /// <summary>
     /// HyperLiquid local order book factory
     /// </summary>
-    public interface IHyperLiquidOrderBookFactory
+    public interface IHyperLiquidOrderBookFactory : IExchangeService
     {
         /// <summary>
         /// Order book factory methods

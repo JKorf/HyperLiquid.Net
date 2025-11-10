@@ -22,7 +22,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
 
         #region Ticker client
-        EndpointOptions<SubscribeTickerRequest> ITickerSocketClient.SubscribeTickerOptions { get; } = new EndpointOptions<SubscribeTickerRequest>(false);
+        SubscribeTickerOptions ITickerSocketClient.SubscribeTickerOptions { get; } = new SubscribeTickerOptions();
         async Task<ExchangeResult<UpdateSubscription>> ITickerSocketClient.SubscribeToTickerUpdatesAsync(SubscribeTickerRequest request, Action<ExchangeEvent<SharedSpotTicker>> handler, CancellationToken ct)
         {
             var validationError = ((ITickerSocketClient)this).SubscribeTickerOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
@@ -55,10 +55,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 if (update.UpdateType == SocketUpdateType.Snapshot)
                     return;
 
-                handler(update.AsExchangeEvent<SharedTrade[]>(Exchange, update.Data.Select(x => new SharedTrade(x.Quantity, x.Price, x.Timestamp)
-                {
-                    Side = x.Side == Enums.OrderSide.Sell ? SharedOrderSide.Sell : SharedOrderSide.Buy,
-                }).ToArray()
+                handler(update.AsExchangeEvent<SharedTrade[]>(Exchange, update.Data.Select(x => 
+                    new SharedTrade(request.Symbol, symbol, x.Quantity, x.Price, x.Timestamp)
+                    {
+                        Side = x.Side == Enums.OrderSide.Sell ? SharedOrderSide.Sell : SharedOrderSide.Buy,
+                    }).ToArray()
                 ));
             }, ct).ConfigureAwait(false);
 
@@ -99,7 +100,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                     if (update.UpdateType == SocketUpdateType.Snapshot)
                         return;
 
-                    handler(update.AsExchangeEvent(Exchange, new SharedKline(update.Data.OpenTime, update.Data.ClosePrice, update.Data.HighPrice, update.Data.LowPrice, update.Data.OpenPrice, update.Data.Volume)));
+                    handler(update.AsExchangeEvent(Exchange, new SharedKline(request.Symbol, symbol, update.Data.OpenTime, update.Data.ClosePrice, update.Data.HighPrice, update.Data.LowPrice, update.Data.OpenPrice, update.Data.Volume)));
                 }, ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);
