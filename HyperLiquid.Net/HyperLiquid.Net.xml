@@ -5295,7 +5295,7 @@
         <member name="T:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.#ctor(Microsoft.Extensions.Logging.ILogger,CryptoExchange.Net.Clients.SocketApiClient,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{`0}},System.Boolean)">
+        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.#ctor(Microsoft.Extensions.Logging.ILogger,CryptoExchange.Net.Clients.SocketApiClient,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{`0}},System.Boolean,System.Boolean)">
             <summary>
             ctor
             </summary>
