@@ -20,6 +20,10 @@ namespace HyperLiquid.Net.Utils
         private static Dictionary<string, HyperLiquidAsset[]> _spotAssetInfo = new Dictionary<string, HyperLiquidAsset[]>();
         private static Dictionary<string, HyperLiquidSymbol[]> _spotSymbolInfo = new Dictionary<string, HyperLiquidSymbol[]>();
         private static Dictionary<string, HyperLiquidFuturesSymbol[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesSymbol[]>();
+        private static Dictionary<string, int> _dexIndices = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { "xyz", 110000 }
+        };
 
         private static Dictionary<string, DateTime> _lastSpotUpdateTime = new Dictionary<string, DateTime>();
         private static Dictionary<string, DateTime> _lastFuturesUpdateTime = new Dictionary<string, DateTime>();
@@ -120,7 +124,9 @@ namespace HyperLiquid.Net.Utils
                 if (symbol == null)
                     return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.Index + 110000);
+                var dexSafe = dex ?? string.Empty;
+                var indexOffset = _dexIndices.ContainsKey(dexSafe) ? _dexIndices[dexSafe] : 0;
+                return new CallResult<int>(symbol.Index + indexOffset);
             }
         }
 
