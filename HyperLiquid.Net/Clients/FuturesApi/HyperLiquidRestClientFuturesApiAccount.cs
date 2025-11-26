@@ -24,7 +24,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Account
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -32,7 +32,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var parameters = new ParameterCollection()
             {
                 { "type", "clearinghouseState" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey },
+                { "dex", dex ?? string.Empty }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidFuturesAccount>(request, parameters, ct).ConfigureAwait(false);

@@ -20,6 +20,10 @@ namespace HyperLiquid.Net.Utils
         private static Dictionary<string, HyperLiquidAsset[]> _spotAssetInfo = new Dictionary<string, HyperLiquidAsset[]>();
         private static Dictionary<string, HyperLiquidSymbol[]> _spotSymbolInfo = new Dictionary<string, HyperLiquidSymbol[]>();
         private static Dictionary<string, HyperLiquidFuturesSymbol[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesSymbol[]>();
+        private static Dictionary<string, int> _dexIndices = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { "xyz", 110000 }
+        };
 
         private static Dictionary<string, DateTime> _lastSpotUpdateTime = new Dictionary<string, DateTime>();
         private static Dictionary<string, DateTime> _lastFuturesUpdateTime = new Dictionary<string, DateTime>();
@@ -30,18 +34,18 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal futures symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync(IHyperLiquidRestClient client)
+        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync(IHyperLiquidRestClient client, string? dex)
         {
             await _semaphoreFutures.WaitAsync().ConfigureAwait(false);
 
             try
             {
-                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
+                var envName = ComposeEnvironmentName((HyperLiquidRestOptions)client.ClientOptions, dex);
                 _lastFuturesUpdateTime.TryGetValue(envName, out var lastUpdateTime);
                 if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
-                var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
+                var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAsync(dex).ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
@@ -94,6 +98,8 @@ namespace HyperLiquid.Net.Utils
             if (symbolName == "UnitTest")
                 return new CallResult<int>(1);
 
+            var dex = ExtractDexFromSymbol(symbolName);
+
             if (SymbolIsExchangeSpotSymbol(symbolName))
             {
                 var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
@@ -101,7 +107,7 @@ namespace HyperLiquid.Net.Utils
                     return new CallResult<int>(update.Error!);
 
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(symbolName, StringComparison.OrdinalIgnoreCase));
                 if (symbol == null)
                     return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
@@ -109,16 +115,18 @@ namespace HyperLiquid.Net.Utils
             }
             else
             {
-                var update = await UpdateFuturesSymbolInfoAsync(client).ConfigureAwait(false);
+                var update = await UpdateFuturesSymbolInfoAsync(client, dex).ConfigureAwait(false);
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                var envName = ComposeEnvironmentName((HyperLiquidRestOptions)client.ClientOptions, dex);
+                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(symbolName, StringComparison.OrdinalIgnoreCase));
                 if (symbol == null)
                     return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.Index);
+                var dexSafe = dex ?? string.Empty;
+                var indexOffset = _dexIndices.ContainsKey(dexSafe) ? _dexIndices[dexSafe] : 0;
+                return new CallResult<int>(symbol.Index + indexOffset);
             }
         }
 
@@ -133,6 +141,8 @@ namespace HyperLiquid.Net.Utils
             if (symbolName == "UnitTest")
                 return new CallResult<int>(1);
 
+            var dex = ExtractDexFromSymbol(symbolName);
+
             if (SymbolIsExchangeSpotSymbol(symbolName))
             {
                 var update = await UpdateSpotSymbolInfoAsync(client).ConfigureAwait(false);
@@ -140,7 +150,7 @@ namespace HyperLiquid.Net.Utils
                     return new CallResult<int>(update.Error!);
 
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(symbolName, StringComparison.OrdinalIgnoreCase));
                 if (symbol == null)
                     return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
@@ -148,12 +158,12 @@ namespace HyperLiquid.Net.Utils
             }
             else
             {
-                var update = await UpdateFuturesSymbolInfoAsync(client).ConfigureAwait(false);
+                var update = await UpdateFuturesSymbolInfoAsync(client, dex).ConfigureAwait(false);
                 if (!update)
                     return new CallResult<int>(update.Error!);
 
-                var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
+                var envName = ComposeEnvironmentName((HyperLiquidRestOptions)client.ClientOptions, dex);
+                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(symbolName, StringComparison.OrdinalIgnoreCase));
                 if (symbol == null)
                     return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
@@ -249,6 +259,20 @@ namespace HyperLiquid.Net.Utils
             return new CallResult<string>(assetInfo.Name + ":" + assetInfo.AssetId);
         }
 
+        /// <summary>
+        /// Extract the dex from a symbol name, e.g. "xyz:ETH" -> "xyz"
+        /// </summary>
+        /// <param name="symbolName">The symbol name, e.g. "BTC", "xyz:ETH"</param>
+        /// <returns></returns>
+        public static string? ExtractDexFromSymbol(string? symbolName)
+        {
+            var symbolSafe = symbolName ?? string.Empty;
+            if (!symbolSafe.Contains(":"))
+                return null;
+            var parts = symbolSafe.Split(':');
+            return parts.Length != 2 ? null : parts[0].ToLower();
+        }
+
         internal static bool ExchangeSymbolIsSpotSymbol(string symbol)
         {
             return symbol.StartsWith("@") || symbol.EndsWith("/USDC");
@@ -257,6 +281,17 @@ namespace HyperLiquid.Net.Utils
         internal static bool SymbolIsExchangeSpotSymbol(string symbol)
         {
             return symbol.EndsWith("/USDC");
+        }
+
+        internal static string ComposeEnvironmentName(string env, string? dex)
+        {
+            var dexStr = string.IsNullOrWhiteSpace(dex) ? string.Empty : $"-{dex}";
+            return $"{env}{dexStr}".ToLower();
+        }
+
+        internal static string ComposeEnvironmentName(HyperLiquidRestOptions options, string? dex)
+        {
+            return ComposeEnvironmentName(options.Environment.Name, dex);
         }
     }
 }

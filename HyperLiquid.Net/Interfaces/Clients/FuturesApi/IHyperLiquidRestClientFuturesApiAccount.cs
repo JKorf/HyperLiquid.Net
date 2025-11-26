@@ -12,15 +12,16 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// HyperLiquid futures account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
     /// </summary>
     /// <see cref="IHyperLiquidRestClientAccount"/>
-    public interface IHyperLiquidRestClientFuturesApiAccount: IHyperLiquidRestClientAccount
+    public interface IHyperLiquidRestClientFuturesApiAccount : IHyperLiquidRestClientAccount
     {
         /// <summary>
         /// Get account info, balances and open positions
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /></para>
         /// </summary>
         /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="dex">Perpetual dex name (e.g. xyz). Defaults to the empty string which represents the first perpetual dex.</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user funding history

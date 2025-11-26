@@ -18,8 +18,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// Get exchange info
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
         /// </summary>
+        /// <param name="dex">Perpetual dex name (e.g. xyz). Defaults to the empty string which represents the first perpetual dex.</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange and ticker info

@@ -173,7 +173,7 @@
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetFundingHistoryAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
@@ -185,7 +185,7 @@
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAndTickersAsync(System.Threading.CancellationToken)">
@@ -2636,12 +2636,13 @@
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientAccount"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get account info, balances and open positions
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /></para>
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+            <param name="dex">Perpetual dex name (e.g. xyz). Defaults to the empty string which represents the first perpetual dex.</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetFundingHistoryAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
@@ -2669,11 +2670,12 @@
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get exchange info
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
             </summary>
+            <param name="dex">Perpetual dex name (e.g. xyz). Defaults to the empty string which represents the first perpetual dex.</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAndTickersAsync(System.Threading.CancellationToken)">
@@ -5381,7 +5383,7 @@
             Util methods for the HyperLiquid API
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateFuturesSymbolInfoAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient)">
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.UpdateFuturesSymbolInfoAsync(HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,System.String)">
             <summary>
             Update the internal futures symbol info
             </summary>
@@ -5437,6 +5439,13 @@
             </summary>
             <param name="client">Client to make a request to retrieve exchange info if necessary</param>
             <param name="asset">Exchange asset name</param>
+            <returns></returns>
+        </member>
+        <member name="M:HyperLiquid.Net.Utils.HyperLiquidUtils.ExtractDexFromSymbol(System.String)">
+            <summary>
+            Extract the dex from a symbol name, e.g. "xyz:ETH" -> "xyz"
+            </summary>
+            <param name="symbolName">The symbol name, e.g. "BTC", "xyz:ETH"</param>
             <returns></returns>
         </member>
         <member name="T:HyperLiquid.Net.Utils.PackConverter">
