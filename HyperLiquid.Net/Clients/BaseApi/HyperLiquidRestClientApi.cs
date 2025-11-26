@@ -16,6 +16,10 @@ using HyperLiquid.Net.Objects.Models;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects.Errors;
+using System.Net;
+using System.Net.Http.Headers;
+using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
+using HyperLiquid.Net.Clients.MessageHandlers;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -28,6 +32,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         internal IHyperLiquidRestClient BaseClient { get; }
 
         protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
+        protected override IRestMessageHandler MessageHandler { get; } = new HyperLiquidRestMessageHandler(HyperLiquidErrors.Errors);
 
         #region constructor/destructor
         internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
@@ -41,6 +46,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override IStreamMessageAccessor CreateAccessor() => new SystemTextJsonStreamMessageAccessor(HyperLiquidExchange._serializerContext);
         /// <inheritdoc />
         protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer(HyperLiquidExchange._serializerContext);
+
 
         /// <inheritdoc />
         protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials)
@@ -82,7 +88,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
         }
 
-        protected override Error? TryParseError(RequestDefinition request, KeyValuePair<string, string[]>[] responseHeaders, IMessageAccessor accessor)
+        protected override Error? TryParseError(RequestDefinition request, HttpResponseHeaders responseHeaders, IMessageAccessor accessor)
         {
             var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
             if (status == "err")

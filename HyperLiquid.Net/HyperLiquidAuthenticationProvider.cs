@@ -66,7 +66,7 @@ namespace HyperLiquid.Net
             if (!request.Authenticated)
                 return;
 
-            var action = (Dictionary<string, object>)request.BodyParameters["action"];
+            var action = (Dictionary<string, object>)request.BodyParameters!["action"];
             var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
             request.BodyParameters!.Add("nonce", nonce);
             if (action.TryGetValue("signatureChainId", out var chainId))

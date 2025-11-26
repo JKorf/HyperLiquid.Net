@@ -33,7 +33,7 @@ namespace HyperLiquid.Net.Objects.Sockets
             return base.Deserialize(message, type);
         }
 
-        public CallResult<HyperLiquidSocketUpdate<T>> HandleMessage(SocketConnection connection, DataEvent<HyperLiquidSocketUpdate<T>> message)
+        public CallResult<HyperLiquidSocketUpdate<T>> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
         {
             if (_errorString != null 
                 && !_errorString.StartsWith("Already subscribed:") // Allow duplicate subscriptions
@@ -41,10 +41,10 @@ namespace HyperLiquid.Net.Objects.Sockets
             {
                 var err = _errorString;
                 _errorString = null;
-                return message.ToCallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo("Subscription", err)));
+                return new CallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo("Subscription", err)));
             }
 
-            return message.ToCallResult();
+            return new CallResult<HyperLiquidSocketUpdate<T>>(message, originalData, null);
         }
     }
 }

@@ -17,8 +17,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         private readonly SocketApiClient _client;
         private readonly string _topic;
         private readonly Dictionary<string, object> _parameters;
-        private readonly Action<DataEvent<T>> _handler;
-        private readonly bool _firstUpdateIsSnapshot;
+        private readonly Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> _handler;
 
         /// <summary>
         /// ctor
@@ -29,15 +28,13 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             string topic, 
             string listenId, 
             Dictionary<string, object>? parameters,
-            Action<DataEvent<T>> handler, 
-            bool auth,
-            bool firstUpdateIsSnapshot = false) : base(logger, auth)
+            Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> handler, 
+            bool auth) : base(logger, auth)
         {
             _client = client;
             _handler = handler;
             _topic = topic;
             _parameters = parameters ?? new();
-            _firstUpdateIsSnapshot = firstUpdateIsSnapshot;
 
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
         }
@@ -73,9 +70,10 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         }
 
         /// <inheritdoc />
-        public CallResult DoHandleMessage(SocketConnection connection, DataEvent<HyperLiquidSocketUpdate<T>> message)
+        public CallResult DoHandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
         {
-            _handler.Invoke(message.As(message.Data.Data!, _topic, null, _firstUpdateIsSnapshot && ConnectionInvocations == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update));
+            _handler.Invoke(receiveTime, originalData, ConnectionInvocations, message);
+            //_handler.Invoke(message.As(message.Data.Data!, _topic, null, _firstUpdateIsSnapshot && ConnectionInvocations == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update));
             return CallResult.SuccessResult;
         }
     }

@@ -36,15 +36,22 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidFuturesTicker>> onMessage, CancellationToken ct = default)
         {
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidFuturesTickerUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                data.Data.Ticker.Symbol = symbol;
+                onMessage(
+                    new DataEvent<HyperLiquidFuturesTicker>(data.Data.Ticker, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithSymbol(symbol)
+                    );
+            });
+
             var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, this, "activeAssetCtx", "activeAssetCtx-" + symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
             },
-            x =>
-            {
-                x.Data.Ticker.Symbol = symbol;
-                onMessage(x.As(x.Data.Ticker).WithSymbol(symbol));
-            }, false);
+            internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
@@ -54,16 +61,23 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (address == null && AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidFuturesUserSymbolUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                onMessage(
+                    new DataEvent<HyperLiquidFuturesUserSymbolUpdate>(data.Data, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithSymbol(symbol)
+                    );
+            });
+
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, this, "activeAssetData", "activeAssetData-" + symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
                 { "user", addressSub.ToLowerInvariant() },
             },
-            x =>
-            {
-                onMessage(x.WithSymbol(symbol));
-            }, false);
+            internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
@@ -77,16 +91,22 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserFundingUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                onMessage(
+                    new DataEvent<HyperLiquidUserFunding[]>(data.Data.Fundings, receiveTime, originalData)
+                        .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithDataTimestamp(data.Data.Fundings.Any() ? data.Data.Fundings.Max(x => x.Timestamp) : null)
+                    );
+            });
+
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, this, "userFundings", "userFundings", new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            x =>
-            {
-                onMessage(x.As(x.Data.Fundings).WithUpdateType(x.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
-                    .WithDataTimestamp(x.Data.Fundings.Any() ? x.Data.Fundings.Max(x => x.Timestamp) : null));
-            }, false);
+            internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
