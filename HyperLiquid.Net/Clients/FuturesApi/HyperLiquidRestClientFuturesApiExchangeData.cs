@@ -28,11 +28,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Exchange Info
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
-                { "type", "meta" }
+                { "type", "meta" },
+                { "dex", dex ?? string.Empty }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo>(request, parameters, ct).ConfigureAwait(false);
