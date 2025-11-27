@@ -13,7 +13,7 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
     {
         public override JsonSerializerOptions Options { get; } = HyperLiquidExchange._serializerContext;
 
-        protected override MessageEvaluator[] MessageEvaluators { get; } = [
+        protected override MessageEvaluator[] TypeEvaluators { get; } = [
             new MessageEvaluator {
                 Priority = 1,
                 Fields = [
