@@ -4,8 +4,6 @@ using HyperLiquid.Net;
 using System;
 using System.Linq;
 using System.Text.Json;
-using System.Threading.Channels;
-using static HyperLiquid.Net.Converters.CancelResultConverter;
 
 namespace HyperLiquid.Net.Clients.MessageHandlers
 {

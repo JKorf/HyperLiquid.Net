@@ -37,6 +37,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             _parameters = parameters ?? new();
 
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
+            MessageRouter = MessageRouter.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
         }
 
         /// <inheritdoc />

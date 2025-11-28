@@ -19,6 +19,7 @@ namespace HyperLiquid.Net.Objects.Sockets
         {
             _client = client;
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>([listenId, errorListenId], HandleMessage);
+            MessageRouter = MessageRouter.Create<HyperLiquidSocketUpdate<T>>([listenId, errorListenId], HandleMessage);
         }
 
         public override CallResult<object> Deserialize(IMessageAccessor message, Type type)

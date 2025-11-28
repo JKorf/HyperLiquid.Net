@@ -11,6 +11,7 @@ namespace HyperLiquid.Net.Objects.Sockets
         {
             RequestTimeout = TimeSpan.FromSeconds(5);
             MessageMatcher = MessageMatcher.Create<HyperLiquidPong>("pong");
+            MessageRouter = MessageRouter.Create<HyperLiquidPong>("pong");
         }
     }
 }
