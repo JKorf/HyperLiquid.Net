@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Internal
 {
@@ -16,7 +17,7 @@ namespace HyperLiquid.Net.Objects.Internal
         }
 
         [JsonPropertyName("subscription")]
-        public object Subscription { get; set; } = default!;
+        public Dictionary<string, object> Subscription { get; set; } = default!;
     }
 
     internal class HyperLiquidUnsubscribeRequest : HyperLiquidSocketRequest
@@ -27,6 +28,6 @@ namespace HyperLiquid.Net.Objects.Internal
         }
 
         [JsonPropertyName("subscription")]
-        public object Subscription { get; set; } = default!;
+        public Dictionary<string, object> Subscription { get; set; } = default!;
     }
 }

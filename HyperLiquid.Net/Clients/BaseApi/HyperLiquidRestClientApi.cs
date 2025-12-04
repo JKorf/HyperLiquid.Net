@@ -32,7 +32,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         internal IHyperLiquidRestClient BaseClient { get; }
 
         protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
-        protected override IRestMessageHandler MessageHandler { get; } = new HyperLiquidRestMessageHandler(HyperLiquidErrors.Errors);
+        protected override IRestMessageHandler MessageHandler { get; } = new HyperLiquidRestMessageHandler();
 
         #region constructor/destructor
         internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)

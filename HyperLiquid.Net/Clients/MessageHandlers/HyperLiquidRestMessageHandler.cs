@@ -16,18 +16,13 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
 {
     internal class HyperLiquidRestMessageHandler : JsonRestMessageHandler
     {
-        private readonly ErrorMapping _errorMapping;
+        public override bool RequiresSeekableStream => true;
 
         public override JsonSerializerOptions Options { get; } = HyperLiquidExchange._serializerContext;
 
-        public HyperLiquidRestMessageHandler(ErrorMapping errorMapping)
+        public override async ValueTask<Error?> CheckForErrorResponse(RequestDefinition request, HttpResponseHeaders responseHeaders, Stream responseStream)
         {
-            _errorMapping = errorMapping;
-        }
-
-        public override async ValueTask<Error?> CheckForErrorResponse(RequestDefinition request, object? state, HttpResponseHeaders responseHeaders, Stream responseStream)
-        {
-            var (parseError, document) = await GetJsonDocument(responseStream, state).ConfigureAwait(false);
+            var (parseError, document) = await GetJsonDocument(responseStream).ConfigureAwait(false);
             if (parseError != null)
                 return parseError;
 
@@ -56,7 +51,7 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
             return new ServerError(ErrorInfo.Unknown with { Message = hyperResponse.Status });
         }
 
-        public override ValueTask<Error> ParseErrorResponse(int httpStatusCode, object? state, HttpResponseHeaders responseHeaders, Stream responseStream)
+        public override ValueTask<Error> ParseErrorResponse(int httpStatusCode, HttpResponseHeaders responseHeaders, Stream responseStream)
         {
             return new ValueTask<Error>(new ServerError(ErrorInfo.Unknown));
         }

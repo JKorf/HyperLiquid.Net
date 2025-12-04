@@ -101,6 +101,11 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("liquidation")]
         public HyperLiquidLiquidationInfo? Liquidation { get; set; }
+        /// <summary>
+        /// TWAP id
+        /// </summary>
+        [JsonPropertyName("twapId")]
+        public long? TwapId { get; set; }
     }
 
     /// <summary>

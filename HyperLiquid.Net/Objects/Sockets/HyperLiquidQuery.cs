@@ -15,11 +15,20 @@ namespace HyperLiquid.Net.Objects.Sockets
         private string? _errorString;
         private readonly SocketApiClient _client;
 
-        public HyperLiquidQuery(SocketApiClient client, HyperLiquidSocketRequest request, string listenId, string errorListenId, bool authenticated, int weight = 1) : base(request, authenticated, weight)
+        public HyperLiquidQuery(
+            SocketApiClient client,
+            HyperLiquidSocketRequest request,
+            string listenId,
+            bool authenticated, 
+            int weight = 1) : base(request, authenticated, weight)
         {
             _client = client;
-            MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>([listenId, errorListenId], HandleMessage);
-            MessageRouter = MessageRouter.Create<HyperLiquidSocketUpdate<T>>([listenId, errorListenId], HandleMessage);
+            MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(["subscriptionResponse" + listenId, "error" + listenId], HandleMessage);
+            //MessageRouter = MessageRouter.CreateWithTopicFilter<HyperLiquidSocketUpdate<T>>(["subscriptionResponse", "error"], listenId, HandleMessage);
+            MessageRouter = MessageRouter.Create([
+                MessageRoute<HyperLiquidSocketUpdate<T>>.CreateWithTopicFilter("subscriptionResponse", listenId, HandleMessage),
+                MessageRoute<HyperLiquidSocketUpdate<string>>.CreateWithTopicFilter("error", listenId, HandleError)
+                ]);
         }
 
         public override CallResult<object> Deserialize(IMessageAccessor message, Type type)
@@ -32,6 +41,20 @@ namespace HyperLiquid.Net.Objects.Sockets
             }
 
             return base.Deserialize(message, type);
+        }
+
+        public CallResult<HyperLiquidSocketUpdate<string>> HandleError(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<string> message)
+        {
+            var error = message.Data;
+
+            if (error.StartsWith("Already subscribed:")
+             || error.StartsWith("Already unsubscribed"))
+            {
+                // Allow duplicate subscriptions
+                return new CallResult<HyperLiquidSocketUpdate<string>>(message, originalData, null);
+            }
+
+            return new CallResult<HyperLiquidSocketUpdate<string>>(new ServerError(_client.GetErrorInfo("Subscription", error)));
         }
 
         public CallResult<HyperLiquidSocketUpdate<T>> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)

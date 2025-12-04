@@ -57,11 +57,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     );
             });
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", "activeSpotAssetCtx-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
-            internalHandler, false);
+            internalHandler, false, "activeSpotAssetCtx");
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 

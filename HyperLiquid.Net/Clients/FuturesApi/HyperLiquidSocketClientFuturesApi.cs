@@ -47,7 +47,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                     );
             });
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, this, "activeAssetCtx", "activeAssetCtx-" + symbol, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, this, "activeAssetCtx", symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
             },
@@ -72,7 +72,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, this, "activeAssetData", "activeAssetData-" + symbol, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesUserSymbolUpdate>(_logger, this, "activeAssetData", symbol, new Dictionary<string, object>
             {
                 { "coin", symbol },
                 { "user", addressSub.ToLowerInvariant() },
@@ -102,7 +102,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, this, "userFundings", "userFundings", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserFundingUpdate>(_logger, this, "userFundings", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },

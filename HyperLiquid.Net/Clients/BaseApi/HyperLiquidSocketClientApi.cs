@@ -126,7 +126,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, this, "allMids", "allMids", null, internalHandler, false);
+            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, this, "allMids", null, null, internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
@@ -156,7 +156,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var intervalStr = EnumConverter.GetString(interval);
-            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, this, "candle", $"candle-{coin}-{intervalStr}", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidKline>(_logger, this, "candle", $"{coin}{interval}", new Dictionary<string, object>
             {
                 { "coin", coin },
                 { "interval", intervalStr }
@@ -199,7 +199,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             parameters.AddOptionalParameter("nSigFigs", nSigFigs);
             parameters.AddOptionalParameter("mantissa", mantissa);
             
-            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, this, "l2Book", "l2Book-" + coin, parameters, internalHandler, false);
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, this, "l2Book", coin, parameters, internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
@@ -231,7 +231,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidTrade[]>(_logger, this, "trades", "trades-" + coin, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTrade[]>(_logger, this, "trades", coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
@@ -280,7 +280,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, this, "orderUpdates", "orderUpdates", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, this, "orderUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -306,7 +306,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidLedgerUpdate>(_logger, this, "userNonFundingLedgerUpdates", "userNonFundingLedgerUpdates", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidLedgerUpdate>(_logger, this, "userNonFundingLedgerUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -333,7 +333,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, this, "webData2", "webData2", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, this, "webData2", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -382,7 +382,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, this, "userFills", "userFills", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, this, "userFills", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -440,11 +440,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserEventUpdate>(_logger, this, "userEvents", "userEvents", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserEventUpdate>(_logger, this, "userEvents", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false, "user");
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 
@@ -489,7 +489,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, this, "userTwapSliceFills", "userTwapSliceFills", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, this, "userTwapSliceFills", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -538,7 +538,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? AuthenticationProvider!.ApiKey;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, this, "userTwapHistory", "userTwapHistory", new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, this, "userTwapHistory", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -556,13 +556,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 var coin = message.GetValue<string?>(_subscriptionCoinPath);
                 var interval = message.GetValue<string?>(_subscriptionIntervalPath);
                 var user = message.GetValue<string?>(_subscriptionUserPath);
-                var id = channel + "-" + type;
+                var id = channel + type;
                 if (coin != null)
-                    id += "-" + coin;
+                    id += coin;
                 if (interval != null)
-                    id += "-" + interval;
+                    id += interval;
                 if (user != null)
-                    id += "-" + user;
+                    id += user;
 
                 return id;
             }
@@ -595,33 +595,30 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     var coin = jsonDoc.RootElement.TryGetProperty("coin", out var coinProp) ? coinProp.GetString() : null;
                     var interval = jsonDoc.RootElement.TryGetProperty("interval", out var intervalProp) ? intervalProp.GetString() : null;
                     var user = jsonDoc.RootElement.TryGetProperty("user", out var userProp) ? userProp.GetString() : null;
-                    var id = "error-" + type;
+                    var id = "error" + type;
                     if (coin != null)
-                        id += "-" + coin;
+                        id += coin;
                     if (interval != null)
-                        id += "-" + interval;
+                        id += interval;
                     if (user != null)
-                        id += "-" + user;
+                        id += user;
 
                     return id;
                 }
             }
             
-            if (channel == "user")
-                return "userEvents";
-
             if (channel == "trades")
-                return channel + "-" + message.GetValue<string>(_itemSymbolPath);
+                return channel + message.GetValue<string>(_itemSymbolPath);
 
             if (channel == "l2Book" || channel == "activeSpotAssetCtx" || channel == "activeAssetCtx" || channel == "activeAssetData")
-                return channel + "-" + message.GetValue<string>(_bookSymbolPath);
+                return channel + message.GetValue<string>(_bookSymbolPath);
 
             if (channel == "candle")
-                return channel + "-" + message.GetValue<string>(_symbolPath) + "-" + message.GetValue<string>(_klineIntervalPath);
+                return channel + message.GetValue<string>(_symbolPath) + EnumConverter.ParseString<KlineInterval>(message.GetValue<string>(_klineIntervalPath)!);
 
             var symbol = message.GetValue<string>(_symbolPath);
             if (symbol != null)
-                return channel + "-" + symbol;
+                return channel + symbol;
 
             return channel;
         }

@@ -12,7 +12,7 @@ using CryptoExchange.Net.Clients;
 namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
 {
     /// <inheritdoc />
-    internal class HyperLiquidSubscription<T> : Subscription<HyperLiquidSocketUpdate<HyperLiquidSubscribeRequest>, HyperLiquidSocketUpdate<HyperLiquidUnsubscribeRequest>>
+    internal class HyperLiquidSubscription<T> : Subscription
     {
         private readonly SocketApiClient _client;
         private readonly string _topic;
@@ -26,18 +26,20 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             ILogger logger,
             SocketApiClient client, 
             string topic, 
-            string listenId, 
+            string? listenSuffix, 
             Dictionary<string, object>? parameters,
             Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> handler, 
-            bool auth) : base(logger, auth)
+            bool auth,
+            string? alternativeTopic = null) : base(logger, auth)
         {
             _client = client;
             _handler = handler;
             _topic = topic;
             _parameters = parameters ?? new();
 
+            var listenId = (alternativeTopic ?? topic) + listenSuffix;
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
-            MessageRouter = MessageRouter.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
+            MessageRouter = MessageRouter.CreateWithOptionalTopicFilter<HyperLiquidSocketUpdate<T>>(alternativeTopic ?? topic, listenSuffix, DoHandleMessage);
         }
 
         /// <inheritdoc />
@@ -51,8 +53,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             {
                 Subscription = subscription
             }, 
-            "subscriptionResponse-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))),
-            "error-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))), false);
+            _topic + string.Join("", _parameters.Select(x => x.Value)), false);
         }
 
         /// <inheritdoc />
@@ -66,8 +67,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             {
                 Subscription = subscription
             },
-            "subscriptionResponse-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))),
-            "error-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))), false);
+            _topic + string.Join("", _parameters.Select(x => x.Value)), false);
         }
 
         /// <inheritdoc />

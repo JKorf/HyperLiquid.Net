@@ -645,6 +645,11 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSocketUpdateString">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubscribeRequest">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -1536,6 +1541,11 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.DictionaryStringDecimal">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.DictionaryStringObject">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -5134,6 +5144,11 @@
             Liquidation info
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade.TwapId">
+            <summary>
+            TWAP id
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationInfo">
             <summary>
             Liquidation info
@@ -5298,7 +5313,7 @@
         <member name="T:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.#ctor(Microsoft.Extensions.Logging.ILogger,CryptoExchange.Net.Clients.SocketApiClient,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Action{System.DateTime,System.String,System.Int32,HyperLiquid.Net.Objects.Internal.HyperLiquidSocketUpdate{`0}},System.Boolean)">
+        <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.#ctor(Microsoft.Extensions.Logging.ILogger,CryptoExchange.Net.Clients.SocketApiClient,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Action{System.DateTime,System.String,System.Int32,HyperLiquid.Net.Objects.Internal.HyperLiquidSocketUpdate{`0}},System.Boolean,System.String)">
             <summary>
             ctor
             </summary>
