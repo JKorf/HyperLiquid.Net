@@ -17,6 +17,27 @@ namespace HyperLiquid.Net.UnitTests
     {
         [TestCase(false)]
         [TestCase(true)]
+        public async Task ValidateConcurrentSpotSubscriptions(bool newDeserialization)
+        {
+            var logger = new LoggerFactory();
+            logger.AddProvider(new TraceLoggerProvider());
+
+            var client = new HyperLiquidSocketClient(Options.Create(new HyperLiquidSocketOptions
+            {
+                OutputOriginalData = true,
+                Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"),
+                UseUpdatedDeserialization = newDeserialization
+            }), logger);
+
+            var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
+            await tester.ValidateConcurrentAsync<HyperLiquidKline>(
+                (client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler),
+                (client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneHour, handler),
+                "Concurrent");
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
         public async Task ValidateSpotSubscriptions(bool useUpdatedDeserialization)
         {
             var loggerFactory = new LoggerFactory();

@@ -72,21 +72,13 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
             AddTopicMapping<HyperLiquidSocketUpdate<HyperLiquidTickerUpdate>>(x => x.Data.Symbol);
         }
 
-        protected override MessageEvaluator[] TypeEvaluators { get; } = [
-            //new MessageEvaluator {
-            //    Priority = 1,
-            //    Fields = [
-            //        new PropertyFieldReference("channel") { Constraint = x => x!.Equals("user", StringComparison.Ordinal) },
-            //    ],
-            //    StaticIdentifier = "userEvents"
-            //},
+        protected override MessageTypeDefinition[] TypeEvaluators { get; } = [
 
-            new MessageEvaluator {
-                Priority = 2,
+            new MessageTypeDefinition {
                 Fields = [
                     new PropertyFieldReference("channel"),
                 ],
-                IdentifyMessageCallback = x => $"{x.FieldValue("channel")}"
+                TypeIdentifierCallback = x => $"{x.FieldValue("channel")}"
             },
              
         ];
