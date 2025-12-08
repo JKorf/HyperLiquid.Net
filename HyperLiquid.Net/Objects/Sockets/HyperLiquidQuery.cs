@@ -1,12 +1,11 @@
 using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.Sockets;
-using System.Collections.Generic;
 using HyperLiquid.Net.Objects.Internal;
 using System;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Converters.MessageParsing;
 using CryptoExchange.Net.Clients;
+using CryptoExchange.Net.Sockets.Default;
 
 namespace HyperLiquid.Net.Objects.Sockets
 {
@@ -24,7 +23,6 @@ namespace HyperLiquid.Net.Objects.Sockets
         {
             _client = client;
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(["subscriptionResponse" + listenId, "error" + listenId], HandleMessage);
-            //MessageRouter = MessageRouter.CreateWithTopicFilter<HyperLiquidSocketUpdate<T>>(["subscriptionResponse", "error"], listenId, HandleMessage);
             MessageRouter = MessageRouter.Create([
                 MessageRoute<HyperLiquidSocketUpdate<T>>.CreateWithTopicFilter("subscriptionResponse", listenId, HandleMessage),
                 MessageRoute<HyperLiquidSocketUpdate<string>>.CreateWithTopicFilter("error", listenId, HandleError)

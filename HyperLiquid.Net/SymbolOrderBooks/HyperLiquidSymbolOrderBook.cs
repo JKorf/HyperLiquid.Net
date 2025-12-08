@@ -9,7 +9,6 @@ using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.Objects.Models;
-using Microsoft.Extensions.Options;
 
 namespace HyperLiquid.Net.SymbolOrderBooks
 {

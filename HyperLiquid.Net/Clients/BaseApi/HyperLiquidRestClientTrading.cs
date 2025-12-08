@@ -11,7 +11,6 @@ using HyperLiquid.Net.Enums;
 using System.Linq;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using CryptoExchange.Net;
-using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Objects.Errors;
 
 namespace HyperLiquid.Net.Clients.BaseApi

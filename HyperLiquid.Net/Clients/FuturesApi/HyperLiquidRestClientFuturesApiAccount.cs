@@ -2,7 +2,6 @@ using CryptoExchange.Net.Objects;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Generic;
 using HyperLiquid.Net.Objects.Models;
 using System;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;

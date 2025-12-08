@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using CryptoExchange.Net.Objects.Sockets;
-using System.Collections.Generic;
 using System.Linq;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net;

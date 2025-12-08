@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Utils;
-using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.Objects.Errors;
 using System.Net;
 

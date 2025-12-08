@@ -9,7 +9,6 @@ using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using System;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {

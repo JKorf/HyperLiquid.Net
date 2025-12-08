@@ -1,7 +1,6 @@
 using CryptoExchange.Net.Converters.SystemTextJson;
 using HyperLiquid.Net.Converters;
 using HyperLiquid.Net.Enums;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
