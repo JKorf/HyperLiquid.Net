@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
-    internal class HyperLiquidTwapCancelResult
+    internal record HyperLiquidTwapCancelResult
     {
         [JsonPropertyName("status")]
         [JsonConverter(typeof(TwapCancelResultConverter))]
