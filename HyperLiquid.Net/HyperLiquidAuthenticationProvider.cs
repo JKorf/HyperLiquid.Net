@@ -14,6 +14,8 @@ namespace HyperLiquid.Net
 {
     internal class HyperLiquidAuthenticationProvider : AuthenticationProvider
     {
+        public override ApiCredentialsType[] SupportedCredentialTypes => [ApiCredentialsType.Hmac];
+
         private static readonly Dictionary<Type, string> _typeMapping = new Dictionary<Type, string>
         {
             { typeof(string), "string" },
