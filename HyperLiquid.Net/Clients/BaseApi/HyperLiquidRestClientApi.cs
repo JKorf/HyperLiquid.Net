@@ -86,18 +86,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
         }
 
-        protected override Error? TryParseError(RequestDefinition request, HttpResponseHeaders responseHeaders, IMessageAccessor accessor)
-        {
-            var status = accessor.GetValue<string?>(MessagePath.Get().Property("status"));
-            if (status == "err")
-            {
-                var errorCode = accessor.GetValue<string>(MessagePath.Get().Property("response"))!;
-                return new ServerError(errorCode, new ErrorInfo(ErrorType.Unknown, errorCode));
-            }
-
-            return null;
-        }
-
         /// <inheritdoc />
         protected override Task<WebCallResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
 

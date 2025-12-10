@@ -11,14 +11,12 @@ namespace HyperLiquid.Net.UnitTests
     [TestFixture]
     public class RestRequestTests
     {
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateSpotExchangeDataCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateSpotExchangeDataCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/ExchangeData", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -30,14 +28,12 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetAssetInfoAsync("123"), "GetAssetInfo");
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateSpotAccountCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateSpotAccountCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -48,14 +44,12 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.SpotApi.Account.GetSubAccountsAsync(), "GetSubAccounts");
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateTradingCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateTradingCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/Trading", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -65,14 +59,12 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.SpotApi.Trading.PlaceOrderAsync("UnitTest", Enums.OrderSide.Buy, Enums.OrderType.Market, 1, 1), "PlaceOrder",  skipResponseValidation: true);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateFuturesExchangeDataCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateFuturesExchangeDataCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/ExchangeData", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -82,30 +74,26 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.FuturesApi.ExchangeData.GetSymbolsAtMaxOpenInterestAsync(), "GetSymbolsAtMaxOpenInterest");
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateFuturesAccountCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateFuturesAccountCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
             await tester.ValidateAsync(client => client.FuturesApi.Account.GetFundingHistoryAsync(DateTime.UtcNow), "GetFundingHistory", ignoreProperties: ["type", "nSamples"]);
             await tester.ValidateAsync(client => client.FuturesApi.Account.GetAccountInfoAsync(), "GetAccountInfo", ignoreProperties: []);
-            
+
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task ValidateFuturesTradingCalls(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateFuturesTradingCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
-                opts.UseUpdatedDeserialization = useUpdatedDeserialization;
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/Trading", "https://api.hyperliquid.xyz", IsAuthenticated);
