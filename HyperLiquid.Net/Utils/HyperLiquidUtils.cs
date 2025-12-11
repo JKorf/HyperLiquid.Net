@@ -276,7 +276,7 @@ namespace HyperLiquid.Net.Utils
 
         internal static bool SymbolIsExchangeSpotSymbol(string symbol)
         {
-            return symbol.EndsWith("/USDC");
+            return symbol.EndsWith("/USDC") || symbol.EndsWith("/USDH") || symbol.EndsWith("/USDT0") || symbol.EndsWith("/USDE");
         }
     }
 }
