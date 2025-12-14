@@ -50,7 +50,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 data.Data.Ticker.Symbol = symbol;
                 onMessage(
-                    new DataEvent<HyperLiquidTicker>(data.Data.Ticker, receiveTime, originalData)
+                    new DataEvent<HyperLiquidTicker>(HyperLiquidExchange.ExchangeName, data.Data.Ticker, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithSymbol(symbol)

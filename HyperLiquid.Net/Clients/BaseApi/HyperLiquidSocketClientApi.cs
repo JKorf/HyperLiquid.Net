@@ -120,7 +120,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }, x => x.Value);
 
                 onMessage(
-                    new DataEvent<Dictionary<string, decimal>>(dictData, receiveTime, originalData)
+                    new DataEvent<Dictionary<string, decimal>>(HyperLiquidExchange.ExchangeName, dictData, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                     );
@@ -149,7 +149,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 data.Data.Symbol = symbol;
                 onMessage(
-                    new DataEvent<HyperLiquidKline>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidKline>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
@@ -184,7 +184,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 data.Data.Symbol = symbol;
                 onMessage(
-                    new DataEvent<HyperLiquidOrderBook>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidOrderBook>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
@@ -224,7 +224,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     trade.Symbol = symbol;
 
                 onMessage(
-                    new DataEvent<HyperLiquidTrade[]>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidTrade[]>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(invocation == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
@@ -273,7 +273,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 onMessage(
-                    new DataEvent<HyperLiquidOrderStatus[]>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidOrderStatus[]>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithDataTimestamp(data.Data.Max(x => x.Timestamp))
@@ -300,7 +300,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidLedgerUpdate>>((receiveTime, originalData, invocation, data) =>
             {
                 onMessage(
-                    new DataEvent<HyperLiquidAccountLedger>(data.Data.Ledger, receiveTime, originalData)
+                    new DataEvent<HyperLiquidAccountLedger>(HyperLiquidExchange.ExchangeName, data.Data.Ledger, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                     );
@@ -326,7 +326,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserUpdate>>((receiveTime, originalData, invocation, data) =>
             {
                 onMessage(
-                    new DataEvent<HyperLiquidUserUpdate>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidUserUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithDataTimestamp(data.Data.ServerTime)
@@ -375,7 +375,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 onMessage(
-                    new DataEvent<HyperLiquidUserTrade[]>(data.Data.Trades, receiveTime, originalData)
+                    new DataEvent<HyperLiquidUserTrade[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithDataTimestamp(data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null)
@@ -410,7 +410,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (data.Data.Trades?.Any() == true)
                 {
                     onTradeUpdate?.Invoke(
-                        new DataEvent<HyperLiquidUserTrade[]>(data.Data.Trades!, receiveTime, originalData)
+                        new DataEvent<HyperLiquidUserTrade[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades!, receiveTime, originalData)
                             .WithUpdateType(SocketUpdateType.Update)
                             .WithStreamId(data.Channel));
                 }
@@ -418,7 +418,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (data.Data.Funding != null)
                 {
                     onFundingUpdate?.Invoke(
-                        new DataEvent<HyperLiquidUserFunding>(data.Data.Funding!, receiveTime, originalData)
+                        new DataEvent<HyperLiquidUserFunding>(HyperLiquidExchange.ExchangeName, data.Data.Funding!, receiveTime, originalData)
                             .WithUpdateType(SocketUpdateType.Update)
                             .WithStreamId(data.Channel));
                 }
@@ -426,7 +426,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (data.Data.Liquidation != null)
                 {
                     onLiquidationUpdate?.Invoke(
-                        new DataEvent<HyperLiquidLiquidationUpdate>(data.Data.Liquidation!, receiveTime, originalData)
+                        new DataEvent<HyperLiquidLiquidationUpdate>(HyperLiquidExchange.ExchangeName, data.Data.Liquidation!, receiveTime, originalData)
                             .WithUpdateType(SocketUpdateType.Update)
                             .WithStreamId(data.Channel));
                 }
@@ -434,7 +434,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (data.Data.NonUserCancelations?.Any() == true)
                 {
                     onNonUserCancelation?.Invoke(
-                        new DataEvent<HyperLiquidNonUserCancelation[]>(data.Data.NonUserCancelations!, receiveTime, originalData)
+                        new DataEvent<HyperLiquidNonUserCancelation[]>(HyperLiquidExchange.ExchangeName, data.Data.NonUserCancelations!, receiveTime, originalData)
                             .WithUpdateType(SocketUpdateType.Update)
                             .WithStreamId(data.Channel));
                 }
@@ -482,7 +482,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 onMessage(
-                    new DataEvent<HyperLiquidTwapStatus[]>(data.Data.Trades, receiveTime, originalData)
+                    new DataEvent<HyperLiquidTwapStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithDataTimestamp(data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null)
@@ -531,7 +531,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 onMessage(
-                    new DataEvent<HyperLiquidTwapOrderStatus[]>(data.Data.History, receiveTime, originalData)
+                    new DataEvent<HyperLiquidTwapOrderStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.History, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithDataTimestamp(data.Data.History.Any() ? data.Data.History.Max(x => x.Timestamp) : null)

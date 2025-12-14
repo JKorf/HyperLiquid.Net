@@ -40,7 +40,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             {
                 data.Data.Ticker.Symbol = symbol;
                 onMessage(
-                    new DataEvent<HyperLiquidFuturesTicker>(data.Data.Ticker, receiveTime, originalData)
+                    new DataEvent<HyperLiquidFuturesTicker>(HyperLiquidExchange.ExchangeName, data.Data.Ticker, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithSymbol(symbol)
@@ -64,7 +64,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidFuturesUserSymbolUpdate>>((receiveTime, originalData, invocation, data) =>
             {
                 onMessage(
-                    new DataEvent<HyperLiquidFuturesUserSymbolUpdate>(data.Data, receiveTime, originalData)
+                    new DataEvent<HyperLiquidFuturesUserSymbolUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithSymbol(symbol)
@@ -94,7 +94,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserFundingUpdate>>((receiveTime, originalData, invocation, data) =>
             {
                 onMessage(
-                    new DataEvent<HyperLiquidUserFunding[]>(data.Data.Fundings, receiveTime, originalData)
+                    new DataEvent<HyperLiquidUserFunding[]>(HyperLiquidExchange.ExchangeName, data.Data.Fundings, receiveTime, originalData)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
                         .WithDataTimestamp(data.Data.Fundings.Any() ? data.Data.Fundings.Max(x => x.Timestamp) : null)
