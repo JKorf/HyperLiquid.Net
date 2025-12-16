@@ -13,7 +13,7 @@ namespace HyperLiquid.Net.UnitTests
     [NonParallelizable]
     internal class HyperLiquidSocketIntegrationTests : SocketIntegrationTest<HyperLiquidSocketClient>
     {
-        public override bool Run { get; set; } = true;
+        public override bool Run { get; set; } = false;
 
         public HyperLiquidSocketIntegrationTests()
         {
