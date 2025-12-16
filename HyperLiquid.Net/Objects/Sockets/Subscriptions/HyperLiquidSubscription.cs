@@ -73,7 +73,6 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         public CallResult DoHandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
         {
             _handler.Invoke(receiveTime, originalData, ConnectionInvocations, message);
-            //_handler.Invoke(message.As(message.Data.Data!, _topic, null, _firstUpdateIsSnapshot && ConnectionInvocations == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update));
             return CallResult.SuccessResult;
         }
     }
