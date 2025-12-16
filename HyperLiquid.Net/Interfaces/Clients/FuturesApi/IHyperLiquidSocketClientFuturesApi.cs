@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Objects.Sockets;
 using HyperLiquid.Net.Objects.Models;
-using System.Collections.Generic;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 
 namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi

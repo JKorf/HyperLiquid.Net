@@ -1,0 +1,29 @@
+> {"subscription":{"type":"userEvents","user":"mtiz"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"userEvents","user":"mtiz"}}}
+= 
+{
+	"channel":"user",
+	"data":
+	{
+		"fills":
+		[
+			{
+				"coin":"@107",
+				"px":"34.895",
+				"sz":"0.5",
+				"side":"B",
+				"time":1764840678849,
+				"startPosition":"0.01388282",
+				"dir":"Buy",
+				"closedPnl":"0.0",
+				"hash":"0x01",
+				"oid":257770947487,
+				"crossed":true,
+				"fee":"0.00031499",
+				"tid":1,
+				"feeToken":"HYPE",
+				"twapId":null
+			}
+		]
+	}
+}

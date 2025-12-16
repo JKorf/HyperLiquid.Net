@@ -1,0 +1,14 @@
+> {"subscription":{"type":"allMids"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"allMids"}}}
+= 
+{
+	"channel":"allMids",
+	"data":
+	{
+		"mids":
+		{
+			"0G":"1.2017",
+			"2Z":"0.129165"
+		}
+	}
+}

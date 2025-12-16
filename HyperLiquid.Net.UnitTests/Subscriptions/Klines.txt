@@ -1,0 +1,19 @@
+> {"subscription":{"type":"candle","coin":"HYPE","interval":"1d"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"candle","interval":"1d","coin":"HYPE"}}}
+= 
+{
+	"channel":"candle",
+	"data":
+	{
+		"t":1764806400000,
+		"T":1764892799999,
+		"s":"HYPE",
+		"i":"1d",
+		"o":"34.668",
+		"c":"34.868",
+		"h":"36.219",
+		"l":"34.251",
+		"v":"3495670.8399999999",
+		"n":102895
+	}
+}

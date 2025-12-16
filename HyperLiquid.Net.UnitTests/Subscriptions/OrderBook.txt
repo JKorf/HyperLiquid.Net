@@ -1,0 +1,22 @@
+> {"subscription":{"type":"l2Book","coin":"HYPE"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"l2Book","coin":"HYPE","nSigFigs":null,"mantissa":null}}}
+= 
+{
+	"channel":"l2Book",
+	"data":
+	{
+		"coin":"HYPE",
+		"time":1764842873555,
+		"levels":
+		[
+			[
+				{"px":"34.967","sz":"2.85","n":1},
+				{"px":"34.962","sz":"3.84","n":2}
+			],
+			[
+				{"px":"34.969","sz":"1473.06","n":2},
+				{"px":"34.97","sz":"1544.51","n":4}
+			]
+		]
+	}
+}

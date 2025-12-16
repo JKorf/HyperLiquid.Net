@@ -1,0 +1,7 @@
+>1 {"subscription":{"type":"candle","coin":"HYPE","interval":"1d"},"method":"subscribe"}
+>2 {"subscription":{"type":"candle","coin":"HYPE","interval":"1h"},"method":"subscribe"}
+<1 {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"candle","interval":"1d","coin":"HYPE"}}}
+<2 {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"candle","interval":"1h","coin":"HYPE"}}}
+=1 { "channel":"candle", "data": { "t":1764806400000, "T":1764892799999, "s":"HYPE", "i":"1h" } }
+=2 { "channel":"candle", "data": { "t":1764806400000, "T":1764892799999, "s":"HYPE", "i":"1d" } }
+

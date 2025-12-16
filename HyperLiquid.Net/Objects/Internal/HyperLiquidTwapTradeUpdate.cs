@@ -1,6 +1,5 @@
 using CryptoExchange.Net.Converters.SystemTextJson;
 using HyperLiquid.Net.Objects.Models;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Internal

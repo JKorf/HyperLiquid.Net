@@ -225,7 +225,7 @@ namespace HyperLiquid.Net.Signing
 
             var t = v.ToByteArray();
             if (BitConverter.IsLittleEndian)
-                t = t.Reverse().ToArray();
+                t = t.AsEnumerable().Reverse().ToArray();
 
             t.CopyTo(result, result.Length - t.Length);
             return result;

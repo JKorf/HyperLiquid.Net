@@ -7,7 +7,6 @@ using HyperLiquid.Net.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Numerics;
 using System.Security.Cryptography;
 
@@ -15,6 +14,8 @@ namespace HyperLiquid.Net
 {
     internal class HyperLiquidAuthenticationProvider : AuthenticationProvider
     {
+        public override ApiCredentialsType[] SupportedCredentialTypes => [ApiCredentialsType.Hmac];
+
         private static readonly Dictionary<Type, string> _typeMapping = new Dictionary<Type, string>
         {
             { typeof(string), "string" },
@@ -66,7 +67,7 @@ namespace HyperLiquid.Net
             if (!request.Authenticated)
                 return;
 
-            var action = (Dictionary<string, object>)request.BodyParameters["action"];
+            var action = (Dictionary<string, object>)request.BodyParameters!["action"];
             var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
             request.BodyParameters!.Add("nonce", nonce);
             if (action.TryGetValue("signatureChainId", out var chainId))
@@ -175,10 +176,10 @@ namespace HyperLiquid.Net
 
                 var c = new byte[33];
 
-                rs.r.Reverse().ToArray().CopyTo(c, 0);
+                rs.r.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
                 BigInteger rValue = new BigInteger(c);
                 c = new byte[33];
-                rs.s.Reverse().ToArray().CopyTo(c, 0);
+                rs.s.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
                 BigInteger sValue = new BigInteger(c);
 
                 var v = RecoverFromSignature(rValue, sValue, messageBytes, parameters.Q.X!, parameters.Q.Y!);
@@ -226,7 +227,7 @@ namespace HyperLiquid.Net
 
             // Normalize the 's' value to be in the lower half of the curve order
             byte[] c = new byte[33];
-            s.Reverse().ToArray().CopyTo(c, 0);
+            s.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
             BigInteger sValue = new BigInteger(c);
             byte[] normalizedS;
             var flip = false;
@@ -234,7 +235,7 @@ namespace HyperLiquid.Net
             {
                 sValue = Secp256k1PointCalculator._n - sValue;
                 flip = true;
-                normalizedS = sValue.ToByteArray().Reverse().ToArray();
+                normalizedS = sValue.ToByteArray().AsEnumerable().Reverse().ToArray();
                 if (normalizedS.Length < 32)
                 {
                     byte[] paddedS = new byte[32];
@@ -260,16 +261,16 @@ namespace HyperLiquid.Net
                 throw new ArgumentNullException("message");
 
             byte[] c = new byte[33];
-            publicKeyX.Reverse().ToArray().CopyTo(c, 0);
+            publicKeyX.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
             BigInteger publicKeyXValue = new BigInteger(c);
 
             c = new byte[33];
-            publicKeyY.Reverse().ToArray().CopyTo(c, 0);
+            publicKeyY.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
             BigInteger publicKeyYValue = new BigInteger(c);
 
             // Compute e from M using Steps 2 and 3 of ECDSA signature verification.
             c = new byte[33];
-            message.Reverse().ToArray().CopyTo(c, 0);
+            message.AsEnumerable().Reverse().ToArray().CopyTo(c, 0);
             var e = new BigInteger(c);
             
             var eInv = (-e) % Secp256k1PointCalculator._n;

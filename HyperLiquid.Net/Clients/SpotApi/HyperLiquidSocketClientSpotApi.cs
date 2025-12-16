@@ -46,15 +46,22 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 coin = spotName.Data;
             }
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", "activeSpotAssetCtx-" + coin, new Dictionary<string, object>
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTickerUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                data.Data.Ticker.Symbol = symbol;
+                onMessage(
+                    new DataEvent<HyperLiquidTicker>(HyperLiquidExchange.ExchangeName, data.Data.Ticker, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithSymbol(symbol)
+                    );
+            });
+
+            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", coin, new Dictionary<string, object>
             {
                 { "coin", coin },
             },
-            x =>
-            {
-                x.Data.Ticker.Symbol = symbol;
-                onMessage(x.As(x.Data.Ticker).WithSymbol(symbol));
-            }, false);
+            internalHandler, false, "activeSpotAssetCtx");
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
         }
 

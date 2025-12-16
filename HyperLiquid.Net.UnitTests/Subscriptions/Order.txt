@@ -1,0 +1,23 @@
+> {"subscription":{"type":"orderUpdates","user":"mtiz"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"orderUpdates","user":"mtiz"}}}
+= 
+{
+	"channel":"orderUpdates",
+	"data":
+	[
+		{
+			"order":
+			{
+				"coin":"@107",
+				"side":"B",
+				"limitPx":"30.0",
+				"sz":"0.49",
+				"oid":1,
+				"timestamp":1764843090519,
+				"origSz":"0.49"
+			},
+			"status":"open",
+			"statusTimestamp":1764843090519
+		}
+	]
+}

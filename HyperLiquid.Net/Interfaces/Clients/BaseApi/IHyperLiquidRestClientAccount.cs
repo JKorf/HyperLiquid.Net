@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Objects.Models;
-using HyperLiquid.Net.Enums;
-using System;
 
 namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 {

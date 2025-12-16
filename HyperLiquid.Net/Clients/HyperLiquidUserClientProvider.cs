@@ -1,13 +1,11 @@
 ﻿using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using CryptoExchange.Net.Authentication;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
-using System.Collections.Generic;
 
 namespace HyperLiquid.Net.Clients
 {

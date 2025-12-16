@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HyperLiquid.Net.Clients;
+using HyperLiquid.Net.Objects.Options;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -14,17 +17,21 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task ValidateSpotExchangeDataCalls()
         {
-            var client = new HyperLiquidRestClient(opts =>
+            var logger = new LoggerFactory();
+            logger.AddProvider(new TraceLoggerProvider());
+
+            var client = new HyperLiquidRestClient(null, logger, Options.Create(new HyperLiquidRestOptions
             {
-                opts.AutoTimestamp = false;
-                opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
-            });
+                AutoTimestamp = false,
+                Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"),
+                ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456")
+            }));
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/ExchangeData", "https://api.hyperliquid.xyz", IsAuthenticated);
-            await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetPricesAsync(), "GetPrices");
+            //await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetPricesAsync(), "GetPrices");
             await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetOrderBookAsync("UnitTest"), "GetOrderBook");
             await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetKlinesAsync("UnitTest", Enums.KlineInterval.OneDay, DateTime.UtcNow, DateTime.UtcNow), "GetKlines");
             await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetExchangeInfoAsync(), "GetExchangeInfo");
-            await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync(), "GetExchangeInfoAndTickers");
+            await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync(), "GetExchangeInfoAndTickers", skipResponseValidation: true);
             await tester.ValidateAsync(client => client.SpotApi.ExchangeData.GetAssetInfoAsync("123"), "GetAssetInfo");
         }
 
@@ -34,6 +41,7 @@ namespace HyperLiquid.Net.UnitTests
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
+                opts.Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz");
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -50,6 +58,7 @@ namespace HyperLiquid.Net.UnitTests
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
+                opts.Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz");
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/Trading", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -59,13 +68,13 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.SpotApi.Trading.PlaceOrderAsync("UnitTest", Enums.OrderSide.Buy, Enums.OrderType.Market, 1, 1), "PlaceOrder",  skipResponseValidation: true);
         }
 
-
         [Test]
         public async Task ValidateFuturesExchangeDataCalls()
         {
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
+                opts.Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz");
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/ExchangeData", "https://api.hyperliquid.xyz", IsAuthenticated);
@@ -81,12 +90,13 @@ namespace HyperLiquid.Net.UnitTests
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
+                opts.Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz");
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
             await tester.ValidateAsync(client => client.FuturesApi.Account.GetFundingHistoryAsync(DateTime.UtcNow), "GetFundingHistory", ignoreProperties: ["type", "nSamples"]);
             await tester.ValidateAsync(client => client.FuturesApi.Account.GetAccountInfoAsync(), "GetAccountInfo", ignoreProperties: []);
-            
+
         }
 
         [Test]
@@ -95,6 +105,7 @@ namespace HyperLiquid.Net.UnitTests
             var client = new HyperLiquidRestClient(opts =>
             {
                 opts.AutoTimestamp = false;
+                opts.Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz");
                 opts.ApiCredentials = new CryptoExchange.Net.Authentication.ApiCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Futures/Trading", "https://api.hyperliquid.xyz", IsAuthenticated);

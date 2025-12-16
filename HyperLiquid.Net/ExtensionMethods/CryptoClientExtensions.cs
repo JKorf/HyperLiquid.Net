@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Interfaces.Clients;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces.Clients;
 

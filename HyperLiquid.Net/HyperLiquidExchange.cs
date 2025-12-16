@@ -5,7 +5,6 @@ using CryptoExchange.Net.RateLimiting.Interfaces;
 using CryptoExchange.Net.RateLimiting;
 using System;
 using CryptoExchange.Net.SharedApis;
-using System.Text.Json.Serialization;
 using HyperLiquid.Net.Converters;
 using CryptoExchange.Net.Converters;
 using System.Collections.Generic;

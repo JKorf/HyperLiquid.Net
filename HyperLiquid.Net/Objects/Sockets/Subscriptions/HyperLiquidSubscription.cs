@@ -1,6 +1,4 @@
-using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,17 +6,17 @@ using System.Collections.Generic;
 using HyperLiquid.Net.Objects.Internal;
 using System.Linq;
 using CryptoExchange.Net.Clients;
+using CryptoExchange.Net.Sockets.Default;
 
 namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
 {
     /// <inheritdoc />
-    internal class HyperLiquidSubscription<T> : Subscription<HyperLiquidSocketUpdate<HyperLiquidSubscribeRequest>, HyperLiquidSocketUpdate<HyperLiquidUnsubscribeRequest>>
+    internal class HyperLiquidSubscription<T> : Subscription
     {
         private readonly SocketApiClient _client;
         private readonly string _topic;
         private readonly Dictionary<string, object> _parameters;
-        private readonly Action<DataEvent<T>> _handler;
-        private readonly bool _firstUpdateIsSnapshot;
+        private readonly Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> _handler;
 
         /// <summary>
         /// ctor
@@ -27,19 +25,20 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             ILogger logger,
             SocketApiClient client, 
             string topic, 
-            string listenId, 
+            string? listenSuffix, 
             Dictionary<string, object>? parameters,
-            Action<DataEvent<T>> handler, 
+            Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> handler, 
             bool auth,
-            bool firstUpdateIsSnapshot = false) : base(logger, auth)
+            string? alternativeTopic = null) : base(logger, auth)
         {
             _client = client;
             _handler = handler;
             _topic = topic;
             _parameters = parameters ?? new();
-            _firstUpdateIsSnapshot = firstUpdateIsSnapshot;
 
+            var listenId = (alternativeTopic ?? topic) + listenSuffix;
             MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
+            MessageRouter = MessageRouter.CreateWithOptionalTopicFilter<HyperLiquidSocketUpdate<T>>(alternativeTopic ?? topic, listenSuffix, DoHandleMessage);
         }
 
         /// <inheritdoc />
@@ -53,8 +52,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             {
                 Subscription = subscription
             }, 
-            "subscriptionResponse-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))),
-            "error-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))), false);
+            _topic + string.Join("", _parameters.Select(x => x.Value)), false);
         }
 
         /// <inheritdoc />
@@ -68,14 +66,13 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             {
                 Subscription = subscription
             },
-            "subscriptionResponse-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))),
-            "error-" + _topic + ((_parameters.Any() ? "-" : "") + string.Join("-", _parameters.Select(x => x.Value))), false);
+            _topic + string.Join("", _parameters.Select(x => x.Value)), false);
         }
 
         /// <inheritdoc />
-        public CallResult DoHandleMessage(SocketConnection connection, DataEvent<HyperLiquidSocketUpdate<T>> message)
+        public CallResult DoHandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
         {
-            _handler.Invoke(message.As(message.Data.Data!, _topic, null, _firstUpdateIsSnapshot && ConnectionInvocations == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update));
+            _handler.Invoke(receiveTime, originalData, ConnectionInvocations, message);
             return CallResult.SuccessResult;
         }
     }

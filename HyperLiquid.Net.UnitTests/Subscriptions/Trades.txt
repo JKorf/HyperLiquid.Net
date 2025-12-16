@@ -1,0 +1,17 @@
+> {"subscription":{"type":"trades","coin":"HYPE"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"trades","coin":"HYPE"}}}
+= 
+{
+	"channel":"trades",
+	"data":
+	[{
+		"coin":"HYPE",
+		"side":"B",
+		"px":"35.276",
+		"sz":"5.78",
+		"time":1764835613064,
+		"hash":"0x0000000000000000000000000000000000000000000000000000000000000000",
+		"tid":716095722814130,
+		"users":["0x8cdba352268065be9d5444e1f82b8fe83717bbd5","0x13558be785661958932ceac35ba20de187275a42"]
+	}]
+}
