@@ -1,10 +1,11 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
-using CryptoExchange.Net.Objects;
-using HyperLiquid.Net.Objects.Models;
+﻿using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
+using HyperLiquid.Net.Objects.Models;
+using System;
+using System.Globalization;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -12,6 +13,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientApi _baseClient;
+
+        protected readonly string _chainIdTestnet = "0x66eee";
+        protected readonly string _chainIdMainnet = "0xa4b1";
 
         internal HyperLiquidRestClientAccount(HyperLiquidRestClientApi baseClient)
         {
@@ -33,6 +37,43 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<HyperLiquidFeeInfo>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Send Asset
+
+        /// <inheritdoc />
+        public async Task<WebCallResult> SendAssetAsync(
+            string destination,
+            string sourceDex,
+            string destinationDex,
+            string tokenName,
+            string tokenId,
+            decimal quantity,
+            string? fromSubAccount = null,
+            CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection();
+            var actionParameters = new ParameterCollection()
+            {
+                { "type", "sendAsset" },
+                { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
+            };
+
+            actionParameters.Add("destination", destination);
+            actionParameters.Add("sourceDex", sourceDex);
+            actionParameters.Add("destinationDex", destinationDex);
+            actionParameters.Add("token", $"{tokenName}:{tokenId}");
+            actionParameters.AddString("amount", quantity);
+            actionParameters.Add("fromSubAccount", fromSubAccount ?? string.Empty);
+            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            parameters.Add("action", actionParameters);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
         }
 
         #endregion

@@ -18,8 +18,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientSpotApi _baseClient;
-        private readonly string _chainIdTestnet = "0x66eee";
-        private readonly string _chainIdMainnet = "0xa4b1";
 
         internal HyperLiquidRestClientSpotApiAccount(HyperLiquidRestClientSpotApi baseClient): base(baseClient)
         {
