@@ -23,6 +23,7 @@ namespace HyperLiquid.Net.Converters
 
     // End manual defined attributes
 
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidBookTicker>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<string>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidUserEventUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidTrade[]>))]

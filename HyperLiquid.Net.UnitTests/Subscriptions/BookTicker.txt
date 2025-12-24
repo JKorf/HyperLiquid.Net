@@ -1,0 +1,16 @@
+> {"subscription":{"type":"bbo","coin":"HYPE"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"bbo","coin":"HYPE"}}}
+= 
+{
+	"channel":"bbo",
+	"data":
+	{
+		"coin":"HYPE",
+		"time":1766566375292,
+		"bbo": 
+		[
+			{"px":"23.757","sz":"42.09","n":1},
+			{"px":"23.758","sz":"100.26","n":2}
+		]
+	}
+}

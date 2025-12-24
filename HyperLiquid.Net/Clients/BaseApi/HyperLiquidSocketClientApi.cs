@@ -241,6 +241,41 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToBookTickerUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidBookTicker>> onMessage, CancellationToken ct = default)
+        {
+            var coin = symbol;
+            if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
+            {
+                // Spot symbol
+                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
+                if (!spotName)
+                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+
+                coin = spotName.Data;
+            }
+
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidBookTicker>>((receiveTime, originalData, invocation, data) =>
+            {
+                data.Data.Symbol = symbol;
+
+                onMessage(
+                    new DataEvent<HyperLiquidBookTicker>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithSymbol(symbol)
+                        .WithStreamId(data.Channel)
+                        .WithDataTimestamp(data.Data.Timestamp)
+                    );
+            });
+
+            var subscription = new HyperLiquidSubscription<HyperLiquidBookTicker>(_logger, this, "bbo", coin, new Dictionary<string, object>
+            {
+                { "coin", coin },
+            },
+            internalHandler, false);
+            return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidOrderStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && AuthenticationProvider == null)
@@ -611,7 +646,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (channel == "trades")
                 return channel + message.GetValue<string>(_itemSymbolPath);
 
-            if (channel == "l2Book" || channel == "activeSpotAssetCtx" || channel == "activeAssetCtx" || channel == "activeAssetData")
+            if (channel == "l2Book" || channel == "activeSpotAssetCtx" || channel == "activeAssetCtx" || channel == "activeAssetData" || channel == "bbo")
                 return channel + message.GetValue<string>(_bookSymbolPath);
 
             if (channel == "candle")

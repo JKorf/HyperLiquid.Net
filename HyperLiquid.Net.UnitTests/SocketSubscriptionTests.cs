@@ -51,6 +51,7 @@ namespace HyperLiquid.Net.UnitTests
             }), loggerFactory);
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
             await tester.ValidateAsync<HyperLiquidTrade[]>((client, handler) => client.SpotApi.SubscribeToTradeUpdatesAsync("HYPE", handler), "Trades");
+            await tester.ValidateAsync<HyperLiquidBookTicker>((client, handler) => client.SpotApi.SubscribeToBookTickerUpdatesAsync("HYPE", handler), "BookTicker", ignoreProperties: ["coin"]);
             await tester.ValidateAsync<Dictionary<string, decimal>>((client, handler) => client.SpotApi.SubscribeToPriceUpdatesAsync(handler), "Prices", nestedJsonProperty: "data.mids");
             await tester.ValidateAsync<HyperLiquidKline>((client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler), "Klines");
             await tester.ValidateAsync<HyperLiquidOrderBook>((client, handler) => client.SpotApi.SubscribeToOrderBookUpdatesAsync("HYPE", handler), "OrderBook");
