@@ -753,6 +753,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
         {
+            Console.WriteLine("Hello i am here");
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in requests)
             {
@@ -777,9 +778,24 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 orderParameters.Add("r", order.ReduceOnly ?? false);
 
                 var orderTypeParameters = new ParameterCollection();
-                var limitParameters = new ParameterCollection();
-                limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
-                orderTypeParameters.Add("limit", limitParameters);
+
+                if (order.TpSlType is not null)
+                {
+                    var limitParameters = new ParameterCollection();
+                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    orderTypeParameters.Add("limit", limitParameters);
+                }
+                else
+                {
+                    // here we have a trigger order
+                    var triggerParameters = new ParameterCollection();
+                    triggerParameters.Add("isMarket", order.OrderType is OrderType.StopMarket or OrderType.TakeProfitMarket);
+                    triggerParameters.AddString("triggerPx", (order.TriggerPrice ?? throw new Exception("Editing to trigger order, must provide trigger price")).Normalize());
+                    triggerParameters.AddEnum("tpsl", order.TpSlType ?? throw new Exception("Editing to trigger order, must provide tp/sl type"));
+                    orderTypeParameters.Add("trigger", triggerParameters);
+                }
+
+                
                 orderParameters.Add("t", orderTypeParameters);
 
                 orderParameters.AddOptional("c", order.ClientOrderId);
