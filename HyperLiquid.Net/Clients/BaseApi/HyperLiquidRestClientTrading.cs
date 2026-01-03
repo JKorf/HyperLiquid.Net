@@ -753,7 +753,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
             DateTime? expiresAfter = null,
             CancellationToken ct = default)
         {
-            Console.WriteLine("Hello i am here");
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in requests)
             {
@@ -779,7 +778,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
                 var orderTypeParameters = new ParameterCollection();
 
-                if (order.TpSlType is not null)
+                if (order.OrderType is OrderType.Limit or OrderType.Market)
                 {
                     var limitParameters = new ParameterCollection();
                     limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
@@ -787,11 +786,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
                 else
                 {
-                    // here we have a trigger order
                     var triggerParameters = new ParameterCollection();
-                    triggerParameters.Add("isMarket", order.OrderType is OrderType.StopMarket or OrderType.TakeProfitMarket);
-                    triggerParameters.AddString("triggerPx", (order.TriggerPrice ?? throw new Exception("Editing to trigger order, must provide trigger price")).Normalize());
-                    triggerParameters.AddEnum("tpsl", order.TpSlType ?? throw new Exception("Editing to trigger order, must provide tp/sl type"));
+                    triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
+                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
                     orderTypeParameters.Add("trigger", triggerParameters);
                 }
 
