@@ -777,9 +777,30 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 orderParameters.Add("r", order.ReduceOnly ?? false);
 
                 var orderTypeParameters = new ParameterCollection();
-                var limitParameters = new ParameterCollection();
-                limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
-                orderTypeParameters.Add("limit", limitParameters);
+                //var limitParameters = new ParameterCollection();
+                //limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                //orderTypeParameters.Add("limit", limitParameters);
+                if (order.OrderType is OrderType.Limit or OrderType.Market)
+                {
+                    var limitParameters = new ParameterCollection();
+                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    orderTypeParameters.Add("limit", limitParameters);
+                }
+                else
+                {
+                    if (order.TriggerPrice == null)
+                        throw new ArgumentNullException(nameof(order.TriggerPrice), "Stop order should have a trigger price");
+
+                    if (order.TpSlType == null)
+                        throw new ArgumentNullException(nameof(order.TpSlType), "Stop order should have a TpSlType");
+
+                    var triggerParameters = new ParameterCollection();
+                    triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
+                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
+                    orderTypeParameters.Add("trigger", triggerParameters);
+                }
+
                 orderParameters.Add("t", orderTypeParameters);
 
                 orderParameters.AddOptional("c", order.ClientOrderId);
