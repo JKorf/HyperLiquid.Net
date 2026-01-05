@@ -27,7 +27,8 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
                 x.Data.Subscription.TryGetValue("coin", out var coin);
                 x.Data.Subscription.TryGetValue("interval", out var interval);
                 x.Data.Subscription.TryGetValue("user", out var user);
-                return type?.ToString() + coin?.ToString() + interval?.ToString() + user?.ToString();
+                x.Data.Subscription.TryGetValue("nSigFigs", out var nSigFigs);
+                return type?.ToString() + coin?.ToString() + interval?.ToString() + user?.ToString() + nSigFigs;
             });
             AddTopicMapping<HyperLiquidSocketUpdate<string>>(x =>
             {
