@@ -182,13 +182,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOrderBook>>((receiveTime, originalData, invocation, data) =>
             {
+                UpdateTimeOffset(data.Data.Timestamp);
+
                 data.Data.Symbol = symbol;
                 onMessage(
                     new DataEvent<HyperLiquidOrderBook>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.Timestamp)
+                        .WithDataTimestamp(data.Data.Timestamp, GetTimeOffset())
                     );
             });
 
@@ -220,6 +222,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTrade[]>>((receiveTime, originalData, invocation, data) =>
             {
+                var timestamp = data.Data.Max(x => x.Timestamp);
+                if (invocation != 1)
+                    UpdateTimeOffset(timestamp);
+
                 foreach (var trade in data.Data)
                     trade.Symbol = symbol;
 
@@ -228,7 +234,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                         .WithUpdateType(invocation == 1 ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.Max(x => x.Timestamp))
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 
@@ -256,6 +262,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidBookTicker>>((receiveTime, originalData, invocation, data) =>
             {
+                UpdateTimeOffset(data.Data.Timestamp);
+
                 data.Data.Symbol = symbol;
 
                 onMessage(
@@ -263,7 +271,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithSymbol(symbol)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.Timestamp)
+                        .WithDataTimestamp(data.Data.Timestamp, GetTimeOffset())
                     );
             });
 
@@ -289,6 +297,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOrderStatus[]>>((receiveTime, originalData, invocation, data) =>
             {
+                var timestamp = data.Data.Max(x => x.Timestamp);
+                if (invocation != 1)
+                    UpdateTimeOffset(timestamp);
+
                 foreach (var order in data.Data)
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.Order.ExchangeSymbol))
@@ -311,7 +323,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     new DataEvent<HyperLiquidOrderStatus[]>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.Max(x => x.Timestamp))
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 
@@ -360,11 +372,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserUpdate>>((receiveTime, originalData, invocation, data) =>
             {
+                UpdateTimeOffset(data.Data.ServerTime);
+
                 onMessage(
                     new DataEvent<HyperLiquidUserUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
                         .WithUpdateType(SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.ServerTime)
+                        .WithDataTimestamp(data.Data.ServerTime, GetTimeOffset())
                     );
             });
 
@@ -391,6 +405,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserTradeUpdate>>((receiveTime, originalData, invocation, data) =>
             {
+                DateTime? timestamp = data.Data.Trades.Length != 0 ? data.Data.Trades.Max(x => x.Timestamp) : null;
+                if (!data.Data.IsSnapshot && timestamp != null)
+                    UpdateTimeOffset(timestamp!.Value);
+
                 foreach (var order in data.Data.Trades)
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
@@ -413,7 +431,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     new DataEvent<HyperLiquidUserTrade[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
-                        .WithDataTimestamp(data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null)
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 
@@ -516,11 +534,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     }
                 }
 
+                DateTime? timestamp = data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null;
+                if (timestamp != null)
+                    UpdateTimeOffset(timestamp.Value);
+
                 onMessage(
                     new DataEvent<HyperLiquidTwapStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
-                        .WithDataTimestamp(data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null)
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 
@@ -547,6 +569,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTwapOrderUpdate>>((receiveTime, originalData, invocation, data) =>
             {
+                DateTime? timestamp = data.Data.History.Length != 0 ? data.Data.History.Max(x => x.Timestamp) : null;
+                if (!data.Data.IsSnapshot && timestamp != null)
+                    UpdateTimeOffset(timestamp!.Value);
+
                 foreach (var order in data.Data.History)
                 {
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.TwapInfo.ExchangeSymbol))
@@ -569,7 +595,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     new DataEvent<HyperLiquidTwapOrderStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.History, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
-                        .WithDataTimestamp(data.Data.History.Any() ? data.Data.History.Max(x => x.Timestamp) : null)
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 
@@ -664,9 +690,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (address != null && (!address.StartsWith("0x") || address.Length != 42))
                 throw new ArgumentException("Address should be in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000");
         }
-
-        /// <inheritdoc />
-        protected override Task<Query?> GetAuthenticationRequestAsync(SocketConnection connection) => Task.FromResult<Query?>(null);
 
         /// <inheritdoc />
         public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverDate = null)

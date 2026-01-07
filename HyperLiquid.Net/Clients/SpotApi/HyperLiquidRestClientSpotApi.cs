@@ -14,8 +14,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
     internal partial class HyperLiquidRestClientSpotApi : HyperLiquidRestClientApi, IHyperLiquidRestClientSpotApi
     {
         #region fields 
-        internal static TimeSyncState _timeSyncState = new TimeSyncState("Spot Api");
-
         internal new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
         #endregion
 
@@ -40,12 +38,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         /// <inheritdoc />
         protected override Task<WebCallResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
-
-        /// <inheritdoc />
-        public override TimeSyncInfo? GetTimeSyncInfo() => null;
-
-        /// <inheritdoc />
-        public override TimeSpan? GetTimeOffset() => _timeSyncState.TimeOffset;
 
         /// <inheritdoc />
         public IHyperLiquidRestClientSpotApiShared SharedClient => this;

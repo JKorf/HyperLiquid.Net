@@ -90,9 +90,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override Task<WebCallResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
 
         /// <inheritdoc />
-        public override TimeSyncInfo? GetTimeSyncInfo() => null;
-
-        /// <inheritdoc />
         public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverDate = null)
             => HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode, deliverDate);
 

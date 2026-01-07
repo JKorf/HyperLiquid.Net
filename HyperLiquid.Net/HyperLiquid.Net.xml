@@ -25,9 +25,6 @@
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.GetServerTimestampAsync">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.GetTimeSyncInfo">
-            <inheritdoc />
-        </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
             <inheritdoc />
         </member>
@@ -149,9 +146,6 @@
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.GetListenerIdentifier(CryptoExchange.Net.Interfaces.IMessageAccessor)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.GetAuthenticationRequestAsync(CryptoExchange.Net.Sockets.Default.SocketConnection)">
-            <inheritdoc />
-        </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
             <inheritdoc />
         </member>
@@ -168,12 +162,6 @@
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApi.GetServerTimestampAsync">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApi.GetTimeSyncInfo">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApi.GetTimeOffset">
             <inheritdoc />
         </member>
         <member name="P:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApi.SharedClient">
@@ -348,12 +336,6 @@
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApi.GetServerTimestampAsync">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApi.GetTimeSyncInfo">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApi.GetTimeOffset">
             <inheritdoc />
         </member>
         <member name="P:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApi.SharedClient">

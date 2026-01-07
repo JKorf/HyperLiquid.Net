@@ -93,11 +93,15 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserFundingUpdate>>((receiveTime, originalData, invocation, data) =>
             {
+                DateTime? timestamp = data.Data.Fundings.Length != 0 ? data.Data.Fundings.Max(x => x.Timestamp) : null;
+                if (!data.Data.IsSnapshot && timestamp != null)
+                    UpdateTimeOffset(timestamp!.Value);
+
                 onMessage(
                     new DataEvent<HyperLiquidUserFunding[]>(HyperLiquidExchange.ExchangeName, data.Data.Fundings, receiveTime, originalData)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.Fundings.Any() ? data.Data.Fundings.Max(x => x.Timestamp) : null)
+                        .WithDataTimestamp(timestamp, GetTimeOffset())
                     );
             });
 

@@ -87,7 +87,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
 
         private void HandleUpdate(DataEvent<HyperLiquidOrderBook> @event)
         {
-            SetInitialOrderBook(@event.Data.Timestamp.Ticks, @event.Data.Levels.Bids, @event.Data.Levels.Asks);
+            SetInitialOrderBook(@event.Data.Timestamp.Ticks, @event.Data.Levels.Bids, @event.Data.Levels.Asks, @event.DataTime, @event.DataTimeLocal);
         }
 
         /// <inheritdoc />
