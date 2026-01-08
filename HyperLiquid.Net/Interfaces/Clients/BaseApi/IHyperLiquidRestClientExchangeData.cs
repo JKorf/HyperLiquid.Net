@@ -17,8 +17,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// Get mid prices for all assets, includes both Spot and Futures symbols
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /></para>
         /// </summary>
+        /// <param name="dex">Filter by DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(CancellationToken ct = default);
+        Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get order book

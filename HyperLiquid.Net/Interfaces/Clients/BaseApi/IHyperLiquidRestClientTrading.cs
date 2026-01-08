@@ -18,16 +18,18 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /></para>
         /// </summary>
         /// <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidOpenOrder[]>> GetOpenOrdersAsync(string? address = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidOpenOrder[]>> GetOpenOrdersAsync(string? address = null, string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get open orders including with additional info, will return both Spot and Futures orders
         /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /></para>
         /// </summary>
         /// <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidOrder[]>> GetOpenOrdersExtendedAsync(string? address = null, CancellationToken ct = default);
+        Task<WebCallResult<HyperLiquidOrder[]>> GetOpenOrdersExtendedAsync(string? address = null, string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user trades, will return both Spot and Futures orders

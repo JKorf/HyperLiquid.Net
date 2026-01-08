@@ -145,7 +145,7 @@ namespace HyperLiquid.Net
                 props.Add(new Dictionary<string, object>
                 {
                     { "name", item.Key },
-                    { "type", item.Key == "builder" ? "address" : _typeMapping[item.Value.GetType()] }
+                    { "type", (item.Key == "builder" || item.Key == "user") ? "address" : _typeMapping[item.Value.GetType()] }
                 });
             }
 

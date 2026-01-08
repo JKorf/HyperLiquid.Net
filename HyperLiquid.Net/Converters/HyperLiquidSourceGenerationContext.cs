@@ -20,6 +20,9 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidSubAccount[]))]
     [JsonSerializable(typeof(HyperLiquidUserRole))]
     [JsonSerializable(typeof(HyperLiquidResponse))]
+    [JsonSerializable(typeof(HyperLiquidPerpDex[]))]
+    [JsonSerializable(typeof(HyperLiquidPerpDexLimit))]
+    [JsonSerializable(typeof(HyperLiquidPerpDexStatus))]
 
     // End manual defined attributes
 

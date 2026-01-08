@@ -18,7 +18,7 @@ namespace HyperLiquid.Net.Utils
     {
         private static Dictionary<string, HyperLiquidAsset[]> _spotAssetInfo = new Dictionary<string, HyperLiquidAsset[]>();
         private static Dictionary<string, HyperLiquidSymbol[]> _spotSymbolInfo = new Dictionary<string, HyperLiquidSymbol[]>();
-        private static Dictionary<string, HyperLiquidFuturesSymbol[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesSymbol[]>();
+        private static Dictionary<string, HyperLiquidFuturesDexInfo[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesDexInfo[]>();
 
         private static Dictionary<string, DateTime> _lastSpotUpdateTime = new Dictionary<string, DateTime>();
         private static Dictionary<string, DateTime> _lastFuturesUpdateTime = new Dictionary<string, DateTime>();
@@ -43,12 +43,13 @@ namespace HyperLiquid.Net.Utils
                 if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
                     return CallResult.SuccessResult;
 
-                var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false);
+                var symbolInfo = await client.FuturesApi.ExchangeData.GetExchangeInfoAllDexesAsync().ConfigureAwait(false);
                 if (!symbolInfo)
                     return symbolInfo.AsDataless();
 
                 _futuresSymbolInfo[envName] = symbolInfo.Data;
                 _lastFuturesUpdateTime[envName] = DateTime.UtcNow;
+
                 return CallResult.SuccessResult;
             }
             finally
@@ -119,11 +120,30 @@ namespace HyperLiquid.Net.Utils
                     return new CallResult<int>(update.Error!);
 
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
-                if (symbol == null)
-                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.Index);
+                var symbolSplit = symbolName.Split(':');
+                if (symbolSplit.Length == 2)
+                {
+                    // DEX
+                    var dexName = symbolSplit[0];
+                    var dex = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(dexName, StringComparison.InvariantCultureIgnoreCase));
+                    if (dex == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
+
+                    var symbol = dex.Symbols.SingleOrDefault(x => x.Name == symbolName);
+                    if (symbol == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                    return new CallResult<int>(100000 + dex.Index * 10000 + symbol.Index);
+                }
+                else
+                {
+                    var symbol = _futuresSymbolInfo[envName][0].Symbols.SingleOrDefault(x => x.Name == symbolName);
+                    if (symbol == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                    return new CallResult<int>(symbol.Index);
+                }
             }
         }
 
@@ -158,11 +178,31 @@ namespace HyperLiquid.Net.Utils
                     return new CallResult<int>(update.Error!);
 
                 var envName = ((HyperLiquidRestOptions)client.ClientOptions).Environment.Name;
-                var symbol = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
-                if (symbol == null)
-                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.QuantityDecimals);
+                var symbolSplit = symbolName.Split(':');
+                if (symbolSplit.Length == 2)
+                {
+                    // DEX
+                    var dexName = symbolSplit[0];
+                    var dex = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(dexName, StringComparison.InvariantCultureIgnoreCase));
+                    if (dex == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
+
+                    var symbol = dex.Symbols.SingleOrDefault(x => x.Name == symbolName);
+                    if (symbol == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                    return new CallResult<int>(symbol.QuantityDecimals);
+                }
+                else
+                {
+
+                    var symbol = _futuresSymbolInfo[envName][0].Symbols.SingleOrDefault(x => x.Name == symbolName);
+                    if (symbol == null)
+                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                    return new CallResult<int>(symbol.QuantityDecimals);
+                }
             }
         }
 

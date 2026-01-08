@@ -31,7 +31,7 @@
         <member name="T:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientExchangeData">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientExchangeData.GetPricesAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientExchangeData.GetPricesAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientExchangeData.GetOrderBookAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
@@ -43,10 +43,10 @@
         <member name="T:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOpenOrdersAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOpenOrdersAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOpenOrdersExtendedAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetOpenOrdersExtendedAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientTrading.GetUserTradesAsync(System.String,System.Threading.CancellationToken)">
@@ -170,7 +170,7 @@
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetFundingHistoryAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
@@ -179,10 +179,16 @@
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetUserSymbolAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.GetHip3DexAbstractionAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiAccount.ToggleHip3DexAbstractionAsync(System.Boolean,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAndTickersAsync(System.Threading.CancellationToken)">
@@ -191,7 +197,13 @@
         <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetFundingRateHistoryAsync(System.String,System.DateTime,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetSymbolsAtMaxOpenInterestAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetSymbolsAtMaxOpenInterestAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketLimitsAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketStatusAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:HyperLiquid.Net.Clients.FuturesApi.HyperLiquidRestClientFuturesApiTrading">
@@ -748,6 +760,16 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidAssetValue">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidAssetValueArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidAuthResponseHyperLiquidCancelResult">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -1213,6 +1235,26 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidPerpDex">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidPerpDexArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidPerpDexLimit">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidPerpDexStatus">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidPosition">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -1319,6 +1361,16 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubAccountArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubDeployer">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidSubDeployerArray">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -2279,11 +2331,12 @@
             HyperLiquid exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetPricesAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetPricesAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get mid prices for all assets, includes both Spot and Futures symbols
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /></para>
             </summary>
+            <param name="dex">Filter by DEX</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetOrderBookAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
@@ -2312,20 +2365,22 @@
             HyperLiquid trading endpoints, placing and managing orders.
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get open orders, will return both Spot and Futures orders
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /></para>
             </summary>
             <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersExtendedAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersExtendedAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get open orders including with additional info, will return both Spot and Futures orders
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /></para>
             </summary>
             <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetUserTradesAsync(System.String,System.Threading.CancellationToken)">
@@ -2670,12 +2725,13 @@
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientAccount"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get account info, balances and open positions
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /></para>
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+            <param name="dex">The DEX to request data for, leave null for default perp DEX</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetFundingHistoryAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
@@ -2697,15 +2753,50 @@
             <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
         </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetHip3DexAbstractionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get whether HIP-3 DEX abstraction enabled
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-hip-3-dex-abstraction-state" /></para>
+            </summary>
+            <param name="user"></param>
+            <param name="ct"></param>
+            <returns></returns>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.ToggleHip3DexAbstractionAsync(System.Boolean,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Toggle HIP-3 DEX abstraction. If set, actions on HIP-3 perps will automatically transfer collateral from validator-operated USDC perps balance for HIP-3 DEXs where USDC is the collateral token, and spot otherwise. 
+            When HIP-3 DEX abstraction is active, collateral is returned to the same source (validator-operated USDC perps or spot balance) when released from positions or open orders.
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#enable-hip-3-dex-abstraction" /></para>
+            </summary>
+            <param name="enabled"></param>
+            <param name="address"></param>
+            <param name="ct"></param>
+            <returns></returns>
+        </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData">
             <summary>
             HyperLiquid futures exchange data endpoints. Exchange data includes market data (tickers, order books, etc) and system status.
             </summary>
             <see cref="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData"/>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Get all Perp dexes
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-all-perpetual-dexs" /></para>
+            </summary>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get exchange info
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
+            </summary>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAllDexesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Get exchange info for all perp dexes
             <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
             </summary>
             <param name="ct">Cancellation token</param>
@@ -2727,10 +2818,28 @@
             <param name="endTime">Filter by end time</param>
             <param name="ct">Cancellation token</param>
         </member>
-        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetSymbolsAtMaxOpenInterestAsync(System.Threading.CancellationToken)">
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetSymbolsAtMaxOpenInterestAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get futures symbols at max open interest
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#query-perps-at-open-interest-caps" /></para>
             </summary>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketLimitsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get Perp DEX market limits
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-builder-deployed-perp-market-limits" /></para>
+            </summary>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketStatusAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get Perp DEX market status
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#get-perp-market-status" /></para>
+            </summary>
+            <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiShared">
@@ -4080,6 +4189,26 @@
             Since open
             </summary>
         </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesDexInfo">
+            <summary>
+            Perp dex
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesDexInfo.Symbols">
+            <summary>
+            Symbols
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesDexInfo.Name">
+            <summary>
+            Dex name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesDexInfo.Index">
+            <summary>
+            Index of the DEX
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidFuturesExchangeInfo">
             <summary>
             Futures exchange info
@@ -4718,6 +4847,126 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidOrderStatus.Order">
             <summary>
             Order info
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex">
+            <summary>
+            Perp DEX info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.FullName">
+            <summary>
+            Full name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.Deployer">
+            <summary>
+            Deployer address
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.OracleUpdater">
+            <summary>
+            Oracle updater address
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.FeeRecipient">
+            <summary>
+            Fee recipient address
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.AssetToStreamingOpenInterestCap">
+            <summary>
+            Asset to streaming open interest cap
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.SubDeployers">
+            <summary>
+            Sub deployers
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.DeployerFeeScale">
+            <summary>
+            Deployer fee scale
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.LastDeployerFeeScaleChangeTime">
+            <summary>
+            Last deployer fee scale change time
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDex.AssetToFundingMultiplier">
+            <summary>
+            Asset to funding multiplier
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidSubDeployer">
+            <summary>
+            Sub deployer info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubDeployer.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidSubDeployer.Addresses">
+            <summary>
+            Addresses
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidAssetValue">
+            <summary>
+            Asset value mapping
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidAssetValue.Asset">
+            <summary>
+            Asset
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidAssetValue.Value">
+            <summary>
+            Cap
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexLimit">
+            <summary>
+            Perp DEX market limits
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexLimit.TotalOpenInterestCap">
+            <summary>
+            Total open interest cap
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexLimit.OpenInterestSizeCapPerPerp">
+            <summary>
+            Open interest size cap per perp
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexLimit.MaxTransferNotional">
+            <summary>
+            Max transfer notional value
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexLimit.OpenInterestCaps">
+            <summary>
+            Open interest cap per symbol
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexStatus">
+            <summary>
+            Perp DEX market status
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidPerpDexStatus.TotalNetDeposit">
+            <summary>
+            Total net deposit
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidRateLimit">

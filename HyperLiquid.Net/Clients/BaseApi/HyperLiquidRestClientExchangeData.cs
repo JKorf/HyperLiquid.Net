@@ -27,12 +27,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Prices
 
         /// <inheritdoc />
-        public async Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "allMids" }
             };
+            parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<Dictionary<string, decimal>>(request, parameters, ct).ConfigureAwait(false);
             

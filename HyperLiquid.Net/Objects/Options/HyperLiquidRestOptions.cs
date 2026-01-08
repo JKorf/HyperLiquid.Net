@@ -13,8 +13,7 @@ namespace HyperLiquid.Net.Objects.Options
         /// </summary>
         internal static HyperLiquidRestOptions Default { get; set; } = new HyperLiquidRestOptions()
         {
-            Environment = HyperLiquidEnvironment.Live,
-            AutoTimestamp = true
+            Environment = HyperLiquidEnvironment.Live
         };
 
         /// <summary>

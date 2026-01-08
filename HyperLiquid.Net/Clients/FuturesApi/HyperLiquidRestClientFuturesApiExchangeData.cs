@@ -10,6 +10,7 @@ using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using CryptoExchange.Net.Objects.Errors;
 using System.Net;
+using System.Collections.Generic;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
@@ -24,15 +25,77 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             _baseClient = baseClient;
         }
 
+        public async Task<WebCallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "perpDexs" }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidPerpDex[]>(request, parameters, ct).ConfigureAwait(false);
+
+            return result;
+        }
+
+        public async Task<WebCallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "allPerpMetas" }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo[]>(request, parameters, ct).ConfigureAwait(false);
+
+            for (var j = 0; j < result.Data.Length; j++)
+            {
+                var data = result.Data[j];
+                for (var i = 0; i < data.Symbols.Length; i++)
+                {
+                    var symbol = data.Symbols.ElementAt(i);
+                    symbol.Index = i;
+                    if (symbol.MarginTableId < 50)
+                    {
+                        symbol.MarginTable = new HyperLiquidMarginTableEntry
+                        {
+                            MarginTiers = [
+                                new HyperLiquidMarginTableTier {
+                                LowerBound = 0,
+                                MaxLeverage = symbol.MarginTableId
+                            }
+                            ]
+                        };
+                    }
+                    else
+                    {
+                        symbol.MarginTable = data.MarginTables.Single(x => x.Id == symbol.MarginTableId).Table;
+                    }
+                }
+            }
+
+            int index = 0;
+            return result.As(result.Data.Select(x =>
+            {
+                var symbolName = x.Symbols.FirstOrDefault()?.Name;
+                return new HyperLiquidFuturesDexInfo
+                {
+                    Name = symbolName?.Contains(':') == true ? symbolName.Split(':')[0] : "default",
+                    Symbols = x.Symbols,
+                    Index = index++
+                };
+            }).ToArray());
+        }
+
         #region Get Futures Exchange Info
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "meta" }
             };
+            parameters.AddOptional("dex", dex);
+
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo>(request, parameters, ct).ConfigureAwait(false);
             if (!result)
@@ -117,17 +180,47 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Symbols At Max Open Interest
 
         /// <inheritdoc />
-        public async Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default)
         {
-            var innerParameters = new ParameterCollection();
-
             var parameters = new ParameterCollection()
             {
                 { "type", "perpsAtOpenInterestCap" },
             };
-
+            parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<string[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Perp DEX Market Limits
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "perpDexLimits" },
+            };
+            parameters.AddOptional("dex", dex);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            return await _baseClient.SendAsync<HyperLiquidPerpDexLimit>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Perp Market Status
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "perpDexStatus" },
+            };
+            parameters.AddOptional("dex", dex);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            return await _baseClient.SendAsync<HyperLiquidPerpDexStatus>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion
