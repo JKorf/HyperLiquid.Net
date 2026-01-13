@@ -404,6 +404,9 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.GetUserRoleAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.GetExtraAgentsAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiExchangeData">
             <inheritdoc />
         </member>
@@ -1476,6 +1479,16 @@
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidTwapStatusArray">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserAgent">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Converters.HyperLiquidSourceGenerationContext.HyperLiquidUserAgentArray">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -3187,6 +3200,13 @@
             Get user role
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetExtraAgentsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get extra agents associated with a user
+            </summary>
+            <param name="address">Address to request agents for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData">
@@ -5282,6 +5302,26 @@
         <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidTwapStatus.Timestamp">
             <summary>
             Timestamp
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidUserAgent">
+            <summary>
+            Agent info
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserAgent.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserAgent.Address">
+            <summary>
+            Address
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Models.HyperLiquidUserAgent.ValidUntil">
+            <summary>
+            Name
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Models.HyperLiquidUserFunding">

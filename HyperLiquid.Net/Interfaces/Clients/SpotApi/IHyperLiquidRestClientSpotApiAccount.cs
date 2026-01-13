@@ -164,5 +164,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get extra agents associated with a user
+        /// </summary>
+        /// <param name="address">Address to request agents for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default);
     }
 }

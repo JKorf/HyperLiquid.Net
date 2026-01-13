@@ -1,0 +1,10 @@
+POST
+/info
+false
+[
+    {
+        "name": "",
+        "address": "",
+        "validUntil": 1736927066501
+    }
+]

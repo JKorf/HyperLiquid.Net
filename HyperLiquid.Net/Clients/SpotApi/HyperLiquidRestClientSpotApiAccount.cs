@@ -380,5 +380,21 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Get Extra Agents
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "extraAgents" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
+            return await _baseClient.SendAsync<HyperLiquidUserAgent[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
     }
 }
