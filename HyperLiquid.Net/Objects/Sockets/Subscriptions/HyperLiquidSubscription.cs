@@ -37,7 +37,6 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             _parameters = parameters ?? new();
 
             var listenId = (alternativeTopic ?? topic) + listenSuffix;
-            MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(listenId, DoHandleMessage);
             MessageRouter = MessageRouter.CreateWithOptionalTopicFilter<HyperLiquidSocketUpdate<T>>(alternativeTopic ?? topic, listenSuffix, DoHandleMessage);
         }
 

@@ -13,9 +13,6 @@
         <member name="P:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.ExchangeName">
             <inheritdoc />
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.CreateAccessor">
-            <inheritdoc />
-        </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidRestClientApi.CreateSerializer">
             <inheritdoc />
         </member>
@@ -95,9 +92,6 @@
             ctor
             </summary>
         </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.CreateAccessor(System.Net.WebSockets.WebSocketMessageType)">
-            <inheritdoc />
-        </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.CreateSerializer">
             <inheritdoc />
         </member>
@@ -141,9 +135,6 @@
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.SubscribeToTwapOrderUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTwapOrderStatus[]}},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.GetListenerIdentifier(CryptoExchange.Net.Interfaces.IMessageAccessor)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.BaseApi.HyperLiquidSocketClientApi.FormatSymbol(System.String,System.String,CryptoExchange.Net.SharedApis.TradingMode,System.Nullable{System.DateTime})">
@@ -2215,6 +2206,11 @@
         <member name="T:HyperLiquid.Net.HyperLiquidExchange">
             <summary>
             HyperLiquid exchange information and configuration
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.HyperLiquidExchange.Metadata">
+            <summary>
+            Platform metadata
             </summary>
         </member>
         <member name="P:HyperLiquid.Net.HyperLiquidExchange.ExchangeName">

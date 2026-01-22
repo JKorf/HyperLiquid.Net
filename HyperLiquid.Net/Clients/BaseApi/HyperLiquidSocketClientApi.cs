@@ -39,18 +39,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
     internal partial class HyperLiquidSocketClientApi : SocketApiClient, IHyperLiquidSocketClientApi
     {
         #region fields
-        private static readonly MessagePath _channelPath = MessagePath.Get().Property("channel");
-        private static readonly MessagePath _subscriptionTopicPath = MessagePath.Get().Property("data").Property("subscription").Property("type");
-        private static readonly MessagePath _subscriptionCoinPath = MessagePath.Get().Property("data").Property("subscription").Property("coin");
-        private static readonly MessagePath _subscriptionIntervalPath = MessagePath.Get().Property("data").Property("subscription").Property("interval");
-        private static readonly MessagePath _subscriptionUserPath = MessagePath.Get().Property("data").Property("subscription").Property("user");
-        
-        private static readonly MessagePath _dataPath = MessagePath.Get().Property("data");
-        private static readonly MessagePath _symbolPath = MessagePath.Get().Property("data").Property("s");
-        private static readonly MessagePath _itemSymbolPath = MessagePath.Get().Property("data").Index(0).Property("coin");
-        private static readonly MessagePath _bookSymbolPath = MessagePath.Get().Property("data").Property("coin");
-        private static readonly MessagePath _klineIntervalPath = MessagePath.Get().Property("data").Property("i");
-
         protected IHyperLiquidRestClient _restClient;
 
         protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
@@ -90,8 +78,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
         #endregion
 
-        /// <inheritdoc />
-        protected override IByteMessageAccessor CreateAccessor(WebSocketMessageType type) => new SystemTextJsonByteMessageAccessor(HyperLiquidExchange._serializerContext);
         /// <inheritdoc />
         protected override IMessageSerializer CreateSerializer() => new SystemTextJsonMessageSerializer(HyperLiquidExchange._serializerContext);
         /// <inheritdoc />
@@ -606,83 +592,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
             },
             internalHandler, false);
             return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        public override string? GetListenerIdentifier(IMessageAccessor message)
-        {
-            var channel = message.GetValue<string>(_channelPath);
-            if (channel == "subscriptionResponse")
-            {
-                var type = message.GetValue<string>(_subscriptionTopicPath);
-                var coin = message.GetValue<string?>(_subscriptionCoinPath);
-                var interval = message.GetValue<string?>(_subscriptionIntervalPath);
-                var user = message.GetValue<string?>(_subscriptionUserPath);
-                var id = channel + type;
-                if (coin != null)
-                    id += coin;
-                if (interval != null)
-                    id += interval;
-                if (user != null)
-                    id += user;
-
-                return id;
-            }
-
-            if (channel == "error")
-            {
-                var errorMessage = message.GetValue<string?>(_dataPath);
-                if (errorMessage == null)
-                    return null;
-
-                if (errorMessage.StartsWith("Invalid subscription")
-                    || errorMessage.StartsWith("Already subscribed")
-                    || errorMessage.StartsWith("Already unsubscribed"))
-                {
-                    // error message format: "Invalid subscription {\"type\":\"candle\",\"interval\":\"1d\",\"coin\":\"TST2\"}"
-                    var json = errorMessage.Replace("Invalid subscription ", "")
-                                           .Replace("Already subscribed: ", "")
-                                           .Replace("Already unsubscribed: ", "");
-                    JsonDocument jsonDoc;
-                    try
-                    {
-                        jsonDoc = JsonDocument.Parse(json);
-                    }
-                    catch (Exception)
-                    {
-                        return channel;
-                    }
-
-                    var type = jsonDoc.RootElement.GetProperty("type").GetString();
-                    var coin = jsonDoc.RootElement.TryGetProperty("coin", out var coinProp) ? coinProp.GetString() : null;
-                    var interval = jsonDoc.RootElement.TryGetProperty("interval", out var intervalProp) ? intervalProp.GetString() : null;
-                    var user = jsonDoc.RootElement.TryGetProperty("user", out var userProp) ? userProp.GetString() : null;
-                    var id = "error" + type;
-                    if (coin != null)
-                        id += coin;
-                    if (interval != null)
-                        id += interval;
-                    if (user != null)
-                        id += user;
-
-                    return id;
-                }
-            }
-            
-            if (channel == "trades")
-                return channel + message.GetValue<string>(_itemSymbolPath);
-
-            if (channel == "l2Book" || channel == "activeSpotAssetCtx" || channel == "activeAssetCtx" || channel == "activeAssetData" || channel == "bbo")
-                return channel + message.GetValue<string>(_bookSymbolPath);
-
-            if (channel == "candle")
-                return channel + message.GetValue<string>(_symbolPath) + EnumConverter.ParseString<KlineInterval>(message.GetValue<string>(_klineIntervalPath)!);
-
-            var symbol = message.GetValue<string>(_symbolPath);
-            if (symbol != null)
-                return channel + symbol;
-
-            return channel;
         }
 
         private void ValidateAddress(string? address)

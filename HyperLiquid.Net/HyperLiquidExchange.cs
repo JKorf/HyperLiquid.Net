@@ -19,6 +19,19 @@ namespace HyperLiquid.Net
     public static class HyperLiquidExchange
     {
         /// <summary>
+        /// Platform metadata
+        /// </summary>
+        public static PlatformInfo Metadata { get; } = new PlatformInfo(
+                "HyperLiquid",
+                "HyperLiquid",
+                "https://raw.githubusercontent.com/JKorf/HyperLiquid.Net/master/HyperLiquid.Net/Icon/icon.png",
+                "https://app.hyperliquid.xyz/",
+                ["https://hyperliquid.gitbook.io/hyperliquid-docs"],
+                PlatformType.CryptoCurrencyExchange,
+                CentralizationType.Decentralized
+                );
+
+        /// <summary>
         /// Exchange name
         /// </summary>
         public static string ExchangeName => "HyperLiquid";

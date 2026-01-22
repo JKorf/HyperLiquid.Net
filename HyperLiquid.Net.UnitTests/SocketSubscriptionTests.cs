@@ -15,8 +15,7 @@ namespace HyperLiquid.Net.UnitTests
     [TestFixture]
     public class SocketSubscriptionTests
     {
-        [TestCase(false)]
-        [TestCase(true)]
+        [Test]
         public async Task ValidateConcurrentSpotSubscriptions(bool newDeserialization)
         {
             var logger = new LoggerFactory();
@@ -25,8 +24,7 @@ namespace HyperLiquid.Net.UnitTests
             var client = new HyperLiquidSocketClient(Options.Create(new HyperLiquidSocketOptions
             {
                 OutputOriginalData = true,
-                Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"),
-                UseUpdatedDeserialization = newDeserialization
+                Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz")
             }), logger);
 
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
@@ -36,9 +34,8 @@ namespace HyperLiquid.Net.UnitTests
                 "Concurrent");
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public async Task ValidateSpotSubscriptions(bool useUpdatedDeserialization)
+        [Test]
+        public async Task ValidateSpotSubscriptions()
         {
             var loggerFactory = new LoggerFactory();
             loggerFactory.AddProvider(new TraceLoggerProvider());
@@ -46,7 +43,6 @@ namespace HyperLiquid.Net.UnitTests
             {
                 OutputOriginalData = true,
                 Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"),
-                UseUpdatedDeserialization = useUpdatedDeserialization,
                 ApiCredentials = new ApiCredentials("MTIz", "MTIz")
             }), loggerFactory);
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");

@@ -57,7 +57,7 @@ namespace HyperLiquid.Net.UnitTests
             await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync(default), false);
             await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetExchangeInfoAsync(default), false);
             await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetAssetInfoAsync("0x6d1e7cde53ba9467b783cb7c530ce054", default), false);
-            await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetPricesAsync(default), false);
+            await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetPricesAsync(default, default), false);
             await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetOrderBookAsync("HYPE/USDC", default, default, default), false);
             await RunAndCheckResult(client => client.SpotApi.ExchangeData.GetKlinesAsync("HYPE/USDC", Enums.KlineInterval.OneDay, DateTime.UtcNow.AddDays(-3), DateTime.UtcNow, default), false);
         }
@@ -65,8 +65,8 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task TestSpotTrading()
         {
-            await RunAndCheckResult(client => client.SpotApi.Trading.GetOpenOrdersAsync(default, default), true);
-            await RunAndCheckResult(client => client.SpotApi.Trading.GetOpenOrdersExtendedAsync(default, default), true);
+            await RunAndCheckResult(client => client.SpotApi.Trading.GetOpenOrdersAsync(default, default, default), true);
+            await RunAndCheckResult(client => client.SpotApi.Trading.GetOpenOrdersExtendedAsync(default, default, default), true);
             await RunAndCheckResult(client => client.SpotApi.Trading.GetUserTradesAsync(default, default), true);
             await RunAndCheckResult(client => client.SpotApi.Trading.GetUserTradesByTimeAsync(DateTime.UtcNow.AddDays(-30), default, default, default, default), true);
             await RunAndCheckResult(client => client.SpotApi.Trading.GetOrderHistoryAsync(default, default), true);
@@ -75,17 +75,17 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task TestFuturesAccount()
         {
-            await RunAndCheckResult(client => client.FuturesApi.Account.GetAccountInfoAsync(default, default), true);
+            await RunAndCheckResult(client => client.FuturesApi.Account.GetAccountInfoAsync(default, default, default), true);
             await RunAndCheckResult(client => client.FuturesApi.Account.GetFundingHistoryAsync(DateTime.UtcNow.AddDays(-10), default, default, default), true);
         }
 
         [Test]
         public async Task TestFuturesExchangeData()
         {
-            await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetExchangeInfoAsync(default), false);
+            await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetExchangeInfoAsync(default, default), false);
             await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetExchangeInfoAndTickersAsync(default), false);
             await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetFundingRateHistoryAsync("ETH", DateTime.UtcNow.AddDays(-3), default, default), false);
-            await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetSymbolsAtMaxOpenInterestAsync(default), false);
+            await RunAndCheckResult(client => client.FuturesApi.ExchangeData.GetSymbolsAtMaxOpenInterestAsync(default, default), false);
         }
 
         [Test]

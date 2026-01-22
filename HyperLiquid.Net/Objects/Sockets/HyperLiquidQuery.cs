@@ -22,23 +22,10 @@ namespace HyperLiquid.Net.Objects.Sockets
             int weight = 1) : base(request, authenticated, weight)
         {
             _client = client;
-            MessageMatcher = MessageMatcher.Create<HyperLiquidSocketUpdate<T>>(["subscriptionResponse" + listenId, "error" + listenId], HandleMessage);
             MessageRouter = MessageRouter.Create([
                 MessageRoute<HyperLiquidSocketUpdate<T>>.CreateWithTopicFilter("subscriptionResponse", listenId, HandleMessage),
                 MessageRoute<HyperLiquidSocketUpdate<string>>.CreateWithTopicFilter("error", listenId, HandleError)
                 ]);
-        }
-
-        public override CallResult<object> Deserialize(IMessageAccessor message, Type type)
-        {
-            if (message.GetValue<string>(MessagePath.Get().Property("channel"))?.Equals("error") == true)
-            {
-                // Error is set, the actual model doesn't matter
-                _errorString = message.GetValue<string>(MessagePath.Get().Property("data"));
-                return new CallResult<object>(new HyperLiquidSocketUpdate<T>());
-            }
-
-            return base.Deserialize(message, type);
         }
 
         public CallResult<HyperLiquidSocketUpdate<string>> HandleError(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<string> message)

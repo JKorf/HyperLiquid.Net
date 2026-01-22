@@ -19,7 +19,7 @@ namespace HyperLiquid.Net.UnitTests
         {
         }
 
-        public override HyperLiquidSocketClient GetClient(ILoggerFactory loggerFactory, bool useUpdatedDeserialization)
+        public override HyperLiquidSocketClient GetClient(ILoggerFactory loggerFactory)
         {
             var key = Environment.GetEnvironmentVariable("APIKEY");
             var sec = Environment.GetEnvironmentVariable("APISECRET");
@@ -28,17 +28,15 @@ namespace HyperLiquid.Net.UnitTests
             return new HyperLiquidSocketClient(Options.Create(new HyperLiquidSocketOptions
             {
                 OutputOriginalData = true,
-                UseUpdatedDeserialization = useUpdatedDeserialization,
                 ApiCredentials = Authenticated ? new CryptoExchange.Net.Authentication.ApiCredentials(key, sec) : null
             }), loggerFactory);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task TestSubscriptions(bool useUpdatedDeserialization)
+        [Test]
+        public async Task TestSubscriptions()
         {
-            await RunAndCheckUpdate<HyperLiquidTicker>(useUpdatedDeserialization, (client, updateHandler) => client.SpotApi.SubscribeToUserUpdatesAsync(default , default, default), false, true);
-            await RunAndCheckUpdate<HyperLiquidTicker>(useUpdatedDeserialization, (client, updateHandler) => client.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
+            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.SubscribeToUserUpdatesAsync(default , default, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
         } 
     }
 }
