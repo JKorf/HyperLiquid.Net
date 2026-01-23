@@ -1,4 +1,6 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces;
+using CryptoExchange.Net.Trackers.UserData;
 
 namespace HyperLiquid.Net.Interfaces
 {
@@ -7,5 +9,16 @@ namespace HyperLiquid.Net.Interfaces
     /// </summary>
     public interface IHyperLiquidTrackerFactory: ITrackerFactory
     {
+        /// <summary>
+        /// Create a new user data tracker
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="userIdentifier"></param>
+        /// <param name="credentials"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        IUserDataTracker CreateUserDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+
+        IUserDataTracker CreateUserDataTracker(UserDataTrackerConfig config);
     }
 }

@@ -1,12 +1,16 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.SharedApis;
 using CryptoExchange.Net.Trackers.Klines;
 using CryptoExchange.Net.Trackers.Trades;
+using CryptoExchange.Net.Trackers.UserData;
+using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces;
 using HyperLiquid.Net.Interfaces.Clients;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using HyperLiquid.Net.Clients;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using System;
+using System.Net;
 
 namespace HyperLiquid.Net
 {
@@ -91,6 +95,34 @@ namespace HyperLiquid.Net
                 symbol,
                 limit,
                 period
+                );
+        }
+
+        public IUserDataTracker CreateUserDataTracker(UserDataTrackerConfig config)
+        {
+            var restClient = _serviceProvider?.GetRequiredService<IHyperLiquidRestClient>() ?? new HyperLiquidRestClient();
+            var socketClient = _serviceProvider?.GetRequiredService<IHyperLiquidSocketClient>() ?? new HyperLiquidSocketClient();
+            return new HyperLiquidUserDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserDataTracker>>() ?? new NullLogger<HyperLiquidUserDataTracker>(),
+                restClient,
+                socketClient,
+                null,
+                config
+                );
+        }
+
+        /// <inheritdoc />
+        public IUserDataTracker CreateUserDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null)
+        {
+            var clientProvider = _serviceProvider?.GetRequiredService<IHyperLiquidUserClientProvider>() ?? new HyperLiquidUserClientProvider();
+            var restClient = clientProvider.GetRestClient(userIdentifier, credentials, environment);
+            var socketClient = clientProvider.GetSocketClient(userIdentifier, credentials, environment);
+            return new HyperLiquidUserDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserDataTracker>>() ?? new NullLogger<HyperLiquidUserDataTracker>(),
+                restClient,
+                socketClient,
+                userIdentifier,
+                config
                 );
         }
     }
