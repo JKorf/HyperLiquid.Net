@@ -75,6 +75,36 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("reduceOnlyRejected")]
         ReduceOnlyRejected,
+        /// <summary>
+        /// Cancelled as a self trade
+        /// </summary>
+        [Map("selfTradeCanceled")]
+        SelfTradeCanceled,
+        /// <summary>
+        /// Cancelled due to Open Interest cap on the Symbol
+        /// </summary>
+        [Map("openInterestCapCanceled")]
+        OpenInterestCapCanceled,
+        /// <summary>
+        /// Cancelled due to insufficient margin available due to a vault withdrawal
+        /// </summary>
+        [Map("vaultWithdrawalCanceled")]
+        VaultWithdrawalCanceled,
+        /// <summary>
+        /// Cancelled due to the Symbol being delisted
+        /// </summary>
+        [Map("delistedCanceled")]
+        DelistedCanceled,
+        /// <summary>
+        /// Cancelled due to the Position being liquidated
+        /// </summary>
+        [Map("liquidatedCanceled")]
+        LiquidatedCanceled,
+        /// <summary>
+        /// Cancelled as scheduled by the order expiry
+        /// </summary>
+        [Map("scheduledCancel")]
+        ScheduledCanceled,
 
         /// <summary>
         /// Position increase at open interest cap rejected
