@@ -1,0 +1,72 @@
+> {"subscription":{"type":"userTwapSliceFills","user":"example"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"userTwapSliceFills","user":"example"}}}
+= 
+{
+  "channel": "userTwapSliceFills",
+  "data": {
+    "isSnapshot": true,
+    "user": "example",
+    "twapSliceFills": [
+      {
+        "fill": {
+          "coin": "OP",
+          "px": "0.28643",
+          "sz": "52.6",
+          "side": "B",
+          "time": 1769678452038,
+          "startPosition": "0.0",
+          "dir": "Open Long",
+          "closedPnl": "0.0",
+          "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "oid": 305485362646,
+          "crossed": true,
+          "fee": "0.006779",
+          "tid": 868987806894146,
+          "feeToken": "USDC",
+          "twapId": null
+        },
+        "twapId": 1546850
+      },
+      {
+        "fill": {
+          "coin": "OP",
+          "px": "0.28647",
+          "sz": "52.6",
+          "side": "B",
+          "time": 1769678482064,
+          "startPosition": "52.6",
+          "dir": "Open Long",
+          "closedPnl": "0.0",
+          "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "oid": 305485601317,
+          "crossed": true,
+          "fee": "0.00678",
+          "tid": 315525355385068,
+          "feeToken": "USDC",
+          "twapId": null
+        },
+        "twapId": 1546850
+      },
+      {
+        "fill": {
+          "coin": "OP",
+          "px": "0.28652",
+          "sz": "52.6",
+          "side": "B",
+          "time": 1769678512052,
+          "startPosition": "105.2",
+          "dir": "Open Long",
+          "closedPnl": "0.0",
+          "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "oid": 305485844161,
+          "crossed": true,
+          "fee": "0.006781",
+          "tid": 353884852367043,
+          "feeToken": "USDC",
+          "twapId": null
+        },
+        "twapId": 1546850
+      }
+    ]
+  }
+}

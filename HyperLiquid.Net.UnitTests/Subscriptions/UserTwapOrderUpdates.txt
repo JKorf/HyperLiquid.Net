@@ -1,0 +1,50 @@
+> {"subscription":{"type":"userTwapHistory","user":"example"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"userTwapHistory","user":"example"}}}
+= 
+{
+  "channel": "userTwapHistory",
+  "data": {
+    "isSnapshot": true,
+    "user": "example",
+    "history": [
+      {
+        "time": 1769678450,
+        "state": {
+          "coin": "OP",
+          "user": "example",
+          "side": "B",
+          "sz": "578.8",
+          "executedSz": "0.0",
+          "executedNtl": "0.0",
+          "minutes": 5,
+          "reduceOnly": false,
+          "randomize": false,
+          "timestamp": 1769678450231
+        },
+        "status": {
+          "status": "activated"
+        },
+        "twapId": 1546850
+      },
+      {
+        "time": 1769678522,
+        "state": {
+          "coin": "OP",
+          "user": "example",
+          "side": "B",
+          "sz": "578.8",
+          "executedSz": "157.8",
+          "executedNtl": "45.205492",
+          "minutes": 5,
+          "reduceOnly": false,
+          "randomize": false,
+          "timestamp": 1769678450231
+        },
+        "status": {
+          "status": "terminated"
+        },
+        "twapId": 1546850
+      }
+    ]
+  }
+}

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -36,8 +35,11 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task TestSubscriptions()
         {
-            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.Account.SubscribeToUserUpdatesAsync(default , default, default), false, true);
-            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
+            await RunAndCheckUpdate<HyperLiquidUserUpdate>((client, updateHandler) => client.SpotApi.SubscribeToUserUpdatesAsync(default , updateHandler, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
+
+            await RunAndCheckUpdate<HyperLiquidUserTrade[]>((client, updateHandler) => client.FuturesApi.SubscribeToTwapTradeUpdatesAsync(default, updateHandler, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidTwapHistoryStatus[]>((client, updateHandler) => client.FuturesApi.SubscribeToTwapOrderUpdatesAsync(default, updateHandler, default), false, true);
         } 
     }
 }

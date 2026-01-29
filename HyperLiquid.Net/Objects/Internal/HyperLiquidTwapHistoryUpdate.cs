@@ -5,10 +5,10 @@ using System.Text.Json.Serialization;
 namespace HyperLiquid.Net.Objects.Internal
 {
     [SerializationModel]
-    internal record HyperLiquidTwapOrderUpdate
+    internal record HyperLiquidTwapHistoryUpdate
     {
         [JsonPropertyName("history")]
-        public HyperLiquidTwapOrderStatus[] History { get; set; } = [];
+        public HyperLiquidTwapHistoryStatus[] History { get; set; } = [];
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         [JsonPropertyName("isSnapshot")]

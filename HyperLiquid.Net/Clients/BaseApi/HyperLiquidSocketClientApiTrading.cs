@@ -1144,7 +1144,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapStatus[]>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserTrade[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1159,28 +1159,32 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 foreach (var order in data.Data.Trades)
                 {
-                    if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
+                    order.Fill.TwapId = order.TwapId;
+
+                    if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.Fill.ExchangeSymbol))
                     {
-                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(_baseClient.ClientOptions.Environment.Name, order.ExchangeSymbol);
+                        var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(_baseClient.ClientOptions.Environment.Name, order.Fill.ExchangeSymbol);
                         if (symbolName == null)
                             continue;
 
-                        order.Symbol = symbolName.Data;
-                        order.SymbolType = SymbolType.Spot;
+                        order.Fill.Symbol = symbolName.Data;
+                        order.Fill.SymbolType = SymbolType.Spot;
                     }
                     else
                     {
-                        order.Symbol = order.ExchangeSymbol;
-                        order.SymbolType = SymbolType.Futures;
+                        order.Fill.Symbol = order.Fill.ExchangeSymbol;
+                        order.Fill.SymbolType = SymbolType.Futures;
                     }
                 }
 
-                DateTime? timestamp = data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Timestamp) : null;
+                DateTime? timestamp = data.Data.Trades.Any() ? data.Data.Trades.Max(x => x.Fill.Timestamp) : null;
                 if (timestamp != null)
                     _baseClient.UpdateTimeOffset(timestamp.Value);
 
+                var trades = data.Data.Trades.Select(x => x.Fill).ToArray();
+
                 onMessage(
-                    new DataEvent<HyperLiquidTwapStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.Trades, receiveTime, originalData)
+                    new DataEvent<HyperLiquidUserTrade[]>(HyperLiquidExchange.ExchangeName, trades, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithDataTimestamp(timestamp, _baseClient.GetTimeOffset())
@@ -1197,7 +1201,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapOrderStatus[]>> onMessage, CancellationToken ct = default)
+        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapHistoryStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1208,7 +1212,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (!result)
                 return new CallResult<UpdateSubscription>(result.Error!);
 
-            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTwapOrderUpdate>>((receiveTime, originalData, invocation, data) =>
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTwapHistoryUpdate>>((receiveTime, originalData, invocation, data) =>
             {
                 DateTime? timestamp = data.Data.History.Length != 0 ? data.Data.History.Max(x => x.Timestamp) : null;
                 if (!data.Data.IsSnapshot && timestamp != null)
@@ -1233,7 +1237,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 onMessage(
-                    new DataEvent<HyperLiquidTwapOrderStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.History, receiveTime, originalData)
+                    new DataEvent<HyperLiquidTwapHistoryStatus[]>(HyperLiquidExchange.ExchangeName, data.Data.History, receiveTime, originalData)
                         .WithStreamId(data.Channel)
                         .WithUpdateType(data.Data.IsSnapshot ? SocketUpdateType.Snapshot : SocketUpdateType.Update)
                         .WithDataTimestamp(timestamp, _baseClient.GetTimeOffset())
@@ -1241,7 +1245,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, _baseClient, "userTwapHistory", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapHistoryUpdate>(_logger, _baseClient, "userTwapHistory", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
