@@ -116,6 +116,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>))]
     [JsonSerializable(typeof(HyperLiquidUserTrade[]))]
     [JsonSerializable(typeof(HyperLiquidTwapStatus[]))]
+    [JsonSerializable(typeof(HyperLiquidUserTwapFillResult[]))]
     [JsonSerializable(typeof(HyperLiquidTwapHistoryStatus[]))]
     [JsonSerializable(typeof(HyperLiquidTwapHistoryUpdate[]))]
     [JsonSerializable(typeof(HyperLiquidTwapTradeUpdate[]))]
