@@ -211,6 +211,50 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #endregion
 
+        #region Get User TWAP Trades
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidUserTrade[]>> GetUserTwapTradesAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "userTwapSliceFills" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidUserTwapFillResult[]>(request, parameters, ct).ConfigureAwait(false);
+            if (!result)
+                return result.As<HyperLiquidUserTrade[]>(default!);
+
+            foreach (var fill in result.Data)
+            {
+                var trade = fill.Fill;
+                trade.TwapId = fill.TwapId;
+
+                if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(trade.ExchangeSymbol))
+                {
+                    var symbolName = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, trade.ExchangeSymbol).ConfigureAwait(false);
+                    if (symbolName == null)
+                        continue;
+
+                    trade.Symbol = symbolName.Data;
+                    trade.SymbolType = SymbolType.Spot;
+                }
+                else
+                {
+                    trade.Symbol = trade.ExchangeSymbol;
+                    trade.SymbolType = SymbolType.Futures;
+                }
+            }
+
+            var trades = result.Data.Select(x => x.Fill).ToArray();
+            return result.As(trades);
+        }
+
+        #endregion
+
         #region Get Order
 
         /// <inheritdoc />

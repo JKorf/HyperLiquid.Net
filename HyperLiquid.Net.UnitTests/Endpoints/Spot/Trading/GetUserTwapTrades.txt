@@ -1,0 +1,45 @@
+POST
+/info
+false
+[
+    {
+        "fill": {
+            "coin": "PAXG",
+            "px": "4065.0",
+            "sz": "0.341",
+            "side": "B",
+            "time": 1759991386052,
+            "startPosition": "1999.875",
+            "dir": "Open Long",
+            "closedPnl": "0.0",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "oid": 191861016018,
+            "crossed": true,
+            "fee": "0.623774",
+            "tid": 678197371278825,
+            "feeToken": "USDC",
+            "twapId": null
+        },
+        "twapId": 1242828
+    },
+    {
+        "fill": {
+            "coin": "PAXG",
+            "px": "4064.9",
+            "sz": "0.7",
+            "side": "B",
+            "time": 1759991386052,
+            "startPosition": "1999.175",
+            "dir": "Open Long",
+            "closedPnl": "0.0",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "oid": 191861016018,
+            "crossed": true,
+            "fee": "1.280443",
+            "tid": 549086789418866,
+            "feeToken": "USDC",
+            "twapId": null
+        },
+        "twapId": 1242828
+    }
+]

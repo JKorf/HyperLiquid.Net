@@ -76,6 +76,14 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             CancellationToken ct = default);
 
         /// <summary>
+        /// Get the last 2000 user TWAP trades, will return both Spot and Futures
+        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-twap-slice-fills" /></para>
+        /// </summary>
+        /// <param name="address">Address to request user TWAP trades for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        public Task<WebCallResult<HyperLiquidUserTrade[]>> GetUserTwapTradesAsync(string? address = null, CancellationToken ct = default);
+
+        /// <summary>
         /// Get order info by id
         /// <para>
         /// Docs:<br />
