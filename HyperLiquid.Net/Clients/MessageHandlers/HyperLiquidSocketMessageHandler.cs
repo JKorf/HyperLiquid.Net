@@ -68,6 +68,7 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
             AddTopicMapping<HyperLiquidSocketUpdate<HyperLiquidFuturesTickerUpdate>>(x => x.Data.Symbol);
             AddTopicMapping<HyperLiquidSocketUpdate<HyperLiquidFuturesUserSymbolUpdate>>(x => x.Data.Symbol);
             AddTopicMapping<HyperLiquidSocketUpdate<HyperLiquidTickerUpdate>>(x => x.Data.Symbol);
+            AddTopicMapping<HyperLiquidSocketUpdate<HyperLiquidBookTicker>>(x => x.Data.Symbol);
         }
 
         protected override MessageTypeDefinition[] TypeEvaluators { get; } = [
