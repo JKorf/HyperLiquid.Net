@@ -2,6 +2,7 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 using HyperLiquid.Net.Enums;
 using System;
 using System.Text.Json.Serialization;
+using HyperLiquid.Net.Converters;
 
 namespace HyperLiquid.Net.Objects.Models
 {
@@ -90,7 +91,8 @@ namespace HyperLiquid.Net.Objects.Models
         /// ["<c>triggerCondition</c>"] Trigger condition
         /// </summary>
         [JsonPropertyName("triggerCondition")]
-        public string TriggerCondition { get; set; } = string.Empty;
+        [JsonConverter(typeof(HyperLiquidTriggerConditionConverter))]
+        public HyperLiquidTriggerCondition? TriggerCondition { get; set; }
         /// <summary>
         /// ["<c>triggerPx</c>"] Trigger price
         /// </summary>
