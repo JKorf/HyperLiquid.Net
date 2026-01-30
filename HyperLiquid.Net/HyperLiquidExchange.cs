@@ -164,8 +164,29 @@ namespace HyperLiquid.Net
         }
 
 
-        internal IRateLimitGate HyperLiquidRest { get; private set; }
-        internal IRateLimitGate HyperLiquidSocket { get; private set; }
+        /// <summary>
+        /// Rate limiter for the HyperLiquid REST API
+        /// </summary>
+        public IRateLimitGate HyperLiquidRest { get; private set; }
+        /// <summary>
+        /// Rate limiter for the HyperLiquid Socket API
+        /// </summary>
+        public IRateLimitGate HyperLiquidSocket { get; private set; }
 
+        /// <summary>
+        /// Override the Hyperliquid Rate Limiters if you have custom rate limits
+        /// </summary>
+        /// <param name="restGate">Rate limiter for the Rest clients</param>
+        /// <param name="socketGate">Rate limiter for the Socket clients</param>
+        public void Override(IRateLimitGate restGate, IRateLimitGate socketGate)
+        {
+            HyperLiquidRest = restGate;
+            HyperLiquidRest.RateLimitTriggered += (x) => RateLimitTriggered?.Invoke(x);
+            HyperLiquidRest.RateLimitUpdated += (x) => RateLimitUpdated?.Invoke(x);
+
+            HyperLiquidSocket = socketGate;
+            HyperLiquidSocket.RateLimitTriggered += (x) => RateLimitTriggered?.Invoke(x);
+            HyperLiquidSocket.RateLimitUpdated += (x) => RateLimitUpdated?.Invoke(x);
+        }
     }
 }
