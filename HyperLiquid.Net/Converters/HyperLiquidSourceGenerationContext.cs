@@ -104,6 +104,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidUserTradeUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidTwapTradeUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidTwapHistoryUpdate>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOrderHistoryUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidFuturesTickerUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidFuturesUserSymbolUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidUserFundingUpdate>))]
