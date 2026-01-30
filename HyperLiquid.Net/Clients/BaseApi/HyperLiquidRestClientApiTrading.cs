@@ -348,7 +348,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         #region Place Order
-
+        /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidOrderResult>> PlaceOrderAsync(
             string symbol,
             OrderSide side,
@@ -363,11 +363,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null, 
 			string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            decimal? builderFeePercentage = null,
+            string? builderAddress = null,
             CancellationToken ct = default)
         {
             var result = await PlaceMultipleOrdersAsync([
                 new HyperLiquidOrderRequest(symbol, side, orderType, quantity, price, timeInForce, reduceOnly, triggerPrice: triggerPrice, tpSlType: tpSlType, clientOrderId: clientOrderId)
-                ], tpSlGrouping, vaultAddress, expiresAfter, ct).ConfigureAwait(false);
+                ], tpSlGrouping, vaultAddress, expiresAfter, builderFeePercentage, builderAddress, ct).ConfigureAwait(false);
 
             if (!result)
                 return result.As<HyperLiquidOrderResult>(default);
@@ -389,9 +391,17 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
 			string? vaultAddress = null,
             DateTime? expireAfter = null,
+            decimal? builderFeePercentage = null,
+            string? builderAddress = null,
             CancellationToken ct = default)
         {
-            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+            builderFeePercentage ??= _baseClient.ClientOptions.BuilderFeePercentage;
+            builderAddress ??= _baseClient.ClientOptions.BuilderAddress;
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(
+                builderFeePercentage,
+                async () => await _baseClient.BaseClient.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
+                async () => await _baseClient.BaseClient.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in orders)
@@ -470,16 +480,16 @@ namespace HyperLiquid.Net.Clients.BaseApi
             else
                 actionParameters.Add("grouping", "na");
 
-            if (_baseClient.ClientOptions.BuilderFeePercentage > 0
-                && _baseClient.ClientOptions.BuilderAddress != null
+            if (builderFeePercentage > 0
+                && builderAddress != null
                 && HyperLiquidUtils._builderFeeSuccess)
             {
                 // Convert from percentage to 1/10 basis point
-                var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
+                var tenthPoints = (int)(builderFeePercentage * 1000);
                 actionParameters.Add("builder",
                     new ParameterCollection
                     {
-                        { "b", _baseClient.ClientOptions.BuilderAddress.ToLower() },
+                        { "b", builderAddress.ToLower() },
                         { "f", tenthPoints }
                     }
                 );

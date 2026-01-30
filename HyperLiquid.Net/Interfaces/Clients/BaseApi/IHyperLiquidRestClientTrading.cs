@@ -4,6 +4,7 @@ using System.Threading;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Objects.Models;
 using System;
+using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Enums;
 
 namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
@@ -195,6 +196,15 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="clientOrderId">Client order id, an optional 128 bit hex string, e.g. 0x1234567890abcdef1234567890abcdef</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="builderFeePercentage">
+        /// The builder fee percentage to apply this order. This refers to a fee percentage being paid to the developer to support development. Defaults to null/0. Can be between 0.001% and 0.1%.<br />
+        /// If set to a non-null value the address has to be whitelisted using <see cref="HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">restClient.SpotApi.Account.ApproveBuilderFeeAsync</see>
+        /// <remarks>Providing this argument will override the Options.BuilderFeePercentage</remarks>
+        /// </param>
+        /// <param name="builderAddress">
+        /// Address of the builder
+        /// <remarks>Providing this argument will override the Options.BuilderFeePercentage</remarks>
+        /// </param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidOrderResult>> PlaceOrderAsync(
             string symbol,
@@ -210,6 +220,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            decimal? builderFeePercentage = null,
+            string? builderAddress = null,
             CancellationToken ct = default
             );
 
@@ -226,12 +238,16 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="tpSlGrouping">["<c>action.grouping</c>"] Take profit / Stop loss grouping</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="builderFeePercentage"></param>
+        /// <param name="builderAddress"></param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<CallResult<HyperLiquidOrderResult>[]>> PlaceMultipleOrdersAsync(
             IEnumerable<HyperLiquidOrderRequest> orders,
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            decimal? builderFeePercentage = null,
+            string? builderAddress = null,
             CancellationToken ct = default);
 
         /// <summary>
