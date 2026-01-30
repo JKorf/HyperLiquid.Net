@@ -51,5 +51,16 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("users")]
         public string[] Users { get; set; } = [];
+
+        /// <summary>
+        /// The user on the buyer side of the Trade
+        /// </summary>
+        [JsonIgnore]
+        public string Buyer => Users[0];
+        /// <summary>
+        /// The user on the seller side of the Trade
+        /// </summary>
+        [JsonIgnore]
+        public string Seller => Users[1];
     }
 }
