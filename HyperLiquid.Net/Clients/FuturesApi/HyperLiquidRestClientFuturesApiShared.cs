@@ -227,7 +227,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 MaxShortLeverage = s.MaxLeverage
             }).ToArray());
 
-            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, response.Data);
+            // Register both HYPE/USDC and HYPE as symbol names
+            var symbolRegistrations = response.Data
+                .Concat(response.Data.Select(x => new SharedSpotSymbol(x.BaseAsset, x.QuoteAsset, x.BaseAsset, x.Trading, x.TradingMode))).ToArray();
+
+            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, symbolRegistrations);
             return response;
         }
 
@@ -668,6 +672,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 LiquidationPrice = x.Position.LiquidationPrice == 0 ? null : x.Position.LiquidationPrice,
                 Leverage = x.Position.Leverage?.Value,
                 AverageOpenPrice = x.Position.AverageEntryPrice,
+                PositionMode = SharedPositionMode.OneWay,
                 PositionSide = x.Position.PositionQuantity >= 0 ? SharedPositionSide.Long : SharedPositionSide.Short
             }).ToArray());
         }

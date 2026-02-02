@@ -9,14 +9,29 @@ using System.Threading.Tasks;
 
 namespace HyperLiquid.Net
 {
-    public class HyperLiquidUserDataTracker : UserDataTracker
+    public class HyperLiquidUserSpotDataTracker : UserSpotDataTracker
     {
-        public HyperLiquidUserDataTracker(
-            ILogger<HyperLiquidUserDataTracker> logger,
+        public HyperLiquidUserSpotDataTracker(
+            ILogger<HyperLiquidUserSpotDataTracker> logger,
             IHyperLiquidRestClient restClient,
             IHyperLiquidSocketClient socketClient,
             string? userIdentifier,
             UserDataTrackerConfig config) : base(logger, restClient.SpotApi.SharedClient, socketClient.SpotApi.SharedClient, userIdentifier, config)
+        {
+
+        }
+    }
+
+    public class HyperLiquidUserFuturesDataTracker : UserFuturesDataTracker
+    {
+        protected override bool WebsocketPositionUpdatesAreFullSnapshots => true;
+
+        public HyperLiquidUserFuturesDataTracker(
+            ILogger<HyperLiquidUserFuturesDataTracker> logger,
+            IHyperLiquidRestClient restClient,
+            IHyperLiquidSocketClient socketClient,
+            string? userIdentifier,
+            UserDataTrackerConfig config) : base(logger, restClient.FuturesApi.SharedClient, socketClient.FuturesApi.SharedClient, userIdentifier, config)
         {
 
         }

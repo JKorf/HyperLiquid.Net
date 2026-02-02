@@ -98,12 +98,12 @@ namespace HyperLiquid.Net
                 );
         }
 
-        public IUserDataTracker CreateUserDataTracker(UserDataTrackerConfig config)
+        public IUserSpotDataTracker CreateUserSpotDataTracker(UserDataTrackerConfig config)
         {
             var restClient = _serviceProvider?.GetRequiredService<IHyperLiquidRestClient>() ?? new HyperLiquidRestClient();
             var socketClient = _serviceProvider?.GetRequiredService<IHyperLiquidSocketClient>() ?? new HyperLiquidSocketClient();
-            return new HyperLiquidUserDataTracker(
-                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserDataTracker>>() ?? new NullLogger<HyperLiquidUserDataTracker>(),
+            return new HyperLiquidUserSpotDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserSpotDataTracker>>() ?? new NullLogger<HyperLiquidUserSpotDataTracker>(),
                 restClient,
                 socketClient,
                 null,
@@ -112,13 +112,41 @@ namespace HyperLiquid.Net
         }
 
         /// <inheritdoc />
-        public IUserDataTracker CreateUserDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null)
+        public IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null)
         {
             var clientProvider = _serviceProvider?.GetRequiredService<IHyperLiquidUserClientProvider>() ?? new HyperLiquidUserClientProvider();
             var restClient = clientProvider.GetRestClient(userIdentifier, credentials, environment);
             var socketClient = clientProvider.GetSocketClient(userIdentifier, credentials, environment);
-            return new HyperLiquidUserDataTracker(
-                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserDataTracker>>() ?? new NullLogger<HyperLiquidUserDataTracker>(),
+            return new HyperLiquidUserSpotDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserSpotDataTracker>>() ?? new NullLogger<HyperLiquidUserSpotDataTracker>(),
+                restClient,
+                socketClient,
+                userIdentifier,
+                config
+                );
+        }
+
+        public IUserFuturesDataTracker CreateUserFuturesDataTracker(UserDataTrackerConfig config)
+        {
+            var restClient = _serviceProvider?.GetRequiredService<IHyperLiquidRestClient>() ?? new HyperLiquidRestClient();
+            var socketClient = _serviceProvider?.GetRequiredService<IHyperLiquidSocketClient>() ?? new HyperLiquidSocketClient();
+            return new HyperLiquidUserFuturesDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserFuturesDataTracker>>() ?? new NullLogger<HyperLiquidUserFuturesDataTracker>(),
+                restClient,
+                socketClient,
+                null,
+                config
+                );
+        }
+
+        /// <inheritdoc />
+        public IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null)
+        {
+            var clientProvider = _serviceProvider?.GetRequiredService<IHyperLiquidUserClientProvider>() ?? new HyperLiquidUserClientProvider();
+            var restClient = clientProvider.GetRestClient(userIdentifier, credentials, environment);
+            var socketClient = clientProvider.GetSocketClient(userIdentifier, credentials, environment);
+            return new HyperLiquidUserFuturesDataTracker(
+                _serviceProvider?.GetRequiredService<ILogger<HyperLiquidUserFuturesDataTracker>>() ?? new NullLogger<HyperLiquidUserFuturesDataTracker>(),
                 restClient,
                 socketClient,
                 userIdentifier,

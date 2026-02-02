@@ -17,8 +17,9 @@ namespace HyperLiquid.Net.Interfaces
         /// <param name="credentials"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        IUserDataTracker CreateUserDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
-
-        IUserDataTracker CreateUserDataTracker(UserDataTrackerConfig config);
+        IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+        IUserSpotDataTracker CreateUserSpotDataTracker(UserDataTrackerConfig config);
+        IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+        IUserFuturesDataTracker CreateUserFuturesDataTracker(UserDataTrackerConfig config);
     }
 }

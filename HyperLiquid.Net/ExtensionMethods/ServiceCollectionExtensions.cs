@@ -104,8 +104,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IHyperLiquidOrderBookFactory, HyperLiquidOrderBookFactory>();
             services.AddTransient<IHyperLiquidTrackerFactory, HyperLiquidTrackerFactory>();
             services.AddTransient<ITrackerFactory, HyperLiquidTrackerFactory>();
-#warning singleton or transient? Need factory?
-            services.AddSingleton<HyperLiquidUserDataTracker>(); 
             services.AddSingleton<IHyperLiquidUserClientProvider, HyperLiquidUserClientProvider>(x =>
             new HyperLiquidUserClientProvider(
                 x.GetRequiredService<HttpClient>(),
