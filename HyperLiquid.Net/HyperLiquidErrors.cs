@@ -15,6 +15,9 @@ namespace HyperLiquid.Net
                     if (msg.StartsWith("Order must have minimum value of"))
                         return new ErrorInfo(ErrorType.InvalidQuantity, false, "Order value too low", code);
 
+                    if (msg.StartsWith("Order has invalid size"))
+                        return new ErrorInfo(ErrorType.InvalidQuantity, false, "Order quantity invalid", code);
+
                     if (msg.StartsWith("Price must be divisible by tick size"))
                         return new ErrorInfo(ErrorType.InvalidPrice, false, "Price decimal places invalid", code);
 
