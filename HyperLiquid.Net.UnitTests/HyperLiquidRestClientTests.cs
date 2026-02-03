@@ -95,5 +95,14 @@ namespace HyperLiquid.Net.UnitTests
             //CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<HyperLiquidSocketClient>(
             //    ["IHyperLiquidSocketClientApiAccount", "IHyperLiquidSocketClientApiExchangeData", "IHyperLiquidSocketClientApiTrading"]);
         }
+
+        [Test]
+        public void CheckEip721JsonOutput()
+        {
+            var client = new HyperLiquidRestClient().SpotApi;
+
+            var builder = "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97".ToLowerInvariant();
+            var json = client.Account.GetApproveBuilderFeeEip721(builder, 0.001m, 1);
+        }
     }
 }

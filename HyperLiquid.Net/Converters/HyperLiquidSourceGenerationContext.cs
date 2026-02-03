@@ -4,6 +4,7 @@ using HyperLiquid.Net.Objects.Models;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using HyperLiquid.Net.Signing;
 
 namespace HyperLiquid.Net.Converters
 {
@@ -75,6 +76,8 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidPerpDex[]))]
     [JsonSerializable(typeof(HyperLiquidPerpDexLimit))]
     [JsonSerializable(typeof(HyperLiquidPerpDexStatus))]
+    [JsonSerializable(typeof(HyperliquidReferralInfo))]
+    [JsonSerializable(typeof(TypedDataRaw))]
 
     [JsonSerializable(typeof(HyperLiquidStakingHistory[]))]
     [JsonSerializable(typeof(HyperLiquidStakingSummary))]

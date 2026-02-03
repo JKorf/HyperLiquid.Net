@@ -12,6 +12,7 @@ using Secp256k1Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace HyperLiquid.Net
 {
@@ -55,6 +56,12 @@ namespace HyperLiquid.Net
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.BodyParameters!.Add("nonce", nonce);
 
+            if (request.BodyParameters.TryGetValue("signature", out var externalSignature))
+            {
+                request.BodyParameters["signature"] = DeconstructExternalSignature((string)externalSignature);
+                return;
+            }
+
             var signature = GenerateSignature(
                 ((HyperLiquidRestOptions)apiClient.ClientOptions).Environment,
                 action,
@@ -69,6 +76,12 @@ namespace HyperLiquid.Net
             var action = (Dictionary<string, object>)request["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.Add("nonce", nonce);
+
+            if (request.TryGetValue("signature", out var externalSignature))
+            {
+                request["signature"] = DeconstructExternalSignature((string)externalSignature);
+                return;
+            }
 
             var signature = GenerateSignature(
                 ((HyperLiquidSocketOptions)apiClient.ClientOptions).Environment,
@@ -159,6 +172,26 @@ namespace HyperLiquid.Net
             return signature;
         }
 
+        public static Dictionary<string, object> GetSignatureTypes(string name, Dictionary<string, object> parameters)
+        {
+            var props = new List<object>();
+            var result = new Dictionary<string, object>()
+            {
+                { "HyperliquidTransaction:" + name, props }
+            };
+
+            foreach (var item in parameters.Where(x => x.Key != "type" && x.Key != "signatureChainId"))
+            {
+                props.Add(new Dictionary<string, object>
+                {
+                    { "name", item.Key },
+                    { "type", (item.Key == "builder" || item.Key == "user" || item.Key == "agentAddress") ? "address" : _typeMapping[item.Value.GetType()] }
+                });
+            }
+
+            return result;
+        }
+
         private List<(string Name, string Type, object Value)> GetMessageFields(Dictionary<string, object> parameters)
         {
             var result = new List<(string, string, object)>();
@@ -187,6 +220,117 @@ namespace HyperLiquid.Net
                 { "s", "0x" + hexCompactS },
                 { "v", hexCompactV },
             };
+        }
+
+        private Dictionary<string, object> DeconstructExternalSignature(string signature)
+        {
+            var rsvTriple = signature.HexToByteArray();
+            return new Dictionary<string, object>()
+            {
+                { "r", "0x" + BytesToHexString(new ArraySegment<byte>(rsvTriple, 0, 32)).ToLowerInvariant() },
+                { "s", "0x" + BytesToHexString(new ArraySegment<byte>(rsvTriple, 32, rsvTriple.Length - 33)).ToLowerInvariant() },
+                { "v", (int)rsvTriple[rsvTriple.Length - 1] }
+            };
+        }
+
+        private static HyperLiquid.Net.Signing.TypedDataRaw EncodeTypedData(
+            IEnumerable<KeyValuePair<string, object>> domain,
+            IEnumerable<KeyValuePair<string, object>> messageTypes,
+            IEnumerable<KeyValuePair<string, object>> messageData)
+        {
+            var domainValues = domain.Select(x => x.Value).ToArray();
+
+            var typeRaw = new HyperLiquid.Net.Signing.TypedDataRaw();
+            var types = new Dictionary<string, HyperLiquid.Net.Signing.MemberDescription[]>();
+
+            var domainTypesDescription = new List<HyperLiquid.Net.Signing.MemberDescription>();
+            var domainValuesArray = new List<HyperLiquid.Net.Signing.MemberValue>();
+
+            foreach (var d in new[] {
+                new[] { "name", "string" },
+                new[] { "version", "string" },
+                new[] { "chainId", "uint256" },
+                new[] { "verifyingContract", "address" }
+            })
+            {
+                var key = d[0];
+                var type = d[1];
+                for (var i = 0; i < domain.Count(); i++)
+                {
+                    if (string.Equals(key, domain.Select(x => x.Key).ElementAt(i)))
+                    {
+                        domainTypesDescription.Add(new HyperLiquid.Net.Signing.MemberDescription
+                        {
+                            Name = key,
+                            Type = type
+                        });
+
+                        domainValuesArray.Add(new HyperLiquid.Net.Signing.MemberValue
+                        {
+                            TypeName = type,
+                            Value = domainValues[i]
+                        });
+                    }
+                }
+            }
+
+            types["EIP712Domain"] = domainTypesDescription.ToArray();
+            typeRaw.DomainRawValues = domainValuesArray.ToArray();
+
+            var messageTypesDict = new Dictionary<string, string>();
+            var typeName = messageTypes.Select(x => x.Key).First();
+            var messageTypesContent = (IList<object>)messageTypes.Single(x => x.Key == typeName).Value;
+            var messageTypesDescription = new List<HyperLiquid.Net.Signing.MemberDescription>();
+            for (var i = 0; i < messageTypesContent.Count; i++)
+            {
+                var elem = (IDictionary<string, object>)messageTypesContent[i];
+                var name = (string)elem["name"];
+                var type = (string)elem["type"];
+                messageTypesDict[name] = type;
+                messageTypesDescription.Add(new HyperLiquid.Net.Signing.MemberDescription
+                {
+                    Name = name,
+                    Type = type
+                });
+            }
+            types[typeName] = messageTypesDescription.ToArray();
+
+            var messageValues = new List<HyperLiquid.Net.Signing.MemberValue>();
+            for (var i = 0; i < messageData.Count(); i++)
+            {
+                var kvp = messageData.ElementAt(i);
+                if (messageTypesDict.TryGetValue(kvp.Key, out var msgVal))
+                {
+                    messageValues.Add(new HyperLiquid.Net.Signing.MemberValue
+                    {
+                        TypeName = msgVal,
+                        Value = kvp.Value
+                    });
+                }
+            }
+
+            typeRaw.Message = messageValues.ToArray();
+            typeRaw.Types = types;
+            typeRaw.PrimaryType = typeName;
+            return typeRaw;
+        }
+
+        public static byte[] EncodeEip712(
+            IEnumerable<KeyValuePair<string, object>> domain,
+            IEnumerable<KeyValuePair<string, object>> messageTypes,
+            IEnumerable<KeyValuePair<string, object>> messageData)
+        {
+            var typeRaw = EncodeTypedData(domain, messageTypes, messageData);
+            return LightEip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
+        }
+
+        public static string EncodeEip712Json(
+            IEnumerable<KeyValuePair<string, object>> domain,
+            IEnumerable<KeyValuePair<string, object>> messageTypes,
+            IEnumerable<KeyValuePair<string, object>> messageData)
+        {
+            var typeRaw = EncodeTypedData(domain, messageTypes, messageData);
+            return JsonSerializer.Serialize(typeRaw, HyperLiquidExchange._serializerContext);
         }
 
         private byte[] GenerateActionHash(object action, long nonce, string? vaultAddress, long? expireAfter)
