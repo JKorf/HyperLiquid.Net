@@ -1,6 +1,8 @@
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Trackers.UserData;
+using CryptoExchange.Net.Trackers.UserData.Interfaces;
+using CryptoExchange.Net.Trackers.UserData.Objects;
 
 namespace HyperLiquid.Net.Interfaces
 {
@@ -10,16 +12,31 @@ namespace HyperLiquid.Net.Interfaces
     public interface IHyperLiquidTrackerFactory: ITrackerFactory
     {
         /// <summary>
-        /// Create a new user data tracker
+        /// Create a new Spot user data tracker
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="userIdentifier"></param>
-        /// <param name="credentials"></param>
-        /// <param name="environment"></param>
-        /// <returns></returns>
-        IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
-        IUserSpotDataTracker CreateUserSpotDataTracker(UserDataTrackerConfig config);
-        IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, UserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
-        IUserFuturesDataTracker CreateUserFuturesDataTracker(UserDataTrackerConfig config);
+        /// <param name="userIdentifier">User identifier</param>
+        /// <param name="config">Configuration</param>
+        /// <param name="credentials">Credentials</param>
+        /// <param name="environment">Environment</param>
+        IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, SpotUserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+        /// <summary>
+        /// Create a new spot user data tracker
+        /// </summary>
+        /// <param name="config">Configuration</param>
+        IUserSpotDataTracker CreateUserSpotDataTracker(SpotUserDataTrackerConfig config);
+
+        /// <summary>
+        /// Create a new futures user data tracker
+        /// </summary>
+        /// <param name="userIdentifier">User identifier</param>
+        /// <param name="config">Configuration</param>
+        /// <param name="credentials">Credentials</param>
+        /// <param name="environment">Environment</param>
+        IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, FuturesUserDataTrackerConfig config, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+        /// <summary>
+        /// Create a new futures user data tracker
+        /// </summary>
+        /// <param name="config">Configuration</param>
+        IUserFuturesDataTracker CreateUserFuturesDataTracker(FuturesUserDataTrackerConfig config);
     }
 }
