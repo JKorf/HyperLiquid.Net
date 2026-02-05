@@ -16,7 +16,7 @@ namespace HyperLiquid.Net
             IHyperLiquidRestClient restClient,
             IHyperLiquidSocketClient socketClient,
             string? userIdentifier,
-            SpotUserDataTrackerConfig config) : base(
+            SpotUserDataTrackerConfig? config) : base(
                 logger,
                 restClient.SpotApi.SharedClient,
                 null,
@@ -26,7 +26,7 @@ namespace HyperLiquid.Net
                 socketClient.SpotApi.SharedClient,
                 socketClient.SpotApi.SharedClient,
                 userIdentifier,
-                config)
+                config ?? new SpotUserDataTrackerConfig())
         {
         }
     }
@@ -45,7 +45,7 @@ namespace HyperLiquid.Net
             IHyperLiquidRestClient restClient,
             IHyperLiquidSocketClient socketClient,
             string? userIdentifier,
-            FuturesUserDataTrackerConfig config) : base(logger,
+            FuturesUserDataTrackerConfig? config) : base(logger,
                 restClient.FuturesApi.SharedClient,
                 null,
                 restClient.FuturesApi.SharedClient,
@@ -55,7 +55,7 @@ namespace HyperLiquid.Net
                 socketClient.FuturesApi.SharedClient,
                 socketClient.FuturesApi.SharedClient,
                 userIdentifier,
-                config)
+                config ?? new FuturesUserDataTrackerConfig())
         {
         }
     }
