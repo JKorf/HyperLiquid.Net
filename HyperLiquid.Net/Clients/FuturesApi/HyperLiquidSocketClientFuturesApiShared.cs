@@ -249,6 +249,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                     AverageOpenPrice = x.Position.AverageEntryPrice,
                     Leverage = x.Position.Leverage!.Value,
                     LiquidationPrice = x.Position.LiquidationPrice,
+                    PositionMode = SharedPositionMode.OneWay,
                     PositionSide = x.Position.PositionQuantity < 0 ? SharedPositionSide.Short : SharedPositionSide.Long,
                     UnrealizedPnl = x.Position.UnrealizedPnl
                 }).ToArray())),

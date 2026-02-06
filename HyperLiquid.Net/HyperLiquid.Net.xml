@@ -2310,6 +2310,37 @@
         <member name="M:HyperLiquid.Net.HyperLiquidTrackerFactory.CreateTradeTracker(CryptoExchange.Net.SharedApis.SharedSymbol,System.Nullable{System.Int32},System.Nullable{System.TimeSpan})">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidTrackerFactory.CreateUserSpotDataTracker(CryptoExchange.Net.Trackers.UserData.Objects.SpotUserDataTrackerConfig)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidTrackerFactory.CreateUserSpotDataTracker(System.String,CryptoExchange.Net.Authentication.ApiCredentials,CryptoExchange.Net.Trackers.UserData.Objects.SpotUserDataTrackerConfig,HyperLiquid.Net.HyperLiquidEnvironment)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidTrackerFactory.CreateUserFuturesDataTracker(CryptoExchange.Net.Trackers.UserData.Objects.FuturesUserDataTrackerConfig)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidTrackerFactory.CreateUserFuturesDataTracker(System.String,CryptoExchange.Net.Authentication.ApiCredentials,CryptoExchange.Net.Trackers.UserData.Objects.FuturesUserDataTrackerConfig,HyperLiquid.Net.HyperLiquidEnvironment)">
+            <inheritdoc />
+        </member>
+        <member name="T:HyperLiquid.Net.HyperLiquidUserSpotDataTracker">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidUserSpotDataTracker.#ctor(Microsoft.Extensions.Logging.ILogger{HyperLiquid.Net.HyperLiquidUserSpotDataTracker},HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient,System.String,CryptoExchange.Net.Trackers.UserData.Objects.SpotUserDataTrackerConfig)">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="T:HyperLiquid.Net.HyperLiquidUserFuturesDataTracker">
+            <inheritdoc />
+        </member>
+        <member name="P:HyperLiquid.Net.HyperLiquidUserFuturesDataTracker.WebsocketPositionUpdatesAreFullSnapshots">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.HyperLiquidUserFuturesDataTracker.#ctor(Microsoft.Extensions.Logging.ILogger{HyperLiquid.Net.HyperLiquidUserFuturesDataTracker},HyperLiquid.Net.Interfaces.Clients.IHyperLiquidRestClient,HyperLiquid.Net.Interfaces.Clients.IHyperLiquidSocketClient,System.String,CryptoExchange.Net.Trackers.UserData.Objects.FuturesUserDataTrackerConfig)">
+            <summary>
+            ctor
+            </summary>
+        </member>
         <member name="T:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientAccount">
             <summary>
             HyperLiquid account endpoints. Account endpoints include balance info, withdraw/deposit info and requesting and account settings
@@ -3297,6 +3328,36 @@
             <summary>
             Tracker factory
             </summary>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.IHyperLiquidTrackerFactory.CreateUserSpotDataTracker(System.String,CryptoExchange.Net.Authentication.ApiCredentials,CryptoExchange.Net.Trackers.UserData.Objects.SpotUserDataTrackerConfig,HyperLiquid.Net.HyperLiquidEnvironment)">
+            <summary>
+            Create a new Spot user data tracker
+            </summary>
+            <param name="userIdentifier">User identifier</param>
+            <param name="config">Configuration</param>
+            <param name="credentials">Credentials</param>
+            <param name="environment">Environment</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.IHyperLiquidTrackerFactory.CreateUserSpotDataTracker(CryptoExchange.Net.Trackers.UserData.Objects.SpotUserDataTrackerConfig)">
+            <summary>
+            Create a new spot user data tracker
+            </summary>
+            <param name="config">Configuration</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.IHyperLiquidTrackerFactory.CreateUserFuturesDataTracker(System.String,CryptoExchange.Net.Authentication.ApiCredentials,CryptoExchange.Net.Trackers.UserData.Objects.FuturesUserDataTrackerConfig,HyperLiquid.Net.HyperLiquidEnvironment)">
+            <summary>
+            Create a new futures user data tracker
+            </summary>
+            <param name="userIdentifier">User identifier</param>
+            <param name="config">Configuration</param>
+            <param name="credentials">Credentials</param>
+            <param name="environment">Environment</param>
+        </member>
+        <member name="M:HyperLiquid.Net.Interfaces.IHyperLiquidTrackerFactory.CreateUserFuturesDataTracker(CryptoExchange.Net.Trackers.UserData.Objects.FuturesUserDataTrackerConfig)">
+            <summary>
+            Create a new futures user data tracker
+            </summary>
+            <param name="config">Configuration</param>
         </member>
         <member name="T:HyperLiquid.Net.Objects.HyperLiquidApiAddresses">
             <summary>
