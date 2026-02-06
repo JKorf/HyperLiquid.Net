@@ -169,6 +169,16 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 3.6.0 - 06 Feb 2026
+    * Updated CryptoExchange.Net to version 10.4.0, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
+    * Added HyperLiquidUserSpotDataTracker and HyperLiquidUserFuturesDataTracker
+    * Added additional methods for requesting supported symbols to Shared ISpotSymbolRestClient/IFuturesSymbolRestClient interfaces
+    * Added PositionMode mapping on SharedPosition models
+    * Added Status mapping for SharedDeposit models
+    * Added invalid order size error message mapping
+    * Fixed disposed clients getting returned from UserClientProvider
+    * Fixed SharedSymbol mapping for Shared model updates from websocket
+
 * Version 3.5.1 - 29 Jan 2026
     * Fixed BookTicker websocket subscription not correctly filtering symbols
 
