@@ -12,8 +12,8 @@ namespace HyperLiquid.Net.Clients
     /// <inheritdoc />
     public class HyperLiquidUserClientProvider : IHyperLiquidUserClientProvider
     {
-        private static ConcurrentDictionary<string, IHyperLiquidRestClient> _restClients = new ConcurrentDictionary<string, IHyperLiquidRestClient>();
-        private static ConcurrentDictionary<string, IHyperLiquidSocketClient> _socketClients = new ConcurrentDictionary<string, IHyperLiquidSocketClient>();
+        private ConcurrentDictionary<string, IHyperLiquidRestClient> _restClients = new ConcurrentDictionary<string, IHyperLiquidRestClient>();
+        private ConcurrentDictionary<string, IHyperLiquidSocketClient> _socketClients = new ConcurrentDictionary<string, IHyperLiquidSocketClient>();
 
         private readonly IOptions<HyperLiquidRestOptions> _restOptions;
         private readonly IOptions<HyperLiquidSocketOptions> _socketOptions;
