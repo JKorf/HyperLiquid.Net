@@ -233,5 +233,29 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Book Ticker client
+
+        EndpointOptions<SubscribeBookTickerRequest> IBookTickerSocketClient.SubscribeBookTickerOptions { get; } = new EndpointOptions<SubscribeBookTickerRequest>(false);
+        async Task<ExchangeResult<UpdateSubscription>> IBookTickerSocketClient.SubscribeToBookTickerUpdatesAsync(SubscribeBookTickerRequest request, Action<DataEvent<SharedBookTicker>> handler, CancellationToken ct)
+        {
+            var validationError = ((IBookTickerSocketClient)this).SubscribeBookTickerOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            if (validationError != null)
+                return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
+
+            var symbol = request.Symbol!.GetSymbol(FormatSymbol);
+            var result = await SubscribeToBookTickerUpdatesAsync(symbol, update => 
+            handler(update.ToType(
+                new SharedBookTicker(
+                    ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol),
+                    update.Data.Symbol,
+                    update.Data.BestAsk.Price,
+                    update.Data.BestAsk.Quantity,
+                    update.Data.BestBid.Price,
+                    update.Data.BestBid.Quantity))), ct).ConfigureAwait(false);
+
+            return new ExchangeResult<UpdateSubscription>(Exchange, result);
+        }
+
+        #endregion
     }
 }

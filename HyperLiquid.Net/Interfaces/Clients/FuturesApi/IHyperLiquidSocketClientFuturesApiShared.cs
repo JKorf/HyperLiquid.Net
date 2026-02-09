@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         IUserTradeSocketClient,
         IFuturesOrderSocketClient,
         IBalanceSocketClient,
-        IPositionSocketClient
+        IPositionSocketClient,
+        IBookTickerSocketClient
     {
     }
 }
