@@ -43,7 +43,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         #region Klines Client
 
-        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(SharedPaginationSupport.Descending, true, 1000, false,
+        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(true, true, true, 1000, false,
             SharedKlineInterval.OneMinute,
             SharedKlineInterval.FiveMinutes,
             SharedKlineInterval.FifteenMinutes,
@@ -60,7 +60,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             MaxTotalDataPoints = 5000
         };
 
-        async Task<ExchangeWebResult<SharedKline[]>> IKlineRestClient.GetKlinesAsync(GetKlinesRequest request, INextPageToken? pageToken, CancellationToken ct)
+        async Task<ExchangeWebResult<SharedKline[]>> IKlineRestClient.GetKlinesAsync(GetKlinesRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var interval = (Enums.KlineInterval)request.Interval;
             if (!Enum.IsDefined(typeof(Enums.KlineInterval), interval))
@@ -72,44 +72,46 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             // Determine pagination
             // Data is normally returned oldest first, so to do newest first pagination we have to do some calc
-            DateTime endTime = request.EndTime ?? DateTime.UtcNow;
-            DateTime? startTime = request.StartTime;
-            if (pageToken is DateTimeToken dateTimeToken)
-                endTime = dateTimeToken.LastTime;
+            //DateTime endTime = request.EndTime ?? DateTime.UtcNow;
+            //DateTime? startTime = request.StartTime;
+            //if (pageToken is DateTimeToken dateTimeToken)
+            //    endTime = dateTimeToken.LastTime;
 
-            var limit = request.Limit ?? 1000;
-            if (startTime == null || startTime < endTime)
-            {
-                var offset = (int)interval * (limit - 1);
-                startTime = endTime.AddSeconds(-offset);
-            }
+            //var limit = request.Limit ?? 1000;
+            //if (startTime == null || startTime < endTime)
+            //{
+            //    var offset = (int)interval * (limit - 1);
+            //    startTime = endTime.AddSeconds(-offset);
+            //}
 
-            if (startTime < request.StartTime)
-                startTime = request.StartTime;
+            //if (startTime < request.StartTime)
+            //    startTime = request.StartTime;
 
             // Get data
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
             var result = await ExchangeData.GetKlinesAsync(
                 symbol,
                 interval,
-                startTime ?? DateTime.UtcNow.AddSeconds((-(int)interval) * 100),
-                endTime,
+                default,
+                default,
+                //startTime ?? DateTime.UtcNow.AddSeconds((-(int)interval) * 100),
+                //endTime,
                 ct: ct
                 ).ConfigureAwait(false);
             if (!result)
                 return new ExchangeWebResult<SharedKline[]>(Exchange, request.Symbol.TradingMode, result.As<SharedKline[]>(default));
 
             // Get next token
-            DateTimeToken? nextToken = null;
-            if (result.Data.Count() == limit)
-            {
-                var minOpenTime = result.Data.Min(x => x.OpenTime);
-                if (request.StartTime == null || minOpenTime > request.StartTime.Value)
-                    nextToken = new DateTimeToken(minOpenTime.AddSeconds(-(int)(interval - 1)));
-            }
+            //DateTimeToken? nextToken = null;
+            //if (result.Data.Count() == limit)
+            //{
+            //    var minOpenTime = result.Data.Min(x => x.OpenTime);
+            //    if (request.StartTime == null || minOpenTime > request.StartTime.Value)
+            //        nextToken = new DateTimeToken(minOpenTime.AddSeconds(-(int)(interval - 1)));
+            //}
 
             return result.AsExchangeResult<SharedKline[]>(Exchange, request.Symbol.TradingMode, result.Data.AsEnumerable().Reverse().Select(x => 
-                new SharedKline(request.Symbol, symbol, x.OpenTime, x.ClosePrice, x.HighPrice, x.LowPrice, x.OpenPrice, x.Volume)).ToArray(), nextToken);
+                new SharedKline(request.Symbol, symbol, x.OpenTime, x.ClosePrice, x.HighPrice, x.LowPrice, x.OpenPrice, x.Volume)).ToArray()/*, nextToken*/);
         }
 
         #endregion
@@ -295,33 +297,33 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #endregion
 
         #region Funding Rate client
-        GetFundingRateHistoryOptions IFundingRateRestClient.GetFundingRateHistoryOptions { get; } = new GetFundingRateHistoryOptions(SharedPaginationSupport.Ascending, true, 500, false);
+        GetFundingRateHistoryOptions IFundingRateRestClient.GetFundingRateHistoryOptions { get; } = new GetFundingRateHistoryOptions(true, false, true, 500, false);
 
-        async Task<ExchangeWebResult<SharedFundingRate[]>> IFundingRateRestClient.GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, INextPageToken? pageToken, CancellationToken ct)
+        async Task<ExchangeWebResult<SharedFundingRate[]>> IFundingRateRestClient.GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var validationError = ((IFundingRateRestClient)this).GetFundingRateHistoryOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
                 return new ExchangeWebResult<SharedFundingRate[]>(Exchange, validationError);
 
-            DateTime? fromTime = null;
-            if (pageToken is DateTimeToken token)
-                fromTime = token.LastTime;
+            //DateTime? fromTime = null;
+            //if (pageToken is DateTimeToken token)
+            //    fromTime = token.LastTime;
 
             // Get data
             var result = await ExchangeData.GetFundingRateHistoryAsync(
                 request.Symbol!.GetSymbol(FormatSymbol),
-                startTime: fromTime ?? request.StartTime ?? DateTime.UtcNow.AddDays(-30),
-                endTime: request.EndTime,
+                request.StartTime ?? DateTime.UtcNow.AddDays(-30),
+                //endTime: request.EndTime,
                 ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<SharedFundingRate[]>(Exchange, null, default);
 
-            DateTimeToken? nextToken = null;
-            if (result.Data.Count() == (request.Limit ?? 500))
-                nextToken = new DateTimeToken(result.Data.Max(x => x.Timestamp).AddSeconds(1));
+            //DateTimeToken? nextToken = null;
+            //if (result.Data.Count() == (request.Limit ?? 500))
+            //    nextToken = new DateTimeToken(result.Data.Max(x => x.Timestamp).AddSeconds(1));
 
             // Return
-            return result.AsExchangeResult<SharedFundingRate[]>(Exchange, request.Symbol.TradingMode, result.Data.Select(x => new SharedFundingRate(x.FundingRate, x.Timestamp)).ToArray(), nextToken);
+            return result.AsExchangeResult<SharedFundingRate[]>(Exchange, request.Symbol.TradingMode, result.Data.Select(x => new SharedFundingRate(x.FundingRate, x.Timestamp)).ToArray()/*, nextToken*/);
         }
         #endregion
 
@@ -516,8 +518,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             }).ToArray());
         }
 
-        PaginatedEndpointOptions<GetClosedOrdersRequest> IFuturesOrderRestClient.GetClosedFuturesOrdersOptions { get; } = new PaginatedEndpointOptions<GetClosedOrdersRequest>(SharedPaginationSupport.NotSupported, false, 2000, true);
-        async Task<ExchangeWebResult<SharedFuturesOrder[]>> IFuturesOrderRestClient.GetClosedFuturesOrdersAsync(GetClosedOrdersRequest request, INextPageToken? pageToken, CancellationToken ct)
+        PaginatedEndpointOptions<GetClosedOrdersRequest> IFuturesOrderRestClient.GetClosedFuturesOrdersOptions { get; } = new PaginatedEndpointOptions<GetClosedOrdersRequest>(false, false, false, 2000, true);
+        async Task<ExchangeWebResult<SharedFuturesOrder[]>> IFuturesOrderRestClient.GetClosedFuturesOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetClosedFuturesOrdersOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
@@ -589,21 +591,21 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             }).ToArray());
         }
 
-        PaginatedEndpointOptions<GetUserTradesRequest> IFuturesOrderRestClient.GetFuturesUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(SharedPaginationSupport.Ascending, true, 2000, true);
-        async Task<ExchangeWebResult<SharedUserTrade[]>> IFuturesOrderRestClient.GetFuturesUserTradesAsync(GetUserTradesRequest request, INextPageToken? pageToken, CancellationToken ct)
+        PaginatedEndpointOptions<GetUserTradesRequest> IFuturesOrderRestClient.GetFuturesUserTradesOptions { get; } = new PaginatedEndpointOptions<GetUserTradesRequest>(true, false, true, 2000, true);
+        async Task<ExchangeWebResult<SharedUserTrade[]>> IFuturesOrderRestClient.GetFuturesUserTradesAsync(GetUserTradesRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetFuturesUserTradesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
                 return new ExchangeWebResult<SharedUserTrade[]>(Exchange, validationError);
 
-            // Determine page token
-            DateTime? fromTimestamp = null;
-            if (pageToken is DateTimeToken dateTimeToken)
-                fromTimestamp = dateTimeToken.LastTime;
+            //// Determine page token
+            //DateTime? fromTimestamp = null;
+            //if (pageToken is DateTimeToken dateTimeToken)
+            //    fromTimestamp = dateTimeToken.LastTime;
 
             // Get data
             var orders = await Trading.GetUserTradesByTimeAsync(
-                startTime: fromTimestamp ?? request.StartTime ?? DateTime.UtcNow.AddDays(-7),
+                startTime: request.StartTime ?? DateTime.UtcNow.AddDays(-7),
                 endTime: request.EndTime ?? DateTime.UtcNow,
                 ct: ct
                 ).ConfigureAwait(false);
@@ -613,9 +615,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var data = orders.Data.Where(x => x.Symbol == request.Symbol!.GetSymbol(FormatSymbol));
 
             // Get next token
-            DateTimeToken? nextToken = null;
-            if (orders.Data.Count() == 2000)
-                nextToken = new DateTimeToken(orders.Data.Max(o => o.Timestamp).AddMilliseconds(1));
+            //DateTimeToken? nextToken = null;
+            //if (orders.Data.Count() == 2000)
+            //    nextToken = new DateTimeToken(orders.Data.Max(o => o.Timestamp).AddMilliseconds(1));
 
             return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, TradingMode.PerpetualLinear, data.Select(x => new SharedUserTrade(
                 ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
@@ -630,7 +632,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 Fee = x.Fee,
                 FeeAsset = x.FeeToken,
                 Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
-            }).ToArray(), nextToken);
+            }).ToArray()/*, nextToken*/);
         }
 
         EndpointOptions<CancelOrderRequest> IFuturesOrderRestClient.CancelFuturesOrderOptions { get; } = new EndpointOptions<CancelOrderRequest>(true);
