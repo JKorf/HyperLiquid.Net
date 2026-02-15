@@ -255,9 +255,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTrade[]>>((receiveTime, originalData, invocation, data) =>
             {
-                var timestamp = data.Data.Max(x => x.Timestamp);
-                if (invocation != 1)
-                    _baseClient.UpdateTimeOffset(timestamp);
+                DateTime? timestamp = data.Data.Length != 0 ? data.Data.Max(x => x.Timestamp) : null;
+                if (invocation != 1 && timestamp != null)
+                    _baseClient.UpdateTimeOffset(timestamp.Value);
 
                 foreach (var trade in data.Data)
                     trade.Symbol = symbol;

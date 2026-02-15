@@ -993,9 +993,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOrderStatus[]>>((receiveTime, originalData, invocation, data) =>
             {
-                var timestamp = data.Data.Max(x => x.Timestamp);
-                if (invocation != 1)
-                    _baseClient.UpdateTimeOffset(timestamp);
+                DateTime? timestamp = data.Data.Length != 0 ? data.Data.Max(x => x.Timestamp) : null;
+                if (invocation != 1 && timestamp != null)
+                    _baseClient.UpdateTimeOffset(timestamp.Value);
 
                 foreach (var order in data.Data)
                 {
@@ -1046,9 +1046,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOrderHistoryUpdate>>((receiveTime, originalData, invocation, data) =>
             {
-                var timestamp = data.Data.Orders.Max(x => x.Order.Timestamp);
-                if (invocation != 1)
-                    _baseClient.UpdateTimeOffset(timestamp);
+                DateTime? timestamp = data.Data.Orders.Length != 0 ? data.Data.Orders.Max(x => x.Order.Timestamp) : null;
+                if (invocation != 1 && timestamp != null)
+                    _baseClient.UpdateTimeOffset(timestamp.Value);
 
                 foreach (var order in data.Data.Orders)
                 {
