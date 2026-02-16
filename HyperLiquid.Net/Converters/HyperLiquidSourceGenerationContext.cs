@@ -25,6 +25,11 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidPerpDexLimit))]
     [JsonSerializable(typeof(HyperLiquidPerpDexStatus))]
 
+    [JsonSerializable(typeof(HyperLiquidStakingHistory[]))]
+    [JsonSerializable(typeof(HyperLiquidStakingSummary))]
+    [JsonSerializable(typeof(HyperLiquidStakingDelegation[]))]
+    [JsonSerializable(typeof(HyperLiquidStakingReward[]))]
+
     // End manual defined attributes
 
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidBookTicker>))]

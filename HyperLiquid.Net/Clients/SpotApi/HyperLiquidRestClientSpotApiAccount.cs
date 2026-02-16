@@ -396,5 +396,76 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Get Staking Delegations
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "delegations" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidStakingDelegation[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Get Staking Summary
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "delegatorSummary" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidStakingSummary>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Get Staking History
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "delegatorHistory" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidStakingHistory[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Get Staking History
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "delegatorRewards" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidStakingReward[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
     }
 }
