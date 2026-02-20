@@ -42,7 +42,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #region Klines Client
 
-        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(true, true, true, 1000, false,
+        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(false, true, true, 1000, false,
             SharedKlineInterval.OneMinute,
             SharedKlineInterval.FiveMinutes,
             SharedKlineInterval.FifteenMinutes,
@@ -69,54 +69,34 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return new ExchangeWebResult<SharedKline[]>(Exchange, validationError);
 
-#warning this doesn't work correctly, should have a seperate function for kline calculation as we know the time ranges
-            var direction = request.Direction ?? DataDirection.Ascending;
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var limit = request.Limit ?? 1000;
-            var paginationParameters = ExchangeHelpers.ApplyPaginationParameters(
-                direction,
-                pageRequest,
-                ExchangeHelpers.PaginationFilterType.Time,
-                ExchangeHelpers.PaginationFilterType.Time,
-                ExchangeHelpers.TimeParameterSetType.Both,
-                request.StartTime ?? (request.EndTime ?? DateTime.UtcNow).AddSeconds(-(int)interval * (limit - 1)),
-                request.EndTime ?? DateTime.UtcNow);
+            int limit = request.Limit ?? 1000;
+            var direction = DataDirection.Descending;
+            var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest);
 
             // Get data
             var result = await ExchangeData.GetKlinesAsync(
                 symbol,
                 interval,
-                startTime: paginationParameters.StartTime!.Value,
-                endTime: paginationParameters.EndTime!.Value,
-                /*startTime ?? DateTime.UtcNow.AddSeconds((-(int)interval) * 100)*/
+                startTime: pageParams.StartTime!.Value,
+                endTime: pageParams.EndTime!.Value,
                 ct: ct
                 ).ConfigureAwait(false);
             if (!result)
                 return new ExchangeWebResult<SharedKline[]>(Exchange, TradingMode.Spot, result.As<SharedKline[]>(default));
 
-            var nextPageRequest = ExchangeHelpers.GetNextPageRequest(
-               () =>
-               {
-                   if (direction == DataDirection.Ascending)
-                       return PageRequest.NextStartTimeAsc(result.Data.Select(x => x.OpenTime));
-                   else
-                       return PageRequest.NextEndTimeDesc(result.Data.Select(x => x.OpenTime));
-               },
-                result.Data.Length,
-                result.Data.Select(x => x.OpenTime),
-                limit,
-                pageRequest,
-                ExchangeHelpers.TimeParameterSetType.OnlyMatchingDirection,
-                paginationParameters.StartTime,
-                direction,
-                request.StartTime,
-                request.EndTime);
+            var nextPageRequest = Pagination.GetNextPageRequest(
+                     () => Pagination.NextPageFromTime(pageParams, result.Data.Min(x => x.OpenTime)),
+                     result.Data.Length,
+                     result.Data.Select(x => x.OpenTime),
+                     request.StartTime,
+                     request.EndTime ?? DateTime.UtcNow,
+                     pageParams);
 
             return result.AsExchangeResult(
-                Exchange,
-                TradingMode.Spot,
-                ExchangeHelpers.ApplyFilter(result.Data, x => x.OpenTime, request.StartTime, request.EndTime, direction)
-                    .Take(limit)
+                    Exchange,
+                    request.Symbol.TradingMode,
+                    ExchangeHelpers.ApplyFilter(result.Data, x => x.OpenTime, request.StartTime, request.EndTime, direction)
                     .Select(x => 
                         new SharedKline(
                             request.Symbol,
@@ -490,47 +470,52 @@ namespace HyperLiquid.Net.Clients.SpotApi
         {
             RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 per request / 10000 results in total are returned from the API"
         };
-        async Task<ExchangeWebResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? pageToken, CancellationToken ct)
+        async Task<ExchangeWebResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? pageRequest, CancellationToken ct)
         {
             var validationError = ((ISpotOrderRestClient)this).GetSpotUserTradesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
                 return new ExchangeWebResult<SharedUserTrade[]>(Exchange, validationError);
-
-            //// Determine page token
-            //DateTime? fromTimestamp = null;
-            //if (pageToken is DateTimeToken dateTimeToken)
-            //    fromTimestamp = dateTimeToken.LastTime;
+            
+            int limit = request.Limit ?? 2000;
+            var direction = DataDirection.Ascending;
+            var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest, false);
 
             // Get data
-            var orders = await Trading.GetUserTradesByTimeAsync(
-                startTime: request.StartTime ?? DateTime.UtcNow.AddDays(-7),
-                //endTime: request.EndTime ?? DateTime.UtcNow,
+            var result = await Trading.GetUserTradesByTimeAsync(
+                startTime: pageParams.StartTime ?? DateTime.UtcNow.AddDays(-7),
                 ct: ct
                 ).ConfigureAwait(false);
-            if (!orders)
-                return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, null, default);
+            if (!result)
+                return result.AsExchangeResult<SharedUserTrade[]>(Exchange, null, default);
 
-            var data = orders.Data.Where(x => x.Symbol == request.Symbol!.GetSymbol(FormatSymbol));
+            var data = result.Data.Where(x => x.Symbol == request.Symbol!.GetSymbol(FormatSymbol));
+            var nextPageRequest = Pagination.GetNextPageRequest(
+                     () => Pagination.NextPageFromTime(pageParams, result.Data.Max(x => x.Timestamp)),
+                     result.Data.Length,
+                     result.Data.Select(x => x.Timestamp),
+                     request.StartTime,
+                     request.EndTime ?? DateTime.UtcNow,
+                     pageParams);
 
-            //// Get next token
-            //DateTimeToken? nextToken = null;
-            //if (orders.Data.Count() == 2000)
-            //    nextToken = new DateTimeToken(orders.Data.Max(o => o.Timestamp).AddMilliseconds(1));
-
-            return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, TradingMode.Spot, data.Select(x => new SharedUserTrade(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
-                x.Symbol,
-                x.OrderId.ToString(),
-                x.TradeId.ToString(),
-                x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                x.Quantity,
-                x.Price,
-                x.Timestamp)
-            {
-                Fee = x.Fee,
-                FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
-                Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
-            }).ToArray()/*, nextToken*/);
+            return result.AsExchangeResult(
+                    Exchange,
+                    request.Symbol!.TradingMode,
+                    ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
+                    .Select(x => 
+                        new SharedUserTrade(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
+                        x.Symbol,
+                        x.OrderId.ToString(),
+                        x.TradeId.ToString(),
+                        x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                        x.Quantity,
+                        x.Price,
+                        x.Timestamp)
+                    {
+                        Fee = x.Fee,
+                        FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
+                        Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
+                    }).ToArray(), nextPageRequest);
         }
 
         EndpointOptions<CancelOrderRequest> ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new EndpointOptions<CancelOrderRequest>(true);
