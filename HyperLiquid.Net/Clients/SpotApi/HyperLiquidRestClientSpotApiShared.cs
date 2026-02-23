@@ -392,7 +392,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             }).ToArray());
         }
 
-        GetClosedOrdersOptions ISpotOrderRestClient.GetClosedSpotOrdersOptions { get; } = new GetClosedOrdersOptions(false, false, false, 2000)
+        GetClosedOrdersOptions ISpotOrderRestClient.GetClosedSpotOrdersOptions { get; } = new GetClosedOrdersOptions(true, true, false, 2000)
         {
             RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 results are returned from the API"
         };
@@ -407,32 +407,44 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!orders)
                 return orders.AsExchangeResult<SharedSpotOrder[]>(Exchange, null, default);
 
+            var direction = request.Direction ?? DataDirection.Ascending;
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
             var data = orders.Data.Where(x => 
                 x.Order.SymbolType == Enums.SymbolType.Spot 
                 && x.Order.Symbol == symbol
                 && x.Status != Enums.OrderStatus.Open);
+
+            if (direction == DataDirection.Ascending)
+                data.OrderBy(x => x.Timestamp);
+            if (direction == DataDirection.Descending)
+                data.OrderByDescending(x => x.Timestamp);
             if (request.Limit != null)
                 data = data.Take(request.Limit.Value);
 
-            return orders.AsExchangeResult<SharedSpotOrder[]>(Exchange, TradingMode.Spot, data.Select(x => new SharedSpotOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol), 
-                x.Order.Symbol!,
-                x.Order.OrderId.ToString(),
-                ParseOrderType(x.Order.OrderType),
-                x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                ParseOrderStatus(x.Status),
-                x.Order.Timestamp)
-            {
-                TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
-                ClientOrderId = x.Order.ClientOrderId,
-                OrderPrice = x.Order.Price,
-                OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
-                QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
-                UpdateTime = x.Timestamp,
-                TriggerPrice = x.Order.TriggerPrice,
-                IsTriggerOrder = x.Order.TriggerPrice > 0
-            }).ToArray());
+            return orders.AsExchangeResult(
+                        Exchange,
+                        request.Symbol.TradingMode,
+                        ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
+                        .Select(x =>
+                            new SharedSpotOrder(
+                                ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol), 
+                                x.Order.Symbol!,
+                                x.Order.OrderId.ToString(),
+                                ParseOrderType(x.Order.OrderType),
+                                x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                                ParseOrderStatus(x.Status),
+                                x.Order.Timestamp)
+                            {
+                                TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
+                                ClientOrderId = x.Order.ClientOrderId,
+                                OrderPrice = x.Order.Price,
+                                OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
+                                QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
+                                UpdateTime = x.Timestamp,
+                                TriggerPrice = x.Order.TriggerPrice,
+                                IsTriggerOrder = x.Order.TriggerPrice > 0
+                            })
+                        .ToArray());
         }
 
         EndpointOptions<GetOrderTradesRequest> ISpotOrderRestClient.GetSpotOrderTradesOptions { get; } = new EndpointOptions<GetOrderTradesRequest>(true);

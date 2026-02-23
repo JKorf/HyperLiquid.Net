@@ -515,7 +515,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             }).ToArray());
         }
 
-        GetClosedOrdersOptions IFuturesOrderRestClient.GetClosedFuturesOrdersOptions { get; } = new GetClosedOrdersOptions(false, false, false, 2000);
+        GetClosedOrdersOptions IFuturesOrderRestClient.GetClosedFuturesOrdersOptions { get; } = new GetClosedOrdersOptions(true, true, false, 2000);
         async Task<ExchangeWebResult<SharedFuturesOrder[]>> IFuturesOrderRestClient.GetClosedFuturesOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetClosedFuturesOrdersOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
@@ -536,25 +536,30 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (request.Limit != null)
                 data = data.Take(request.Limit.Value);
 
-            return orders.AsExchangeResult<SharedFuturesOrder[]>(Exchange, request.Symbol.TradingMode, data.Select(x => new SharedFuturesOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol!), 
-                x.Order.Symbol!,
-                x.Order.OrderId.ToString(),
-                ParseOrderType(x.Order.OrderType),
-                x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                ParseOrderStatus(x.Status),
-                x.Order.Timestamp)
-            {
-                TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
-                ClientOrderId = x.Order.ClientOrderId,
-                OrderPrice = x.Order.Price,
-                OrderQuantity = new SharedOrderQuantity(x.Order.Quantity, contractQuantity: x.Order.Quantity),
-                QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining, contractQuantity: x.Order.Quantity - x.Order.QuantityRemaining),
-                UpdateTime = x.Timestamp,
-                ReduceOnly = x.Order.ReduceOnly,
-                TriggerPrice = x.Order.TriggerPrice == 0 ? null : x.Order.TriggerPrice,
-                IsTriggerOrder = x.Order.TriggerPrice > 0
-            }).ToArray());
+            return orders.AsExchangeResult(
+                Exchange,
+                request.Symbol.TradingMode,
+                ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, request.Direction ?? DataDirection.Descending)
+                .Select(x =>
+                    new SharedFuturesOrder(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol!), 
+                        x.Order.Symbol!,
+                        x.Order.OrderId.ToString(),
+                        ParseOrderType(x.Order.OrderType),
+                        x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                        ParseOrderStatus(x.Status),
+                        x.Order.Timestamp)
+                    {
+                        TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
+                        ClientOrderId = x.Order.ClientOrderId,
+                        OrderPrice = x.Order.Price,
+                        OrderQuantity = new SharedOrderQuantity(x.Order.Quantity, contractQuantity: x.Order.Quantity),
+                        QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining, contractQuantity: x.Order.Quantity - x.Order.QuantityRemaining),
+                        UpdateTime = x.Timestamp,
+                        ReduceOnly = x.Order.ReduceOnly,
+                        TriggerPrice = x.Order.TriggerPrice == 0 ? null : x.Order.TriggerPrice,
+                        IsTriggerOrder = x.Order.TriggerPrice > 0
+                    }).ToArray());
         }
 
         EndpointOptions<GetOrderTradesRequest> IFuturesOrderRestClient.GetFuturesOrderTradesOptions { get; } = new EndpointOptions<GetOrderTradesRequest>(true);
