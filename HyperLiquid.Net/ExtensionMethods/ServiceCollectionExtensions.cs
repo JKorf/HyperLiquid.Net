@@ -13,6 +13,7 @@ using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.SymbolOrderBooks;
 using CryptoExchange.Net.Interfaces.Clients;
+using System.Threading;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -95,8 +96,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new HyperLiquidRestClient(client, serviceProvider.GetRequiredService<ILoggerFactory>(), serviceProvider.GetRequiredService<IOptions<HyperLiquidRestOptions>>());
             }).ConfigurePrimaryHttpMessageHandler((serviceProvider) => {
                 var options = serviceProvider.GetRequiredService<IOptions<HyperLiquidRestOptions>>().Value;
-                return LibraryHelpers.CreateHttpClientMessageHandler(options.Proxy, options.HttpKeepAliveInterval);
-            });
+                return LibraryHelpers.CreateHttpClientMessageHandler(options);
+            }).SetHandlerLifetime(Timeout.InfiniteTimeSpan);
             services.Add(new ServiceDescriptor(typeof(IHyperLiquidSocketClient), x => { return new HyperLiquidSocketClient(x.GetRequiredService<IOptions<HyperLiquidSocketOptions>>(), x.GetRequiredService<ILoggerFactory>()); }, socketClientLifeTime ?? ServiceLifetime.Singleton));
 
             services.AddTransient<ICryptoRestClient, CryptoRestClient>();
@@ -106,7 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ITrackerFactory, HyperLiquidTrackerFactory>();
             services.AddSingleton<IHyperLiquidUserClientProvider, HyperLiquidUserClientProvider>(x =>
             new HyperLiquidUserClientProvider(
-                x.GetRequiredService<HttpClient>(),
+                x.GetRequiredService<IHttpClientFactory>().CreateClient(typeof(IHyperLiquidRestClient).Name),
                 x.GetRequiredService<ILoggerFactory>(),
                 x.GetRequiredService<IOptions<HyperLiquidRestOptions>>(),
                 x.GetRequiredService<IOptions<HyperLiquidSocketOptions>>()));
