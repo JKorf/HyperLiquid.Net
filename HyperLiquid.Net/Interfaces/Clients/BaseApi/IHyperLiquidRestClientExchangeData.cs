@@ -15,7 +15,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
     {
         /// <summary>
         /// Get mid prices for all assets, includes both Spot and Futures symbols
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: allMids)
+        /// </para>
         /// </summary>
         /// <param name="dex">Filter by DEX</param>
         /// <param name="ct">Cancellation token</param>
@@ -23,7 +28,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get order book
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#l2-book-snapshot" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#l2-book-snapshot" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: l2Book)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="numberSignificantFigures">Asset name</param>
@@ -33,7 +43,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get klines/candlestick data
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: candleSnapshot)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="interval">Kline interval</param>

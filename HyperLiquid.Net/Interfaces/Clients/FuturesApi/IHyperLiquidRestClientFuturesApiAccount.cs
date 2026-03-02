@@ -15,7 +15,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     {
         /// <summary>
         /// Get account info, balances and open positions
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: clearinghouseState)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="dex">The DEX to request data for, leave null for default perp DEX</param>
@@ -24,7 +29,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get user funding history
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: userFunding)
+        /// </para>
         /// </summary>
         /// <param name="startTime">Filter by start time</param>
         /// <param name="endTime">Filter by end time</param>
@@ -34,7 +44,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get user active symbols
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-active-asset-data" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-active-asset-data" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: activeAssetData)
+        /// </para>
         /// </summary>
         /// <param name="symbol">The symbol, for example `ETH`</param>
         /// <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
@@ -43,7 +58,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get whether HIP-3 DEX abstraction enabled
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-hip-3-dex-abstraction-state" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-hip-3-dex-abstraction-state" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: userDexAbstraction)
+        /// </para>
         /// </summary>
         /// <param name="user"></param>
         /// <param name="ct"></param>
@@ -53,7 +73,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <summary>
         /// Toggle HIP-3 DEX abstraction. If set, actions on HIP-3 perps will automatically transfer collateral from validator-operated USDC perps balance for HIP-3 DEXs where USDC is the collateral token, and spot otherwise. 
         /// When HIP-3 DEX abstraction is active, collateral is returned to the same source (validator-operated USDC perps or spot balance) when released from positions or open orders.
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#enable-hip-3-dex-abstraction" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#enable-hip-3-dex-abstraction" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: userDexAbstraction)
+        /// </para>
         /// </summary>
         /// <param name="enabled"></param>
         /// <param name="address"></param>

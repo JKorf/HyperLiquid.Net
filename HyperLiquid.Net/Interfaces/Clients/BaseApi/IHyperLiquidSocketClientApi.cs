@@ -17,7 +17,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
     {
         /// <summary>
         /// Subscribe to mid price updates, will send updates for both Spot and Futures symbols
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: allMids)
+        /// </para>
         /// </summary>
         /// <param name="onMessage">The event handler for the received data</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
@@ -26,7 +31,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to kline/candlestick data
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: candle)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="interval">Kline interval</param>
@@ -37,7 +47,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to order book updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: l2Book)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="onMessage">The data handler</param>
@@ -49,7 +64,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to trade updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: trades)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="onMessage">The data handler</param>
@@ -59,7 +79,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to book ticker updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: bbo)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="onMessage">The data handler</param>
@@ -69,7 +94,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to order updates, will provided updates for both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: orderUpdates)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>
@@ -79,7 +109,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to user trade updates, will provided updates for both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userFills)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>
@@ -89,7 +124,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to user non-order updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userEvents)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onTradeUpdate">User trade data handler</param>
@@ -108,7 +148,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to user ledger updates (excluding funding updates)will provided updates for both Spot and Futures changes
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userNonFundingLedgerUpdates)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>
@@ -118,7 +163,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to user updates, including Spot and Futures balances
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: webData2)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>
@@ -128,7 +178,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to Time Weighted Average Price trade updates, will provided updates for both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userTwapSliceFills)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>
@@ -138,7 +193,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Subscribe to Time Weighted Average Price order history updates, will provided updates for both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userTwapHistory)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>

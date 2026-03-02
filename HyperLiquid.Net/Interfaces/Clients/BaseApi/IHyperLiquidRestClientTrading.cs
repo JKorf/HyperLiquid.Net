@@ -15,7 +15,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
     {
         /// <summary>
         /// Get open orders, will return both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: openOrders)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
         /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
@@ -24,7 +29,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get open orders including with additional info, will return both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: frontendOpenOrders)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
         /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
@@ -33,7 +43,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get user trades, will return both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: userFills)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to request user trades for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
@@ -41,7 +56,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get user trades by time filter, will return both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills-by-time" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills-by-time" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: userFillsByTime)
+        /// </para>
         /// </summary>
         /// <param name="startTime">Filter by start time</param>
         /// <param name="endTime">Filter by end time</param>
@@ -57,7 +77,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get order info by id
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-order-status-by-oid-or-cloid" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-order-status-by-oid-or-cloid" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: orderStatus)
+        /// </para>
         /// </summary>
         /// <param name="orderId">Get order by order id. Either this or clientOrderId should be provided</param>
         /// <param name="clientOrderId">Get order by client order id. Either this or orderId should be provided</param>
@@ -67,7 +92,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Get user order history, will return both Spot and Futures orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-historical-orders" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-historical-orders" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: historicalOrders)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to request order for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
@@ -75,7 +105,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel an order
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: cancel)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="orderId">Order id</param>
@@ -86,7 +121,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel multiple orders
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: cancel)
+        /// </para>
         /// </summary>
         /// <param name="requests">Cancel requests</param>
         /// <param name="vaultAddress">Vault address</param>
@@ -96,7 +136,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel order by client order id
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: cancelByCloid)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="clientOrderId">Client order id</param>
@@ -107,7 +152,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel multiple orders by client order id
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: cancelByCloid)
+        /// </para>
         /// </summary>
         /// <param name="requests">Cancel requests</param>
         /// <param name="vaultAddress">Vault address</param>
@@ -117,7 +167,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Place a new order
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: order)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="side">Order side</param>
@@ -152,7 +207,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Place multiple new orders in a single call
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: order)
+        /// </para>
         /// </summary>
         /// <param name="orders">Orders to place</param>
         /// <param name="tpSlGrouping">Take profit / Stop loss grouping</param>
@@ -168,7 +228,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel all orders after the provided timeout has passed. Can be called at an interval to act as deadman switch. Pass null to cancel an existing timeout. This will cancel both Spot and Futures orders. This functionality is only available after achieving a certain trading volume.
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: scheduleCancel)
+        /// </para>
         /// </summary>
         /// <param name="timeout">Timeout after which to cancel all order, or null to cancel the countdown</param>
         /// <param name="vaultAddress">Vault address</param>
@@ -178,7 +243,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Edit an existing order
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-an-order" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-an-order" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: modify)
+        /// </para>
         /// </summary>
         /// <param name="orderId">Edit order by order id, either this or clientOrderId should be provided</param>
         /// <param name="clientOrderId">Edit order by client order id, either this or orderId should be provided</param>
@@ -216,7 +286,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Edit multiple orders in a single call
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: batchModify)
+        /// </para>
         /// </summary>
         /// <param name="requests">Edit requests</param>
         /// <param name="vaultAddress">Vault address</param>
@@ -230,7 +305,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Place a Time Weighted Average Price order
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-a-twap-order" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-a-twap-order" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: twapOrder)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="orderSide">Order side</param>
@@ -254,7 +334,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 
         /// <summary>
         /// Cancel a Time Weighted Average Price order
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-a-twap-order" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-a-twap-order" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: twapCancel)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
         /// <param name="twapId">TWAP order id</param>

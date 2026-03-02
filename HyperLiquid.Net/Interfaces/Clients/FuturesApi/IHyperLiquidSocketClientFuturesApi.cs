@@ -16,7 +16,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     {
         /// <summary>
         /// Subscribe to symbol updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: activeAssetCtx)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example `ETH`</param>
         /// <param name="onMessage">The data handler</param>
@@ -26,7 +31,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Subscribe to user symbol updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: activeAssetData)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="symbol">Symbol name, for example `ETH`</param>
@@ -37,7 +47,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Subscribe to user funding updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: userFundings)
+        /// </para>
         /// </summary>
         /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
         /// <param name="onMessage">The data handler</param>

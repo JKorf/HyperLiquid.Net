@@ -15,7 +15,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     {
         /// <summary>
         /// Set leverage for a symbol
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: updateLeverage)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "ETH"</param>
         /// <param name="leverage">New leverage</param>
@@ -33,7 +38,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Add or remove margin from isolated position
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: updateIsolatedMargin)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "ETH"</param>
         /// <param name="updateValue">Change value</param>

@@ -16,7 +16,12 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     {
         /// <summary>
         /// Subscribe to spot symbol updates
-        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: activeAssetCtx)
+        /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example `HYPE/USDC`</param>
         /// <param name="onMessage">The data handler</param>
