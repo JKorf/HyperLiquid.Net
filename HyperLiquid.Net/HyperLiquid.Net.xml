@@ -2436,7 +2436,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetPricesAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get mid prices for all assets, includes both Spot and Futures symbols
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /><br />
+            Endpoint:<br />
+            POST /info (type: allMids)
+            </para>
             </summary>
             <param name="dex">Filter by DEX</param>
             <param name="ct">Cancellation token</param>
@@ -2444,7 +2449,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetOrderBookAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Get order book
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#l2-book-snapshot" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#l2-book-snapshot" /><br />
+            Endpoint:<br />
+            POST /info (type: l2Book)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="numberSignificantFigures">Asset name</param>
@@ -2454,7 +2464,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientExchangeData.GetKlinesAsync(System.String,HyperLiquid.Net.Enums.KlineInterval,System.DateTime,System.DateTime,System.Threading.CancellationToken)">
             <summary>
             Get klines/candlestick data
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot" /><br />
+            Endpoint:<br />
+            POST /info (type: candleSnapshot)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="interval">Kline interval</param>
@@ -2470,7 +2485,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get open orders, will return both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders" /><br />
+            Endpoint:<br />
+            POST /info (type: openOrders)
+            </para>
             </summary>
             <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
@@ -2479,7 +2499,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOpenOrdersExtendedAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get open orders including with additional info, will return both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-open-orders-with-additional-frontend-info" /><br />
+            Endpoint:<br />
+            POST /info (type: frontendOpenOrders)
+            </para>
             </summary>
             <param name="address">Address to request open orders for. If not provided will use the address provided in the API credentials</param>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
@@ -2488,7 +2513,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetUserTradesAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get user trades, will return both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills" /><br />
+            Endpoint:<br />
+            POST /info (type: userFills)
+            </para>
             </summary>
             <param name="address">Address to request user trades for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -2496,7 +2526,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetUserTradesByTimeAsync(System.DateTime,System.Nullable{System.DateTime},System.Nullable{System.Boolean},System.String,System.Threading.CancellationToken)">
             <summary>
             Get user trades by time filter, will return both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills-by-time" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills-by-time" /><br />
+            Endpoint:<br />
+            POST /info (type: userFillsByTime)
+            </para>
             </summary>
             <param name="startTime">Filter by start time</param>
             <param name="endTime">Filter by end time</param>
@@ -2507,7 +2542,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOrderAsync(System.Nullable{System.Int64},System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get order info by id
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-order-status-by-oid-or-cloid" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-order-status-by-oid-or-cloid" /><br />
+            Endpoint:<br />
+            POST /info (type: orderStatus)
+            </para>
             </summary>
             <param name="orderId">Get order by order id. Either this or clientOrderId should be provided</param>
             <param name="clientOrderId">Get order by client order id. Either this or orderId should be provided</param>
@@ -2517,7 +2557,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.GetOrderHistoryAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get user order history, will return both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-historical-orders" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-historical-orders" /><br />
+            Endpoint:<br />
+            POST /info (type: historicalOrders)
+            </para>
             </summary>
             <param name="address">Address to request order for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -2525,7 +2570,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderAsync(System.String,System.Int64,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel an order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cancel)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="orderId">Order id</param>
@@ -2536,7 +2586,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel multiple orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cancel)
+            </para>
             </summary>
             <param name="requests">Cancel requests</param>
             <param name="vaultAddress">Vault address</param>
@@ -2546,7 +2601,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrderByClientOrderIdAsync(System.String,System.String,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel order by client order id
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cancelByCloid)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="clientOrderId">Client order id</param>
@@ -2557,7 +2617,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelOrdersByClientOrderIdAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidCancelByClientOrderIdRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel multiple orders by client order id
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-order-s-by-cloid" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cancelByCloid)
+            </para>
             </summary>
             <param name="requests">Cancel requests</param>
             <param name="vaultAddress">Vault address</param>
@@ -2567,7 +2632,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Nullable{System.Decimal},System.Nullable{HyperLiquid.Net.Enums.TpSlType},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place a new order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /><br />
+            Endpoint:<br />
+            POST /exchange (type: order)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="side">Order side</param>
@@ -2587,7 +2657,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceMultipleOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidOrderRequest},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place multiple new orders in a single call
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-an-order" /><br />
+            Endpoint:<br />
+            POST /exchange (type: order)
+            </para>
             </summary>
             <param name="orders">Orders to place</param>
             <param name="tpSlGrouping">Take profit / Stop loss grouping</param>
@@ -2598,7 +2673,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelAfterAsync(System.Nullable{System.TimeSpan},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel all orders after the provided timeout has passed. Can be called at an interval to act as deadman switch. Pass null to cancel an existing timeout. This will cancel both Spot and Futures orders. This functionality is only available after achieving a certain trading volume.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#schedule-cancel-dead-mans-switch" /><br />
+            Endpoint:<br />
+            POST /exchange (type: scheduleCancel)
+            </para>
             </summary>
             <param name="timeout">Timeout after which to cancel all order, or null to cancel the countdown</param>
             <param name="vaultAddress">Vault address</param>
@@ -2608,7 +2688,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrderAsync(System.String,System.Nullable{System.Int64},System.String,HyperLiquid.Net.Enums.OrderSide,HyperLiquid.Net.Enums.OrderType,System.Decimal,System.Decimal,System.Nullable{HyperLiquid.Net.Enums.TimeInForce},System.Nullable{System.Boolean},System.String,System.Nullable{System.Decimal},System.Nullable{HyperLiquid.Net.Enums.TpSlType},System.Nullable{HyperLiquid.Net.Enums.TpSlGrouping},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Edit an existing order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-an-order" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-an-order" /><br />
+            Endpoint:<br />
+            POST /exchange (type: modify)
+            </para>
             </summary>
             <param name="orderId">Edit order by order id, either this or clientOrderId should be provided</param>
             <param name="clientOrderId">Edit order by client order id, either this or orderId should be provided</param>
@@ -2630,7 +2715,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.EditOrdersAsync(System.Collections.Generic.IEnumerable{HyperLiquid.Net.Objects.Models.HyperLiquidEditOrderRequest},System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Edit multiple orders in a single call
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#modify-multiple-orders" /><br />
+            Endpoint:<br />
+            POST /exchange (type: batchModify)
+            </para>
             </summary>
             <param name="requests">Edit requests</param>
             <param name="vaultAddress">Vault address</param>
@@ -2640,7 +2730,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.PlaceTwapOrderAsync(System.String,HyperLiquid.Net.Enums.OrderSide,System.Decimal,System.Boolean,System.Int32,System.Boolean,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Place a Time Weighted Average Price order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-a-twap-order" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#place-a-twap-order" /><br />
+            Endpoint:<br />
+            POST /exchange (type: twapOrder)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="orderSide">Order side</param>
@@ -2655,7 +2750,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidRestClientTrading.CancelTwapOrderAsync(System.String,System.Int64,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Cancel a Time Weighted Average Price order
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-a-twap-order" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#cancel-a-twap-order" /><br />
+            Endpoint:<br />
+            POST /exchange (type: twapCancel)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="twapId">TWAP order id</param>
@@ -2671,7 +2771,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToPriceUpdatesAsync(System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{System.Collections.Generic.Dictionary{System.String,System.Decimal}}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to mid price updates, will send updates for both Spot and Futures symbols
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: allMids)
+            </para>
             </summary>
             <param name="onMessage">The event handler for the received data</param>
             <param name="ct">Cancellation token for closing this subscription</param>
@@ -2680,7 +2785,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToKlineUpdatesAsync(System.String,HyperLiquid.Net.Enums.KlineInterval,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidKline}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to kline/candlestick data
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: candle)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="interval">Kline interval</param>
@@ -2691,7 +2801,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToOrderBookUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderBook}},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Subscribe to order book updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: l2Book)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="onMessage">The data handler</param>
@@ -2703,7 +2818,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToTradeUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTrade[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to trade updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: trades)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="onMessage">The data handler</param>
@@ -2713,7 +2833,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToBookTickerUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidBookTicker}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to book ticker updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: bbo)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
             <param name="onMessage">The data handler</param>
@@ -2723,7 +2848,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToOrderUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidOrderStatus[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to order updates, will provided updates for both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: orderUpdates)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2733,7 +2863,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToUserTradeUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user trade updates, will provided updates for both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userFills)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2743,7 +2878,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToUserEventUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidUserTrade[]}},System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidUserFunding}},System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidLiquidationUpdate}},System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidNonUserCancelation[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user non-order updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userEvents)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onTradeUpdate">User trade data handler</param>
@@ -2756,7 +2896,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToUserLedgerUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidAccountLedger}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user ledger updates (excluding funding updates)will provided updates for both Spot and Futures changes
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userNonFundingLedgerUpdates)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2766,7 +2911,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToUserUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidUserUpdate}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user updates, including Spot and Futures balances
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: webData2)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2776,7 +2926,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToTwapTradeUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTwapStatus[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to Time Weighted Average Price trade updates, will provided updates for both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userTwapSliceFills)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2786,7 +2941,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.BaseApi.IHyperLiquidSocketClientApi.SubscribeToTwapOrderUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTwapOrderStatus[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to Time Weighted Average Price order history updates, will provided updates for both Spot and Futures orders
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userTwapHistory)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -2830,7 +2990,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetAccountInfoAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get account info, balances and open positions
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-perpetuals-account-summary" /><br />
+            Endpoint:<br />
+            POST /info (type: clearinghouseState)
+            </para>
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
             <param name="dex">The DEX to request data for, leave null for default perp DEX</param>
@@ -2839,7 +3004,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetFundingHistoryAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
             <summary>
             Get user funding history
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /><br />
+            Endpoint:<br />
+            POST /info (type: userFunding)
+            </para>
             </summary>
             <param name="startTime">Filter by start time</param>
             <param name="endTime">Filter by end time</param>
@@ -2849,7 +3019,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetUserSymbolAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get user active symbols
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-active-asset-data" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-users-active-asset-data" /><br />
+            Endpoint:<br />
+            POST /info (type: activeAssetData)
+            </para>
             </summary>
             <param name="symbol">The symbol, for example `ETH`</param>
             <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
@@ -2858,7 +3033,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiAccount.GetHip3DexAbstractionAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get whether HIP-3 DEX abstraction enabled
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-hip-3-dex-abstraction-state" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-hip-3-dex-abstraction-state" /><br />
+            Endpoint:<br />
+            POST /info (type: userDexAbstraction)
+            </para>
             </summary>
             <param name="user"></param>
             <param name="ct"></param>
@@ -2868,7 +3048,12 @@
             <summary>
             Toggle HIP-3 DEX abstraction. If set, actions on HIP-3 perps will automatically transfer collateral from validator-operated USDC perps balance for HIP-3 DEXs where USDC is the collateral token, and spot otherwise. 
             When HIP-3 DEX abstraction is active, collateral is returned to the same source (validator-operated USDC perps or spot balance) when released from positions or open orders.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#enable-hip-3-dex-abstraction" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#enable-hip-3-dex-abstraction" /><br />
+            Endpoint:<br />
+            POST /exchange (type: userDexAbstraction)
+            </para>
             </summary>
             <param name="enabled"></param>
             <param name="address"></param>
@@ -2884,14 +3069,24 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexesAsync(System.Threading.CancellationToken)">
             <summary>
             Get all Perp dexes
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-all-perpetual-dexs" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-all-perpetual-dexs" /><br />
+            Endpoint:<br />
+            POST /info (type: perpDexs)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get exchange info
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /><br />
+            Endpoint:<br />
+            POST /info (type: meta)
+            </para>
             </summary>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
@@ -2899,21 +3094,36 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAllDexesAsync(System.Threading.CancellationToken)">
             <summary>
             Get exchange info for all perp dexes
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals" /><br />
+            Endpoint:<br />
+            POST /info (type: allPerpMetas)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetExchangeInfoAndTickersAsync(System.Threading.CancellationToken)">
             <summary>
             Get exchange and ticker info
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-perpetuals-asset-contexts-includes-mark-price-current-funding-open-interest-etc" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-perpetuals-asset-contexts-includes-mark-price-current-funding-open-interest-etc" /><br />
+            Endpoint:<br />
+            POST /info (type: metaAndAssetCtxs)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetFundingRateHistoryAsync(System.String,System.DateTime,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Get funding rate history
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-historical-funding-rates" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-historical-funding-rates" /><br />
+            Endpoint:<br />
+            POST /info (type: fundingHistory)
+            </para>
             </summary>
             <param name="symbol">Symbol, for example "ETH"</param>
             <param name="startTime">Filter by start time</param>
@@ -2923,7 +3133,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetSymbolsAtMaxOpenInterestAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get futures symbols at max open interest
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#query-perps-at-open-interest-caps" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#query-perps-at-open-interest-caps" /><br />
+            Endpoint:<br />
+            POST /info (type: perpsAtOpenInterestCap)
+            </para>
             </summary>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
@@ -2931,7 +3146,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketLimitsAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get Perp DEX market limits
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-builder-deployed-perp-market-limits" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-builder-deployed-perp-market-limits" /><br />
+            Endpoint:<br />
+            POST /info (type: perpDexLimits)
+            </para>
             </summary>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
@@ -2939,7 +3159,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiExchangeData.GetPerpDexMarketStatusAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get Perp DEX market status
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#get-perp-market-status" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#get-perp-market-status" /><br />
+            Endpoint:<br />
+            POST /info (type: perpDexStatus)
+            </para>
             </summary>
             <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
             <param name="ct">Cancellation token</param>
@@ -2958,7 +3183,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.SetLeverageAsync(System.String,System.Int32,HyperLiquid.Net.Enums.MarginType,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Set leverage for a symbol
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-leverage" /><br />
+            Endpoint:<br />
+            POST /exchange (type: updateLeverage)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="leverage">New leverage</param>
@@ -2970,7 +3200,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidRestClientFuturesApiTrading.UpdateIsolatedMarginAsync(System.String,System.Decimal,System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Add or remove margin from isolated position
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#update-isolated-margin" /><br />
+            Endpoint:<br />
+            POST /exchange (type: updateIsolatedMargin)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example "ETH"</param>
             <param name="updateValue">Change value</param>
@@ -2987,7 +3222,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi.SubscribeToSymbolUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidFuturesTicker}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to symbol updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: activeAssetCtx)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example `ETH`</param>
             <param name="onMessage">The data handler</param>
@@ -2997,7 +3237,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi.SubscribeToUserSymbolUpdatesAsync(System.String,System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidFuturesUserSymbolUpdate}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user symbol updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: activeAssetData)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="symbol">Symbol name, for example `ETH`</param>
@@ -3008,7 +3253,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.FuturesApi.IHyperLiquidSocketClientFuturesApi.SubscribeToUserFundingUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidUserFunding[]}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to user funding updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: userFundings)
+            </para>
             </summary>
             <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
             <param name="onMessage">The data handler</param>
@@ -3154,7 +3404,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetBalancesAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get user asset balances
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-a-users-token-balances" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-a-users-token-balances" /><br />
+            Endpoint:<br />
+            POST /info (type: spotClearinghouseState)
+            </para>
             </summary>
             <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3162,7 +3417,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetAccountLedgerAsync(System.DateTime,System.Nullable{System.DateTime},System.String,System.Threading.CancellationToken)">
             <summary>
             Get user account ledger
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-a-users-funding-history-or-non-funding-ledger-updates" /><br />
+            Endpoint:<br />
+            POST /info (type: userNonFundingLedgerUpdates)
+            </para>
             </summary>
             <param name="startTime">Filter by start time</param>
             <param name="endTime">Filter by end time</param>
@@ -3172,7 +3432,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetRateLimitsAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get user rate limits
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-user-rate-limits" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-user-rate-limits" /><br />
+            Endpoint:<br />
+            POST /info (type: userRateLimit)
+            </para>
             </summary>
             <param name="address">Address to request rate limits for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3180,7 +3445,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetApprovedBuilderFeeAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Get the approved builder fee
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#check-builder-fee-approval" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#check-builder-fee-approval" /><br />
+            Endpoint:<br />
+            POST /info (type: maxBuilderFee)
+            </para>
             </summary>
             <param name="builderAddress">The address of the builder. If not provided will use the builder address for this library</param>
             <param name="address">Address to request approved builder fee for. If not provided will use the address provided in the API credentials</param>
@@ -3189,7 +3459,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferUsdAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <summary>
             Send usd to another address. This transfer does not touch the EVM bridge.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#l1-usdc-transfer" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#l1-usdc-transfer" /><br />
+            Endpoint:<br />
+            POST /exchange (type: usdSend)
+            </para>
             </summary>
             <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
             <param name="quantity">Quantity of USD to send</param>
@@ -3198,7 +3473,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferSpotAsync(System.String,System.String,System.Decimal,System.Threading.CancellationToken)">
             <summary>
             Send spot assets to another address. This transfer does not touch the EVM bridge.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#l1-spot-transfer" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#l1-spot-transfer" /><br />
+            Endpoint:<br />
+            POST /exchange (type: spotSend)
+            </para>
             </summary>
             <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
             <param name="asset">Asset name, for example "HYPE"</param>
@@ -3208,7 +3488,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.WithdrawAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <summary>
             Initiate the withdrawal flow. After making this request, the L1 validators will sign and send the withdrawal request to the bridge contract. There is a $1 fee for withdrawing at the time of this writing and withdrawals take approximately 5 minutes to finalize.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#initiate-a-withdrawal-request" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#initiate-a-withdrawal-request" /><br />
+            Endpoint:<br />
+            POST /exchange (type: withdraw3)
+            </para>
             </summary>
             <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
             <param name="quantity">Quantity of USD to send</param>
@@ -3217,7 +3502,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferInternalAsync(HyperLiquid.Net.Enums.TransferDirection,System.Decimal,System.String,System.Threading.CancellationToken)">
             <summary>
             Transfer USD between Spot and Futures account
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#transfer-from-spot-account-to-perp-account-and-vice-versa" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#transfer-from-spot-account-to-perp-account-and-vice-versa" /><br />
+            Endpoint:<br />
+            POST /exchange (type: usdClassTransfer)
+            </para>
             </summary>
             <param name="direction">Transfer direction</param>
             <param name="quantity">Quantity of USD to send</param>
@@ -3227,7 +3517,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DepositIntoStakingAsync(System.Int64,System.Threading.CancellationToken)">
             <summary>
             Deposit into staking
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#deposit-into-staking" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#deposit-into-staking" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cDeposit)
+            </para>
             </summary>
             <param name="wei">Quantity</param>
             <param name="ct">Cancellation token</param>
@@ -3235,7 +3530,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.WithdrawFromStakingAsync(System.Int64,System.Threading.CancellationToken)">
             <summary>
             Withdraw from staking into the user's spot account. Note that transfers from staking to spot account go through a 7 day unstaking queue.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#withdraw-from-staking" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#withdraw-from-staking" /><br />
+            Endpoint:<br />
+            POST /exchange (type: cWithdraw)
+            </para>
             </summary>
             <param name="wei">Quantity</param>
             <param name="ct">Cancellation token</param>
@@ -3243,7 +3543,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DelegateOrUndelegateStakeFromValidatorAsync(HyperLiquid.Net.Enums.DelegateDirection,System.String,System.Int64,System.Threading.CancellationToken)">
             <summary>
             Delegate or undelegate native tokens to or from a validator. Note that delegations to a particular validator have a lockup duration of 1 day.
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#delegate-or-undelegate-stake-from-validator" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#delegate-or-undelegate-stake-from-validator" /><br />
+            Endpoint:<br />
+            POST /exchange (type: tokenDelegate)
+            </para>
             </summary>
             <param name="direction">Direction</param>
             <param name="validator">Validator address in hex format, for example 0x0000000000000000000000000000000000000000</param>
@@ -3253,7 +3558,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.DepositOrWithdrawFromVaultAsync(HyperLiquid.Net.Enums.DepositWithdrawDirection,System.String,System.Int64,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Deposit or withdraw from vault
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#deposit-or-withdraw-from-a-vault" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#deposit-or-withdraw-from-a-vault" /><br />
+            Endpoint:<br />
+            POST /exchange (type: vaultTransfer)
+            </para>
             </summary>
             <param name="direction">Direction</param>
             <param name="vaultAddress">Vault address</param>
@@ -3264,14 +3574,24 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">
             <summary>
             Approve a builder address of the library to charge the fee percentage as defined in the BuilderFeePercentage client options field
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#approve-a-builder-fee" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#approve-a-builder-fee" /><br />
+            Endpoint:<br />
+            POST /exchange (type: approveBuilderFee)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <summary>
             Approve a builder address to charge a certain fee
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#approve-a-builder-fee" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#approve-a-builder-fee" /><br />
+            Endpoint:<br />
+            POST /exchange (type: approveBuilderFee)
+            </para>
             </summary>
             <param name="builderAddress">The address of the builder in hex format, for example 0x0000000000000000000000000000000000000000</param>
             <param name="maxFeePercentage">Max fee percentage the builder can charge</param>
@@ -3301,7 +3621,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetStakingDelegationsAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get staking delegations
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-delegations" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-delegations" /><br />
+            Endpoint:<br />
+            POST /info (type: delegations)
+            </para>
             </summary>
             <param name="address">Address to request delegations for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3309,7 +3634,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetStakingSummaryAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get staking summary
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-summary" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-summary" /><br />
+            Endpoint:<br />
+            POST /info (type: delegatorSummary)
+            </para>
             </summary>
             <param name="address">Address to request summary for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3317,7 +3647,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetStakingHistoryAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get staking history
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-history" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-history" /><br />
+            Endpoint:<br />
+            POST /info (type: delegatorHistory)
+            </para>
             </summary>
             <param name="address">Address to request history for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3325,7 +3660,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.GetStakingRewardsAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get staking rewards history
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-rewards" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-staking-rewards" /><br />
+            Endpoint:<br />
+            POST /info (type: delegatorRewards)
+            </para>
             </summary>
             <param name="address">Address to request rewards for. If not provided will use the address provided in the API credentials</param>
             <param name="ct">Cancellation token</param>
@@ -3339,21 +3679,36 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData.GetExchangeInfoAsync(System.Threading.CancellationToken)">
             <summary>
             Get exchange info
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-spot-metadata" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-spot-metadata" /><br />
+            Endpoint:<br />
+            POST /info (type: spotMeta)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData.GetExchangeInfoAndTickersAsync(System.Threading.CancellationToken)">
             <summary>
             Get exchange and ticker info
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-spot-asset-contexts" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-spot-asset-contexts" /><br />
+            Endpoint:<br />
+            POST /info (type: spotMetaAndAssetCtxs)
+            </para>
             </summary>
             <param name="ct">Cancellation token</param>
         </member>
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiExchangeData.GetAssetInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Get information on an asset
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-information-about-a-token" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-information-about-a-token" /><br />
+            Endpoint:<br />
+            POST /info (type: tokenDetails)
+            </para>
             </summary>
             <param name="assetId">The asset id</param>
             <param name="ct">Cancellation token</param>
@@ -3378,7 +3733,12 @@
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidSocketClientSpotApi.SubscribeToSymbolUpdatesAsync(System.String,System.Action{CryptoExchange.Net.Objects.Sockets.DataEvent{HyperLiquid.Net.Objects.Models.HyperLiquidTicker}},System.Threading.CancellationToken)">
             <summary>
             Subscribe to spot symbol updates
-            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /></para>
+            <para>
+            Docs:<br />
+            <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+            Endpoint:<br />
+            WS /ws (type: activeAssetCtx)
+            </para>
             </summary>
             <param name="symbol">Symbol name, for example `HYPE/USDC`</param>
             <param name="onMessage">The data handler</param>
@@ -5943,14 +6303,10 @@
         <member name="M:HyperLiquid.Net.Objects.Sockets.Subscriptions.HyperLiquidSubscription`1.DoHandleMessage(CryptoExchange.Net.Sockets.Default.SocketConnection,System.DateTime,System.String,HyperLiquid.Net.Objects.Internal.HyperLiquidSocketUpdate{`0})">
             <inheritdoc />
         </member>
-        <member name="T:HyperLiquid.Net.Signing.Secp256k1PointCalculator">
+        <member name="M:HyperLiquid.Net.Signing.LightEip712TypedDataEncoder.EncodeTypes(System.Collections.Generic.IDictionary{System.String,HyperLiquid.Net.Signing.MemberDescription[]},System.String)">
             <summary>
-            This class regroup helper functions associated with the secp256k1 Curve 
-            </summary>
-        </member>
-        <member name="T:HyperLiquid.Net.Signing.Secp256k1ZCalculator">
-            <summary>
-            This class regroup helper functions for computation in the Z/Zp associated with secp256k1
+            Create a list of type => type(parameters), for example:<br />
+            { IP712Domain, EIP712Domain(string name,string version,uint256 chainId,address verifyingContract) }
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.SymbolOrderBooks.HyperLiquidOrderBookFactory">

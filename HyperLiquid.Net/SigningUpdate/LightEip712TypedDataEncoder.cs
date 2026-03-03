@@ -175,10 +175,10 @@ namespace HyperLiquid.Net.Signing
                 new KeyValuePair<string, string>(currentTypeName, currentTypeName + "(" + string.Join(",", currentTypeMembersEncoded.ToArray()) + ")")
             };
 
-            result.AddRange(currentTypeMembers.Select(x => x.Type.Contains("[") ? x.Type.Substring(0, x.Type.IndexOf("[")) : x.Type)
-                                              .Distinct()
-                                              .Where(IsReferenceType)
-                                              .SelectMany(x => EncodeTypes(types, x)));
+            //result.AddRange(currentTypeMembers.Select(x => x.Type.Contains("[") ? x.Type.Substring(0, x.Type.IndexOf("[")) : x.Type)
+            //                                  .Distinct()
+            //                                  .Where(IsReferenceType)
+            //                                  .SelectMany(x => EncodeTypes(types, x)));
             return result;
         }
         
