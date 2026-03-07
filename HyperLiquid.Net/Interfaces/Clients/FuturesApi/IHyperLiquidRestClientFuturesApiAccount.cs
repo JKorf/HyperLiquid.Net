@@ -22,8 +22,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: clearinghouseState)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
-        /// <param name="dex">The DEX to request data for, leave null for default perp DEX</param>
+        /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="dex">["<c>dex</c>"] The DEX to request data for, leave null for default perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default);
 
@@ -36,9 +36,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: userFunding)
         /// </para>
         /// </summary>
-        /// <param name="startTime">Filter by start time</param>
-        /// <param name="endTime">Filter by end time</param>
-        /// <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="startTime">["<c>startTime</c>"] Filter by start time</param>
+        /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
+        /// <param name="address">["<c>user</c>"] Address to request funding history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
@@ -51,8 +51,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: activeAssetData)
         /// </para>
         /// </summary>
-        /// <param name="symbol">The symbol, for example `ETH`</param>
-        /// <param name="address">Address to request funding history for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="symbol">["<c>coin</c>"] The symbol, for example `ETH`</param>
+        /// <param name="address">["<c>user</c>"] Address to request funding history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default);
 
@@ -65,7 +65,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: userDexAbstraction)
         /// </para>
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="user">["<c>user</c>"] User address. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<WebCallResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default);
@@ -80,8 +80,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /exchange (type: userDexAbstraction)
         /// </para>
         /// </summary>
-        /// <param name="enabled"></param>
-        /// <param name="address"></param>
+        /// <param name="enabled">["<c>enabled</c>"] Whether HIP-3 DEX abstraction should be enabled</param>
+        /// <param name="address">["<c>user</c>"] User address. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<WebCallResult> ToggleHip3DexAbstractionAsync(bool enabled, string? address = null, CancellationToken ct = default);

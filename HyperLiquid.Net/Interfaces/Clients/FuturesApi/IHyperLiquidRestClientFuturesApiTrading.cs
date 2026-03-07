@@ -23,10 +23,10 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "ETH"</param>
-        /// <param name="leverage">New leverage</param>
+        /// <param name="leverage">["<c>leverage</c>"] New leverage</param>
         /// <param name="marginType">Margin type</param>
-        /// <param name="vaultAddress">Vault address</param>
-        /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
+        /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> SetLeverageAsync(
             string symbol,
@@ -46,9 +46,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </para>
         /// </summary>
         /// <param name="symbol">Symbol name, for example "ETH"</param>
-        /// <param name="updateValue">Change value</param>
-        /// <param name="vaultAddress">Vault address</param>
-        /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="updateValue">["<c>ntli</c>"] Change value</param>
+        /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
+        /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> UpdateIsolatedMarginAsync(
             string symbol,

@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: spotClearinghouseState)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
 
@@ -36,9 +36,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: userNonFundingLedgerUpdates)
         /// </para>
         /// </summary>
-        /// <param name="startTime">Filter by start time</param>
-        /// <param name="endTime">Filter by end time</param>
-        /// <param name="address">Address to request ledger for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="startTime">["<c>startTime</c>"] Filter by start time</param>
+        /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
+        /// <param name="address">["<c>user</c>"] Address to request ledger for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidAccountLedger>> GetAccountLedgerAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
@@ -51,7 +51,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: userRateLimit)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request rate limits for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request rate limits for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidRateLimit>> GetRateLimitsAsync(string? address = null, CancellationToken ct = default);
 
@@ -64,8 +64,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: maxBuilderFee)
         /// </para>
         /// </summary>
-        /// <param name="builderAddress">The address of the builder. If not provided will use the builder address for this library</param>
-        /// <param name="address">Address to request approved builder fee for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="builderAddress">["<c>builder</c>"] The address of the builder. If not provided will use the builder address for this library</param>
+        /// <param name="address">["<c>user</c>"] Address to request approved builder fee for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<int>> GetApprovedBuilderFeeAsync(string? builderAddress = null, string? address = null, CancellationToken ct = default);
 
@@ -78,8 +78,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: usdSend)
         /// </para>
         /// </summary>
-        /// <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
-        /// <param name="quantity">Quantity of USD to send</param>
+        /// <param name="destinationAddress">["<c>destination</c>"] Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+        /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> TransferUsdAsync(string destinationAddress, decimal quantity, CancellationToken ct = default);
 
@@ -92,9 +92,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: spotSend)
         /// </para>
         /// </summary>
-        /// <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+        /// <param name="destinationAddress">["<c>destination</c>"] Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
         /// <param name="asset">Asset name, for example "HYPE"</param>
-        /// <param name="quantity">Quantity to send</param>
+        /// <param name="quantity">["<c>amount</c>"] Quantity to send</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> TransferSpotAsync(
             string destinationAddress,
@@ -111,8 +111,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: withdraw3)
         /// </para>
         /// </summary>
-        /// <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
-        /// <param name="quantity">Quantity of USD to send</param>
+        /// <param name="destinationAddress">["<c>destination</c>"] Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+        /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> WithdrawAsync(
             string destinationAddress,
@@ -129,7 +129,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="direction">Transfer direction</param>
-        /// <param name="quantity">Quantity of USD to send</param>
+        /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="subAccount">Subaccount address</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> TransferInternalAsync(
@@ -147,7 +147,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: cDeposit)
         /// </para>
         /// </summary>
-        /// <param name="wei">Quantity</param>
+        /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> DepositIntoStakingAsync(long wei, CancellationToken ct = default);
 
@@ -160,7 +160,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: cWithdraw)
         /// </para>
         /// </summary>
-        /// <param name="wei">Quantity</param>
+        /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> WithdrawFromStakingAsync(long wei, CancellationToken ct = default);
 
@@ -174,8 +174,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="direction">Direction</param>
-        /// <param name="validator">Validator address in hex format, for example 0x0000000000000000000000000000000000000000</param>
-        /// <param name="wei">Quantity</param>
+        /// <param name="validator">["<c>validator</c>"] Validator address in hex format, for example 0x0000000000000000000000000000000000000000</param>
+        /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> DelegateOrUndelegateStakeFromValidatorAsync(DelegateDirection direction, string validator, long wei, CancellationToken ct = default);
 
@@ -189,9 +189,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="direction">Direction</param>
-        /// <param name="vaultAddress">Vault address</param>
-        /// <param name="usd">USD to withdraw or deposit</param>
-        /// <param name="expireAfter">Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
+        /// <param name="usd">["<c>usd</c>"] USD to withdraw or deposit</param>
+        /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, DateTime? expireAfter = null, CancellationToken ct = default);
 
@@ -216,29 +216,29 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /exchange (type: approveBuilderFee)
         /// </para>
         /// </summary>
-        /// <param name="builderAddress">The address of the builder in hex format, for example 0x0000000000000000000000000000000000000000</param>
-        /// <param name="maxFeePercentage">Max fee percentage the builder can charge</param>
+        /// <param name="builderAddress">["<c>builder</c>"] The address of the builder in hex format, for example 0x0000000000000000000000000000000000000000</param>
+        /// <param name="maxFeePercentage">["<c>maxFeeRate</c>"] Max fee percentage the builder can charge</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default);
 
         /// <summary>
         /// Get sub account list
         /// </summary>
-        /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user role
         /// </summary>
-        /// <param name="address">Address to request balances for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get extra agents associated with a user
         /// </summary>
-        /// <param name="address">Address to request agents for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request agents for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default);
 
@@ -251,7 +251,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: delegations)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request delegations for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request delegations for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default);
         /// <summary>
@@ -263,7 +263,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: delegatorSummary)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request summary for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request summary for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default);
         /// <summary>
@@ -275,7 +275,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: delegatorHistory)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request history for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default);
 
@@ -288,7 +288,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: delegatorRewards)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to request rewards for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default);
     }

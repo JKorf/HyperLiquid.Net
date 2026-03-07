@@ -22,7 +22,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// POST /info (type: allMids)
         /// </para>
         /// </summary>
-        /// <param name="dex">Filter by DEX</param>
+        /// <param name="dex">["<c>dex</c>"] Filter by DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
 
@@ -36,8 +36,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
-        /// <param name="numberSignificantFigures">Asset name</param>
-        /// <param name="mantissa">Mantissa</param>
+        /// <param name="numberSignificantFigures">["<c>nSigFigs</c>"] Asset name</param>
+        /// <param name="mantissa">["<c>mantissa</c>"] Mantissa</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default);
 
@@ -51,9 +51,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </para>
         /// </summary>
         /// <param name="symbol">Symbol, for example "HYPE/USDC" for spot, or "ETH" for futures</param>
-        /// <param name="interval">Kline interval</param>
-        /// <param name="startTime">Data start time</param>
-        /// <param name="endTime">Data end time</param>
+        /// <param name="interval">["<c>interval</c>"] Kline interval</param>
+        /// <param name="startTime">["<c>startTime</c>"] Data start time</param>
+        /// <param name="endTime">["<c>endTime</c>"] Data end time</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
 
