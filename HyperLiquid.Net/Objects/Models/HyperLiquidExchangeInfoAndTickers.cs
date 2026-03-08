@@ -32,42 +32,42 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTicker
     {
         /// <summary>
-        /// Previous day price
+        /// ["<c>prevDayPx</c>"] Previous day price
         /// </summary>
         [JsonPropertyName("prevDayPx")]
         public decimal PreviousDayPrice { get; set; }
         /// <summary>
-        /// 24h notional volume
+        /// ["<c>dayNtlVlm</c>"] 24h notional volume
         /// </summary>
         [JsonPropertyName("dayNtlVlm")]
         public decimal QuoteVolume { get; set; }
         /// <summary>
-        /// Mark price
+        /// ["<c>markPx</c>"] Mark price
         /// </summary>
         [JsonPropertyName("markPx")]
         public decimal MarkPrice { get; set; }
         /// <summary>
-        /// Mid price
+        /// ["<c>midPx</c>"] Mid price
         /// </summary>
         [JsonPropertyName("midPx")]
         public decimal? MidPrice { get; set; }
         /// <summary>
-        /// Circulation supply
+        /// ["<c>circulatingSupply</c>"] Circulation supply
         /// </summary>
         [JsonPropertyName("circulatingSupply")]
         public decimal CirculatingSupply { get; set; }
         /// <summary>
-        /// Total supply
+        /// ["<c>totalSupply</c>"] Total supply
         /// </summary>
         [JsonPropertyName("totalSupply")]
         public decimal TotalSupply { get; set; }
         /// <summary>
-        /// 24h base volume
+        /// ["<c>dayBaseVlm</c>"] 24h base volume
         /// </summary>
         [JsonPropertyName("dayBaseVlm")]
         public decimal BaseVolume { get; set; }
         /// <summary>
-        /// Symbol
+        /// ["<c>coin</c>"] Symbol
         /// </summary>
         [JsonPropertyName("coin")]
         public string? Symbol { get; set; }

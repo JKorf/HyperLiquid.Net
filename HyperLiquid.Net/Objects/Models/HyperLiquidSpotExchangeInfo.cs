@@ -15,7 +15,7 @@ namespace HyperLiquid.Net.Objects.Models
         private HyperLiquidSymbol[]? _symbols;
 
         /// <summary>
-        /// Assets
+        /// ["<c>tokens</c>"] Assets
         /// </summary>
         [JsonPropertyName("tokens")]
         public HyperLiquidAsset[] Assets { get; set; } = [];
@@ -90,42 +90,42 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidAsset
     {
         /// <summary>
-        /// Asset name
+        /// ["<c>name</c>"] Asset name
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         /// <summary>
-        /// Decimal places for quantities
+        /// ["<c>szDecimals</c>"] Decimal places for quantities
         /// </summary>
         [JsonPropertyName("szDecimals")]
         public int QuantityDecimals { get; set; }
         /// <summary>
-        /// Decimal prices for prices
+        /// ["<c>weiDecimals</c>"] Decimal prices for prices
         /// </summary>
         [JsonPropertyName("weiDecimals")]
         public int PriceDecimals { get; set; }
         /// <summary>
-        /// Asset index
+        /// ["<c>index</c>"] Asset index
         /// </summary>
         [JsonPropertyName("index")]
         public int Index { get; set; }
         /// <summary>
-        /// Asset id
+        /// ["<c>tokenId</c>"] Asset id
         /// </summary>
         [JsonPropertyName("tokenId")]
         public string AssetId { get; set; } = string.Empty;
         /// <summary>
-        /// Is canonical
+        /// ["<c>isCanonical</c>"] Is canonical
         /// </summary>
         [JsonPropertyName("isCanonical")]
         public bool IsCanonical { get; set; }
         /// <summary>
-        /// EVM contract
+        /// ["<c>evmContract</c>"] EVM contract
         /// </summary>
         [JsonPropertyName("evmContract")]
         public HyperLiquidEvmContract? EvmContract { get; set; }
         /// <summary>
-        /// Full asset name
+        /// ["<c>fullName</c>"] Full asset name
         /// </summary>
         [JsonPropertyName("fullName")]
         public string FullName { get; set; } = string.Empty;
@@ -137,12 +137,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidEvmContract
     {
         /// <summary>
-        /// Address
+        /// ["<c>address</c>"] Address
         /// </summary>
         [JsonPropertyName("address")]
         public string Address { get; set; } = string.Empty;
         /// <summary>
-        /// Extra decimals
+        /// ["<c>evm_extra_wei_decimals</c>"] Extra decimals
         /// </summary>
         [JsonPropertyName("evm_extra_wei_decimals")]
         public int? EvmExtraWeiDecimals { get; set; }

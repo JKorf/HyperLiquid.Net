@@ -12,83 +12,83 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidAssetInfo
     {
         /// <summary>
-        /// Name
+        /// ["<c>name</c>"] Name
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         /// <summary>
-        /// Max supply
+        /// ["<c>maxSupply</c>"] Max supply
         /// </summary>
         [JsonPropertyName("maxSupply")]
         public decimal MaxSupply { get; set; }
         /// <summary>
-        /// Total supply
+        /// ["<c>totalSupply</c>"] Total supply
         /// </summary>
         [JsonPropertyName("totalSupply")]
         public decimal TotalSupply { get; set; }
         /// <summary>
-        /// Circulating supply
+        /// ["<c>circulatingSupply</c>"] Circulating supply
         /// </summary>
         [JsonPropertyName("circulatingSupply")]
         public decimal CirculatingSupply { get; set; }
         /// <summary>
-        /// Quantity decimals
+        /// ["<c>szDecimals</c>"] Quantity decimals
         /// </summary>
         [JsonPropertyName("szDecimals")]
         public decimal QuantityDecimals { get; set; }
         /// <summary>
-        /// Wei decimals
+        /// ["<c>weiDecimals</c>"] Wei decimals
         /// </summary>
         [JsonPropertyName("weiDecimals")]
         public decimal WeiDecimals { get; set; }
         /// <summary>
-        /// Mid price
+        /// ["<c>midPx</c>"] Mid price
         /// </summary>
         [JsonPropertyName("midPx")]
         public decimal MidPrice { get; set; }
         /// <summary>
-        /// Mark price
+        /// ["<c>markPx</c>"] Mark price
         /// </summary>
         [JsonPropertyName("markPx")]
         public decimal MarkPrice { get; set; }
         /// <summary>
-        /// Previous day price
+        /// ["<c>prevDayPx</c>"] Previous day price
         /// </summary>
         [JsonPropertyName("prevDayPx")]
         public decimal PreviousDayPrice { get; set; }
         /// <summary>
-        /// Genesis
+        /// ["<c>genesis</c>"] Genesis
         /// </summary>
         [JsonPropertyName("genesis")]
         public HyperLiquidAssetGenesis Genesis { get; set; } = null!;
         /// <summary>
-        /// Deployer
+        /// ["<c>deployer</c>"] Deployer
         /// </summary>
         [JsonPropertyName("deployer")]
         public string Deployer { get; set; } = string.Empty;
         /// <summary>
-        /// Deploy gas
+        /// ["<c>deployGas</c>"] Deploy gas
         /// </summary>
         [JsonPropertyName("deployGas")]
         public decimal? DeployGas { get; set; }
         /// <summary>
-        /// Deploy time
+        /// ["<c>deployTime</c>"] Deploy time
         /// </summary>
         [JsonPropertyName("deployTime")]
         public DateTime DeployTime { get; set; }
         /// <summary>
-        /// Seeded usdc
+        /// ["<c>seededUsdc</c>"] Seeded usdc
         /// </summary>
         [JsonPropertyName("seededUsdc")]
         public decimal SeededUsdc { get; set; }
         /// <summary>
-        /// Future emissions
+        /// ["<c>futureEmissions</c>"] Future emissions
         /// </summary>
         [JsonPropertyName("futureEmissions")]
         public decimal FutureEmissions { get; set; }
 
         /// <summary>
-        /// Non-circulating user balances
+        /// ["<c>nonCirculatingUserBalances</c>"] Non-circulating user balances
         /// </summary>
         [JsonPropertyName("nonCirculatingUserBalances")]
         public AddressBalance[] NonCirculatingUserBalances { get; set; } = [];
@@ -101,12 +101,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidAssetGenesis
     {
         /// <summary>
-        /// User balances
+        /// ["<c>userBalances</c>"] User balances
         /// </summary>
         [JsonPropertyName("userBalances")]
         public AddressBalance[] UserBalances { get; set; } = [];
         /// <summary>
-        /// Existing token balances
+        /// ["<c>existingTokenBalances</c>"] Existing token balances
         /// </summary>
         [JsonPropertyName("existingTokenBalances")]
         public AddressIndexBalance[] ExistingAssetBalances { get; set; } = [];

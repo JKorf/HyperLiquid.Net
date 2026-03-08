@@ -12,17 +12,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTwapOrderStatus
     {
         /// <summary>
-        /// TWAP status
+        /// ["<c>state</c>"] TWAP status
         /// </summary>
         [JsonPropertyName("state")]
         public HyperLiquidTwapStatus TwapInfo { get; set; } = default!;
         /// <summary>
-        /// Timestamp
+        /// ["<c>time</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
         /// <summary>
-        /// Statu
+        /// ["<c>status</c>"] Statu
         /// </summary>
         [JsonPropertyName("status")]
         public HyperLiquidTwapOrderStatusDesc Status { get; set; } = default!;
@@ -35,12 +35,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTwapOrderStatusDesc
     {
         /// <summary>
-        /// Order status
+        /// ["<c>status</c>"] Order status
         /// </summary>
         [JsonPropertyName("status")]
         public TwapStatus Status { get; set; }
         /// <summary>
-        /// Description
+        /// ["<c>description</c>"] Description
         /// </summary>
         [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;

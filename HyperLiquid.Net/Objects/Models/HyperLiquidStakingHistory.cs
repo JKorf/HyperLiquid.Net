@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -9,19 +9,19 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStakingHistory
     {
         /// <summary>
-        /// Transaction time (milliseconds)
+        /// ["<c>time</c>"] Transaction time (milliseconds)
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
 
         /// <summary>
-        /// Transaction hash
+        /// ["<c>hash</c>"] Transaction hash
         /// </summary>
         [JsonPropertyName("hash")]
         public string Hash { get; set; } = string.Empty;
 
         /// <summary>
-        /// Delta information
+        /// ["<c>delta</c>"] Delta information
         /// </summary>
         [JsonPropertyName("delta")]
         public HyperLiquidStakingDelta Delta { get; set; } = null!;
@@ -33,12 +33,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStakingDelta
     {
         /// <summary>
-        /// Delegate
+        /// ["<c>delegate</c>"] Delegate
         /// </summary>
         [JsonPropertyName("delegate")]
         public HyperLiquidStakingDelegate? Delegate { get; set; }
         /// <summary>
-        /// Deposit info
+        /// ["<c>cDeposit</c>"] Deposit info
         /// </summary>
         [JsonPropertyName("cDeposit")]
         public HyperLiquidStackingDeposit? Deposit { get; set; }
@@ -50,7 +50,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStackingDeposit
     {
         /// <summary>
-        /// Quantity
+        /// ["<c>amount</c>"] Quantity
         /// </summary>
         [JsonPropertyName("amount")]
         public decimal Quantity { get; set; }
@@ -62,17 +62,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStakingDelegate
     {
         /// <summary>
-        /// Validator
+        /// ["<c>validator</c>"] Validator
         /// </summary>
         [JsonPropertyName("validator")]
         public string Validator { get; set; } = string.Empty;
         /// <summary>
-        /// Quantity
+        /// ["<c>amount</c>"] Quantity
         /// </summary>
         [JsonPropertyName("amount")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// Is undelegate
+        /// ["<c>isUndelegate</c>"] Is undelegate
         /// </summary>
         [JsonPropertyName("isUndelegate")]
         public bool IsUndelegate { get; set; }

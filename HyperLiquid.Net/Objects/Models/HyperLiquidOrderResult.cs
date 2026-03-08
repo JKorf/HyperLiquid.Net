@@ -33,7 +33,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidOrderResult
     {
         /// <summary>
-        /// Order id
+        /// ["<c>oid</c>"] Order id
         /// </summary>
         [JsonPropertyName("oid")]
         public long OrderId { get; set; }
@@ -42,12 +42,12 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         public OrderStatus Status { get; set; }
         /// <summary>
-        /// Quantity
+        /// ["<c>totalSz</c>"] Quantity
         /// </summary>
         [JsonPropertyName("totalSz")]
         public decimal? FilledQuantity { get; set; }
         /// <summary>
-        /// Average fill price
+        /// ["<c>avgPx</c>"] Average fill price
         /// </summary>
         [JsonPropertyName("avgPx")]
         public decimal? AveragePrice { get; set; }

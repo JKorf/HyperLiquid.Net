@@ -21,17 +21,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidOrderStatus
     {
         /// <summary>
-        /// Status timestamp
+        /// ["<c>statusTimestamp</c>"] Status timestamp
         /// </summary>
         [JsonPropertyName("statusTimestamp")]
         public DateTime Timestamp { get; set; }
         /// <summary>
-        /// Order status
+        /// ["<c>status</c>"] Order status
         /// </summary>
         [JsonPropertyName("status")]
         public OrderStatus Status { get; set; }
         /// <summary>
-        /// Order info
+        /// ["<c>order</c>"] Order info
         /// </summary>
         [JsonPropertyName("order")]
         public HyperLiquidOrder Order { get; set; } = default!;

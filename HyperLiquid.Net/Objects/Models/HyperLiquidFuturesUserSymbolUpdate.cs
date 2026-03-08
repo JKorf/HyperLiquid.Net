@@ -11,32 +11,32 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFuturesUserSymbolUpdate
     {
         /// <summary>
-        /// User address
+        /// ["<c>user</c>"] User address
         /// </summary>
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         /// <summary>
-        /// Symbol
+        /// ["<c>coin</c>"] Symbol
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Leverage info
+        /// ["<c>leverage</c>"] Leverage info
         /// </summary>
         [JsonPropertyName("leverage")]
         public HyperLiquidLeverage Leverage { get; set; } = default!;
         /// <summary>
-        /// Max trade quantities
+        /// ["<c>maxTradeSzs</c>"] Max trade quantities
         /// </summary>
         [JsonPropertyName("maxTradeSzs")]
         public decimal[] MaxTradeQuantities { get; set; } = [];
         /// <summary>
-        /// Available to trade
+        /// ["<c>availableToTrade</c>"] Available to trade
         /// </summary>
         [JsonPropertyName("availableToTrade")]
         public decimal[] AvailableToTrade { get; set; } = [];
         /// <summary>
-        /// Mark price
+        /// ["<c>markPx</c>"] Mark price
         /// </summary>
         [JsonPropertyName("markPx")]
         public decimal? MarkPrice { get; set; }
@@ -49,17 +49,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidLeverage
     {
         /// <summary>
-        /// Raw USD
+        /// ["<c>rawUsd</c>"] Raw USD
         /// </summary>
         [JsonPropertyName("rawUsd")]
         public decimal RawUsd { get; set; }
         /// <summary>
-        /// Margin type
+        /// ["<c>type</c>"] Margin type
         /// </summary>
         [JsonPropertyName("type")]
         public MarginType MarginType { get; set; }
         /// <summary>
-        /// Value
+        /// ["<c>value</c>"] Value
         /// </summary>
         [JsonPropertyName("value")]
         public int Value { get; set; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -9,19 +9,19 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStakingDelegation
     {
         /// <summary>
-        /// Validator address
+        /// ["<c>validator</c>"] Validator address
         /// </summary>
         [JsonPropertyName("validator")]
         public string Validator { get; set; } = string.Empty;
 
         /// <summary>
-        /// Amount delegated
+        /// ["<c>amount</c>"] Amount delegated
         /// </summary>
         [JsonPropertyName("amount")]
         public decimal Amount { get; set; }
 
         /// <summary>
-        /// Locked until timestamp
+        /// ["<c>lockedUntilTimestamp</c>"] Locked until timestamp
         /// </summary>
         [JsonPropertyName("lockedUntilTimestamp")]
         public DateTime? LockedUntil { get; set; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -9,17 +9,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidStakingReward
     {
         /// <summary>
-        /// Timestamp
+        /// ["<c>time</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
         /// <summary>
-        /// Source
+        /// ["<c>source</c>"] Source
         /// </summary>
         [JsonPropertyName("source")]
         public string Source { get; set; } = string.Empty;
         /// <summary>
-        /// Total quantity
+        /// ["<c>totalAmount</c>"] Total quantity
         /// </summary>
         [JsonPropertyName("totalAmount")]
         public decimal TotalQuantity { get; set; }

@@ -12,42 +12,42 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTrade
     {
         /// <summary>
-        /// Symbol
+        /// ["<c>coin</c>"] Symbol
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Order side
+        /// ["<c>side</c>"] Order side
         /// </summary>
         [JsonPropertyName("side")]
         public OrderSide Side { get; set; }
         /// <summary>
-        /// Trade price
+        /// ["<c>px</c>"] Trade price
         /// </summary>
         [JsonPropertyName("px")]
         public decimal Price { get; set; }
         /// <summary>
-        /// Trade quantity
+        /// ["<c>sz</c>"] Trade quantity
         /// </summary>
         [JsonPropertyName("sz")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// Hash
+        /// ["<c>hash</c>"] Hash
         /// </summary>
         [JsonPropertyName("hash")]
         public string Hash { get; set; } = string.Empty;
         /// <summary>
-        /// Timestamp
+        /// ["<c>time</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
         /// <summary>
-        /// Trade id
+        /// ["<c>tid</c>"] Trade id
         /// </summary>
         [JsonPropertyName("tid")]
         public long TradeId { get; set; }
         /// <summary>
-        /// Users
+        /// ["<c>users</c>"] Users
         /// </summary>
         [JsonPropertyName("users")]
         public string[] Users { get; set; } = [];

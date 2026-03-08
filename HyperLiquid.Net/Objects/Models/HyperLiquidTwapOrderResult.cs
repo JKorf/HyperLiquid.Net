@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTwapOrderResult
     {
         /// <summary>
-        /// Order id
+        /// ["<c>twapId</c>"] Order id
         /// </summary>
         [JsonPropertyName("twapId")]
         public long TwapId { get; set; }

@@ -14,17 +14,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidOrderBook
     {
         /// <summary>
-        /// Symbol 
+        /// ["<c>coin</c>"] Symbol 
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Data timestamp
+        /// ["<c>time</c>"] Data timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
         /// <summary>
-        /// Levels
+        /// ["<c>levels</c>"] Levels
         /// </summary>
         [JsonPropertyName("levels")]
         public HyperLiquidOrderBookLevels Levels { get; set; } = null!;
@@ -56,17 +56,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidOrderBookEntry : ISymbolOrderBookEntry
     {
         /// <summary>
-        /// Price
+        /// ["<c>px</c>"] Price
         /// </summary>
         [JsonPropertyName("px")]
         public decimal Price { get; set; }
         /// <summary>
-        /// Quantity
+        /// ["<c>sz</c>"] Quantity
         /// </summary>
         [JsonPropertyName("sz")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// Number of orders
+        /// ["<c>n</c>"] Number of orders
         /// </summary>
         [JsonPropertyName("n")]
         public int Orders { get; set; }

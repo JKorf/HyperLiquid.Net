@@ -11,52 +11,52 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfo
     {
         /// <summary>
-        /// Daily user volume
+        /// ["<c>dailyUserVlm</c>"] Daily user volume
         /// </summary>
         [JsonPropertyName("dailyUserVlm")]
         public HyperLiquidFeeInfoVolume[] DailyUserVolume { get; set; } = Array.Empty<HyperLiquidFeeInfoVolume>();
         /// <summary>
-        /// Fee schedule
+        /// ["<c>feeSchedule</c>"] Fee schedule
         /// </summary>
         [JsonPropertyName("feeSchedule")]
         public HyperLiquidFeeInfoSchedule FeeSchedule { get; set; } = null!;
         /// <summary>
-        /// User cross rate
+        /// ["<c>userCrossRate</c>"] User cross rate
         /// </summary>
         [JsonPropertyName("userCrossRate")]
         public decimal TakerFeeRate { get; set; }
         /// <summary>
-        /// User add rate
+        /// ["<c>userAddRate</c>"] User add rate
         /// </summary>
         [JsonPropertyName("userAddRate")]
         public decimal MakerFeeRate { get; set; }
         /// <summary>
-        /// User cross rate
+        /// ["<c>userSpotCrossRate</c>"] User cross rate
         /// </summary>
         [JsonPropertyName("userSpotCrossRate")]
         public decimal TakerFeeRateSpot { get; set; }
         /// <summary>
-        /// User add rate
+        /// ["<c>userSpotAddRate</c>"] User add rate
         /// </summary>
         [JsonPropertyName("userSpotAddRate")]
         public decimal MakerFeeRateSpot { get; set; }
         /// <summary>
-        /// Active referral discount
+        /// ["<c>activeReferralDiscount</c>"] Active referral discount
         /// </summary>
         [JsonPropertyName("activeReferralDiscount")]
         public decimal ActiveReferralDiscount { get; set; }
         /// <summary>
-        /// Trial
+        /// ["<c>trial</c>"] Trial
         /// </summary>
         [JsonPropertyName("trial")]
         public string? Trial { get; set; }
         /// <summary>
-        /// Fee trial reward
+        /// ["<c>feeTrialReward</c>"] Fee trial reward
         /// </summary>
         [JsonPropertyName("feeTrialReward")]
         public decimal? FeeTrialReward { get; set; }
         /// <summary>
-        /// Next trial available timestamp
+        /// ["<c>nextTrialAvailableTimestamp</c>"] Next trial available timestamp
         /// </summary>
         [JsonPropertyName("nextTrialAvailableTimestamp")]
         public DateTime? NextTrialAvailableTimestamp { get; set; }
@@ -69,22 +69,22 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfoVolume
     {
         /// <summary>
-        /// Date
+        /// ["<c>date</c>"] Date
         /// </summary>
         [JsonPropertyName("date")]
         public DateTime Date { get; set; }
         /// <summary>
-        /// User taker volume
+        /// ["<c>userCross</c>"] User taker volume
         /// </summary>
         [JsonPropertyName("userCross")]
         public decimal UserTaker { get; set; }
         /// <summary>
-        /// User maker volume
+        /// ["<c>userAdd</c>"] User maker volume
         /// </summary>
         [JsonPropertyName("userAdd")]
         public decimal UserMaker { get; set; }
         /// <summary>
-        /// Exchange
+        /// ["<c>exchange</c>"] Exchange
         /// </summary>
         [JsonPropertyName("exchange")]
         public decimal Exchange { get; set; }
@@ -97,22 +97,22 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfoSchedule
     {
         /// <summary>
-        /// Taker
+        /// ["<c>cross</c>"] Taker
         /// </summary>
         [JsonPropertyName("cross")]
         public decimal Taker { get; set; }
         /// <summary>
-        /// Maker
+        /// ["<c>add</c>"] Maker
         /// </summary>
         [JsonPropertyName("add")]
         public decimal Maker { get; set; }
         /// <summary>
-        /// Tiers
+        /// ["<c>tiers</c>"] Tiers
         /// </summary>
         [JsonPropertyName("tiers")]
         public HyperLiquidFeeInfoFeeTier Tiers { get; set; } = null!;
         /// <summary>
-        /// Referral discount
+        /// ["<c>referralDiscount</c>"] Referral discount
         /// </summary>
         [JsonPropertyName("referralDiscount")]
         public decimal ReferralDiscount { get; set; }
@@ -125,12 +125,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfoFeeTier
     {
         /// <summary>
-        /// VIP tier
+        /// ["<c>vip</c>"] VIP tier
         /// </summary>
         [JsonPropertyName("vip")]
         public HyperLiquidFeeInfoFeeTierRate[] VipTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRate>();
         /// <summary>
-        /// Market maker tier
+        /// ["<c>mm</c>"] Market maker tier
         /// </summary>
         [JsonPropertyName("mm")]
         public HyperLiquidFeeInfoFeeTierRateMarketMaker[] MarketMakerTier { get; set; } = Array.Empty<HyperLiquidFeeInfoFeeTierRateMarketMaker>();
@@ -143,17 +143,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfoFeeTierRate
     {
         /// <summary>
-        /// Notional cutoff
+        /// ["<c>ntlCutoff</c>"] Notional cutoff
         /// </summary>
         [JsonPropertyName("ntlCutoff")]
         public decimal NotionalCutoff { get; set; }
         /// <summary>
-        /// Taker rate
+        /// ["<c>cross</c>"] Taker rate
         /// </summary>
         [JsonPropertyName("cross")]
         public decimal Taker { get; set; }
         /// <summary>
-        /// Maker rate
+        /// ["<c>add</c>"] Maker rate
         /// </summary>
         [JsonPropertyName("add")]
         public decimal Maker { get; set; }
@@ -166,12 +166,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidFeeInfoFeeTierRateMarketMaker
     {
         /// <summary>
-        /// Maker fraction cutoff
+        /// ["<c>makerFractionCutoff</c>"] Maker fraction cutoff
         /// </summary>
         [JsonPropertyName("makerFractionCutoff")]
         public decimal MakerFractionCutoff { get; set; }
         /// <summary>
-        /// Maker rate
+        /// ["<c>add</c>"] Maker rate
         /// </summary>
         [JsonPropertyName("add")]
         public decimal Maker { get; set; }

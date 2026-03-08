@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
@@ -8,12 +8,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidNonUserCancelation
     {
         /// <summary>
-        /// Symbol
+        /// ["<c>coin</c>"] Symbol
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Order id
+        /// ["<c>oid</c>"] Order id
         /// </summary>
         [JsonPropertyName("oid")]
         public long OrderId { get; set; }
