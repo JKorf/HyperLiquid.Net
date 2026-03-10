@@ -10,17 +10,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidRateLimit
     {
         /// <summary>
-        /// Total volume
+        /// ["<c>cumVlm</c>"] Total volume
         /// </summary>
         [JsonPropertyName("cumVlm")]
         public decimal TotalVolume { get; set; }
         /// <summary>
-        /// Request quota used
+        /// ["<c>nRequestsUsed</c>"] Request quota used
         /// </summary>
         [JsonPropertyName("nRequestsUsed")]
         public long RequestsUsed { get; set; }
         /// <summary>
-        /// Request quota
+        /// ["<c>nRequestsCap</c>"] Request quota
         /// </summary>
         [JsonPropertyName("nRequestsCap")]
         public long RequestsCap { get; set; }

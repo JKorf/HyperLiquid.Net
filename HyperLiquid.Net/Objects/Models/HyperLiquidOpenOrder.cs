@@ -22,42 +22,42 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonIgnore]
         public SymbolType SymbolType { get; set; }
         /// <summary>
-        /// Client order id
+        /// ["<c>cloid</c>"] Client order id
         /// </summary>
         [JsonPropertyName("cloid")]
         public string? ClientOrderId { get; set; }
         /// <summary>
-        /// Symbol as returned by the API
+        /// ["<c>coin</c>"] Symbol as returned by the API
         /// </summary>
         [JsonPropertyName("coin")]
         public string ExchangeSymbol { get; set; } = string.Empty;
         /// <summary>
-        /// Limit price
+        /// ["<c>limitPx</c>"] Limit price
         /// </summary>
         [JsonPropertyName("limitPx")]
         public decimal Price { get; set; }
         /// <summary>
-        /// Order id
+        /// ["<c>oid</c>"] Order id
         /// </summary>
         [JsonPropertyName("oid")]
         public long OrderId { get; set; }
         /// <summary>
-        /// Order side
+        /// ["<c>side</c>"] Order side
         /// </summary>
         [JsonPropertyName("side")]
         public OrderSide OrderSide { get; set; }
         /// <summary>
-        /// Remaining unexecuted order quantity
+        /// ["<c>sz</c>"] Remaining unexecuted order quantity
         /// </summary>
         [JsonPropertyName("sz")]
         public decimal QuantityRemaining { get; set; }
         /// <summary>
-        /// Original order quantity
+        /// ["<c>origSz</c>"] Original order quantity
         /// </summary>
         [JsonPropertyName("origSz")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// Order timestamp
+        /// ["<c>timestamp</c>"] Order timestamp
         /// </summary>
         [JsonPropertyName("timestamp")]
         public DateTime Timestamp { get; set; }

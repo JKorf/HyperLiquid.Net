@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidPerpDexStatus
     {
         /// <summary>
-        /// Total net deposit
+        /// ["<c>totalNetDeposit</c>"] Total net deposit
         /// </summary>
         [JsonPropertyName("totalNetDeposit")]
         public decimal TotalNetDeposit { get; set; }

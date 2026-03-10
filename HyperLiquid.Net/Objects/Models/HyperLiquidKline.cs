@@ -12,52 +12,52 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidKline
     {
         /// <summary>
-        /// Open timestamp
+        /// ["<c>t</c>"] Open timestamp
         /// </summary>
         [JsonPropertyName("t")]
         public DateTime OpenTime { get; set; }
         /// <summary>
-        /// Close timestamp
+        /// ["<c>T</c>"] Close timestamp
         /// </summary>
         [JsonPropertyName("T")]
         public DateTime CloseTime { get; set; }
         /// <summary>
-        /// Kline interval
+        /// ["<c>i</c>"] Kline interval
         /// </summary>
         [JsonPropertyName("i")]
         public KlineInterval Interval { get; set; }
         /// <summary>
-        /// Close price
+        /// ["<c>c</c>"] Close price
         /// </summary>
         [JsonPropertyName("c")]
         public decimal ClosePrice { get; set; }
         /// <summary>
-        /// High price
+        /// ["<c>h</c>"] High price
         /// </summary>
         [JsonPropertyName("h")]
         public decimal HighPrice { get; set; }
         /// <summary>
-        /// Low price
+        /// ["<c>l</c>"] Low price
         /// </summary>
         [JsonPropertyName("l")]
         public decimal LowPrice { get; set; }
         /// <summary>
-        /// Open price
+        /// ["<c>o</c>"] Open price
         /// </summary>
         [JsonPropertyName("o")]
         public decimal OpenPrice { get; set; }
         /// <summary>
-        /// Volume
+        /// ["<c>v</c>"] Volume
         /// </summary>
         [JsonPropertyName("v")]
         public decimal Volume { get; set; }
         /// <summary>
-        /// Trade count
+        /// ["<c>n</c>"] Trade count
         /// </summary>
         [JsonPropertyName("n")]
         public int TradeCount { get; set; }
         /// <summary>
-        /// Symbol
+        /// ["<c>s</c>"] Symbol
         /// </summary>
         [JsonPropertyName("s")]
         public string Symbol { get; set; } = string.Empty;

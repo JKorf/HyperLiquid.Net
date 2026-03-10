@@ -12,7 +12,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidTwapStatus
     {
         /// <summary>
-        /// Symbol as returned by the API
+        /// ["<c>coin</c>"] Symbol as returned by the API
         /// </summary>
         [JsonPropertyName("coin")]
         public string ExchangeSymbol { get; set; } = string.Empty;
@@ -27,47 +27,47 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonIgnore]
         public SymbolType SymbolType { get; set; }
         /// <summary>
-        /// User
+        /// ["<c>user</c>"] User
         /// </summary>
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         /// <summary>
-        /// Order side
+        /// ["<c>side</c>"] Order side
         /// </summary>
         [JsonPropertyName("side")]
         public OrderSide Side { get; set; }
         /// <summary>
-        /// Quantity
+        /// ["<c>sz</c>"] Quantity
         /// </summary>
         [JsonPropertyName("sz")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// Executed quantity
+        /// ["<c>executedSz</c>"] Executed quantity
         /// </summary>
         [JsonPropertyName("executedSz")]
         public decimal ExecutedQuantity { get; set; }
         /// <summary>
-        /// Executed value
+        /// ["<c>executedNtl</c>"] Executed value
         /// </summary>
         [JsonPropertyName("executedNtl")]
         public decimal ExecutedValue { get; set; }
         /// <summary>
-        /// Minutes
+        /// ["<c>minutes</c>"] Minutes
         /// </summary>
         [JsonPropertyName("minutes")]
         public int Minutes { get; set; }
         /// <summary>
-        /// Reduce only
+        /// ["<c>reduceOnly</c>"] Reduce only
         /// </summary>
         [JsonPropertyName("reduceOnly")]
         public bool ReduceOnly { get; set; }
         /// <summary>
-        /// Randomize
+        /// ["<c>randomize</c>"] Randomize
         /// </summary>
         [JsonPropertyName("randomize")]
         public bool Randomize { get; set; }
         /// <summary>
-        /// Timestamp
+        /// ["<c>timestamp</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("timestamp")]
         public DateTime Timestamp { get; set; }

@@ -11,27 +11,27 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidUserFunding
     {
         /// <summary>
-        /// Timestamp
+        /// ["<c>time</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime? Timestamp { get; set; }
         /// <summary>
-        /// Symbol name
+        /// ["<c>coin</c>"] Symbol name
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// USDC
+        /// ["<c>usdc</c>"] USDC
         /// </summary>
         [JsonPropertyName("usdc")]
         public decimal Usdc { get; set; }
         /// <summary>
-        /// Quantity
+        /// ["<c>szi</c>"] Quantity
         /// </summary>
         [JsonPropertyName("szi")]
         public decimal Szi { get; set; }
         /// <summary>
-        /// Funding rate
+        /// ["<c>fundingRate</c>"] Funding rate
         /// </summary>
         [JsonPropertyName("fundingRate")]
         public decimal FundingRate { get; set; }

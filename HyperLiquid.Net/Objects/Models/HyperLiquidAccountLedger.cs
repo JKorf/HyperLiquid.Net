@@ -41,7 +41,7 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidDeposit
     {
         /// <summary>
-        /// USDC
+        /// ["<c>usdc</c>"] USDC
         /// </summary>
         [JsonPropertyName("usdc")]
         public decimal Usdc { get; set; }
@@ -54,17 +54,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidWithdrawal
     {
         /// <summary>
-        /// USDC
+        /// ["<c>usdc</c>"] USDC
         /// </summary>
         [JsonPropertyName("usdc")]
         public decimal Usdc { get; set; }
         /// <summary>
-        /// Nonce
+        /// ["<c>nonce</c>"] Nonce
         /// </summary>
         [JsonPropertyName("nonce")]
         public long Nonce { get; set; }
         /// <summary>
-        /// Fee
+        /// ["<c>fee</c>"] Fee
         /// </summary>
         [JsonPropertyName("fee")]
         public decimal Fee { get; set; }
@@ -77,12 +77,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidInternalTransfer
     {
         /// <summary>
-        /// To futures
+        /// ["<c>toPerp</c>"] To futures
         /// </summary>
         [JsonPropertyName("toPerp")]
         public bool ToFutures { get; set; }
         /// <summary>
-        /// USDC
+        /// ["<c>usdc</c>"] USDC
         /// </summary>
         [JsonPropertyName("usdc")]
         public decimal Usdc { get; set; }
@@ -95,17 +95,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidLiquidation
     {
         /// <summary>
-        /// Margin type
+        /// ["<c>leverageType</c>"] Margin type
         /// </summary>
         [JsonPropertyName("leverageType")]
         public MarginType MarginType { get; set; }
         /// <summary>
-        /// Account value. For isolated positions this is the isolated account value
+        /// ["<c>accountValue</c>"] Account value. For isolated positions this is the isolated account value
         /// </summary>
         [JsonPropertyName("accountValue")]
         public decimal AccountValue { get; set; }
         /// <summary>
-        /// Liquidated positions
+        /// ["<c>liquidatedPositions</c>"] Liquidated positions
         /// </summary>
         [JsonPropertyName("liquidatedPositions")]
         public HyperLiquidLiquidationPosition[] Positions { get; set; } = [];
@@ -118,12 +118,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidLiquidationPosition
     {
         /// <summary>
-        /// Symbol
+        /// ["<c>coin</c>"] Symbol
         /// </summary>
         [JsonPropertyName("coin")]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Quantity
+        /// ["<c>szi</c>"] Quantity
         /// </summary>
         [JsonPropertyName("szi")]
         public decimal Quantity { get; set; }
@@ -136,32 +136,32 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidSpotTransfer
     {
         /// <summary>
-        /// Token
+        /// ["<c>token</c>"] Token
         /// </summary>
         [JsonPropertyName("token")]
         public string Token { get; set; } = string.Empty;
         /// <summary>
-        /// Quantity
+        /// ["<c>amount</c>"] Quantity
         /// </summary>
         [JsonPropertyName("amount")]
         public decimal Quantity { get; set; }
         /// <summary>
-        /// USDC value
+        /// ["<c>usdcValue</c>"] USDC value
         /// </summary>
         [JsonPropertyName("usdcValue")]
         public decimal UsdcValue { get; set; }
         /// <summary>
-        /// User
+        /// ["<c>user</c>"] User
         /// </summary>
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         /// <summary>
-        /// Destination
+        /// ["<c>destination</c>"] Destination
         /// </summary>
         [JsonPropertyName("destination")]
         public string Destination { get; set; } = string.Empty;
         /// <summary>
-        /// Fee
+        /// ["<c>fee</c>"] Fee
         /// </summary>
         [JsonPropertyName("fee")]
         public decimal Fee { get; set; }

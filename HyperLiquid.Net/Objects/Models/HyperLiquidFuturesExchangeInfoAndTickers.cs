@@ -37,47 +37,47 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonIgnore]
         public string Symbol { get; set; } = string.Empty;
         /// <summary>
-        /// Impact prices
+        /// ["<c>impactPxs</c>"] Impact prices
         /// </summary>
         [JsonPropertyName("impactPxs")]
         public decimal[] ImpactPrices { get; set; } = [];
         /// <summary>
-        /// Funding rate
+        /// ["<c>funding</c>"] Funding rate
         /// </summary>
         [JsonPropertyName("funding")]
         public decimal? FundingRate { get; set; }
         /// <summary>
-        /// Open interest
+        /// ["<c>openInterest</c>"] Open interest
         /// </summary>
         [JsonPropertyName("openInterest")]
         public decimal? OpenInterest { get; set; }
         /// <summary>
-        /// Oracle price
+        /// ["<c>oraclePx</c>"] Oracle price
         /// </summary>
         [JsonPropertyName("oraclePx")]
         public decimal? OraclePrice { get; set; }
         /// <summary>
-        /// Premium
+        /// ["<c>premium</c>"] Premium
         /// </summary>
         [JsonPropertyName("premium")]
         public decimal? Premium { get; set; }
         /// <summary>
-        /// Previous day price
+        /// ["<c>prevDayPx</c>"] Previous day price
         /// </summary>
         [JsonPropertyName("prevDayPx")]
         public decimal PreviousDayPrice { get; set; }
         /// <summary>
-        /// 24h notional volume
+        /// ["<c>dayNtlVlm</c>"] 24h notional volume
         /// </summary>
         [JsonPropertyName("dayNtlVlm")]
         public decimal NotionalVolume { get; set; }
         /// <summary>
-        /// Mark price
+        /// ["<c>markPx</c>"] Mark price
         /// </summary>
         [JsonPropertyName("markPx")]
         public decimal MarkPrice { get; set; }
         /// <summary>
-        /// Mid price
+        /// ["<c>midPx</c>"] Mid price
         /// </summary>
         [JsonPropertyName("midPx")]
         public decimal? MidPrice { get; set; }

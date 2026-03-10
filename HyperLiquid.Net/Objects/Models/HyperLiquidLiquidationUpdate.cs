@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
 {
@@ -8,27 +8,27 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidLiquidationUpdate
     {
         /// <summary>
-        /// Liquidation id
+        /// ["<c>lid</c>"] Liquidation id
         /// </summary>
         [JsonPropertyName("lid")]
         public long Id { get; set; }
         /// <summary>
-        /// Liquidator
+        /// ["<c>liquidator</c>"] Liquidator
         /// </summary>
         [JsonPropertyName("liquidator")]
         public string Liquidator { get; set; } = string.Empty;
         /// <summary>
-        /// Liquidated user
+        /// ["<c>liquidated_user</c>"] Liquidated user
         /// </summary>
         [JsonPropertyName("liquidated_user")]
         public string LiquidatedUser { get; set; } = string.Empty;
         /// <summary>
-        /// Liquidated notional position
+        /// ["<c>liquidated_ntl_pos</c>"] Liquidated notional position
         /// </summary>
         [JsonPropertyName("liquidated_ntl_pos")]
         public decimal LiquidatedNotionalPosition { get; set; }
         /// <summary>
-        /// Liquidated account value
+        /// ["<c>liquidated_account_value</c>"] Liquidated account value
         /// </summary>
         [JsonPropertyName("liquidated_account_value")]
         public decimal LiquidatedValue { get; set; }

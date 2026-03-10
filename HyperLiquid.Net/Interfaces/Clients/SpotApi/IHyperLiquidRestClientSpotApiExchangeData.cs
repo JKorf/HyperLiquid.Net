@@ -45,7 +45,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// POST /info (type: tokenDetails)
         /// </para>
         /// </summary>
-        /// <param name="assetId">The asset id</param>
+        /// <param name="assetId">["<c>tokenId</c>"] The asset id</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
     }

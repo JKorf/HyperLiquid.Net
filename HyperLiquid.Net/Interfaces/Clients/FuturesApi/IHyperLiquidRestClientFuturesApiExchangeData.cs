@@ -34,7 +34,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: meta)
         /// </para>
         /// </summary>
-        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+        /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default);
 
@@ -71,9 +71,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: fundingHistory)
         /// </para>
         /// </summary>
-        /// <param name="symbol">Symbol, for example "ETH"</param>
-        /// <param name="startTime">Filter by start time</param>
-        /// <param name="endTime">Filter by end time</param>
+        /// <param name="symbol">["<c>coin</c>"] Symbol, for example "ETH"</param>
+        /// <param name="startTime">["<c>startTime</c>"] Filter by start time</param>
+        /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default);
 
@@ -86,7 +86,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: perpsAtOpenInterestCap)
         /// </para>
         /// </summary>
-        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+        /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default);
 
@@ -99,7 +99,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: perpDexLimits)
         /// </para>
         /// </summary>
-        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+        /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default);
 
@@ -112,7 +112,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// POST /info (type: perpDexStatus)
         /// </para>
         /// </summary>
-        /// <param name="dex">DEX name, for example `xyz`, null for default Perp DEX</param>
+        /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default);
     }

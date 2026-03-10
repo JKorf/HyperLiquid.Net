@@ -11,37 +11,37 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidUserUpdate
     {
         /// <summary>
-        /// Total value of ledger
+        /// ["<c>cumLedger</c>"] Total value of ledger
         /// </summary>
         [JsonPropertyName("cumLedger")]
         public decimal CumLedger { get; set; }
         /// <summary>
-        /// Server time
+        /// ["<c>serverTime</c>"] Server time
         /// </summary>
         [JsonPropertyName("serverTime")]
         public DateTime ServerTime { get; set; }
         /// <summary>
-        /// Is vault
+        /// ["<c>isVault</c>"] Is vault
         /// </summary>
         [JsonPropertyName("isVault")]
         public bool IsVault { get; set; }
         /// <summary>
-        /// User
+        /// ["<c>user</c>"] User
         /// </summary>
         [JsonPropertyName("user")]
         public string User { get; set; } = string.Empty;
         /// <summary>
-        /// Open orders
+        /// ["<c>openOrders</c>"] Open orders
         /// </summary>
         [JsonPropertyName("openOrders")]
         public HyperLiquidOrder[] OpenOrders { get; set; } = default!;
         /// <summary>
-        /// Spot balances
+        /// ["<c>spotState</c>"] Spot balances
         /// </summary>
         [JsonPropertyName("spotState")]
         public HyperLiquidBalances SpotBalances { get; set; } = default!;
         /// <summary>
-        /// Futures account info
+        /// ["<c>clearinghouseState</c>"] Futures account info
         /// </summary>
         [JsonPropertyName("clearinghouseState")]
         public HyperLiquidFuturesAccount FuturesInfo { get; set; } = default!;

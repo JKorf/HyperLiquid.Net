@@ -1,4 +1,4 @@
-﻿using CryptoExchange.Net.Attributes;
+using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using System.Text.Json.Serialization;
@@ -30,12 +30,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidMarginTableEntry
     {
         /// <summary>
-        /// Description
+        /// ["<c>description</c>"] Description
         /// </summary>
         [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
         /// <summary>
-        /// Margin tiers
+        /// ["<c>marginTiers</c>"] Margin tiers
         /// </summary>
         [JsonPropertyName("marginTiers")]
         public HyperLiquidMarginTableTier[] MarginTiers { get; set; } = [];
@@ -47,12 +47,12 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidMarginTableTier
     {
         /// <summary>
-        /// Lower bound
+        /// ["<c>lowerBound</c>"] Lower bound
         /// </summary>
         [JsonPropertyName("lowerBound")]
         public decimal LowerBound { get; set; }
         /// <summary>
-        /// Max leverage
+        /// ["<c>maxLeverage</c>"] Max leverage
         /// </summary>
         [JsonPropertyName("maxLeverage")]
         public int MaxLeverage{ get; set; }

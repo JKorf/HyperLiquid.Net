@@ -11,17 +11,17 @@ namespace HyperLiquid.Net.Objects.Models
     public record HyperLiquidUserLedger<T>
     {
         /// <summary>
-        /// Data
+        /// ["<c>delta</c>"] Data
         /// </summary>
         [JsonPropertyName("delta")]
         public T Data { get; set; } = default!;
         /// <summary>
-        /// Hash
+        /// ["<c>hash</c>"] Hash
         /// </summary>
         [JsonPropertyName("hash")]
         public string Hash { get; set; } = string.Empty;
         /// <summary>
-        /// Timestamp
+        /// ["<c>time</c>"] Timestamp
         /// </summary>
         [JsonPropertyName("time")]
         public DateTime Timestamp { get; set; }
