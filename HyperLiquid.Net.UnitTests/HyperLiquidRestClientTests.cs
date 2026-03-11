@@ -20,7 +20,7 @@ namespace HyperLiquid.Net.UnitTests
         public void CheckNonDeterministSignatureExample1()
         {
             const string hash = "FACE28327892D757909E0DB4B499EC67D51AD9127BFBC53B96CCB173155D7B94";
-            const string secret = "0xbb";
+            const string secret = "0x00000000000000000000000000000000000000000000000000000000000000bb";
             var authProvider = new HyperLiquidAuthenticationProvider(new ApiCredentials("0xaa", secret));
             var client = (RestApiClient)new HyperLiquidRestClient().SpotApi;
 

@@ -32,7 +32,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var parameters = new ParameterCollection()
             {
                 { "type", "clearinghouseState" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
             };
             parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
@@ -52,7 +52,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userFunding" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
             };
             parameters.AddMilliseconds("startTime", startTime);
             parameters.AddOptionalMilliseconds("endTime", endTime);
@@ -74,7 +74,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             {
                 { "type", "activeAssetData" },
                 { "coin", symbol },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidFuturesUserSymbolUpdate>(request, parameters, ct).ConfigureAwait(false);
@@ -93,7 +93,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userDexAbstraction" },
-                { "user", user ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", user ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<bool>(request, parameters, ct).ConfigureAwait(false);
@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 { "type", "userDexAbstraction" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
-                { "user", user ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", user ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
             };
 
             actionParameters.Add("enabled", enabled);

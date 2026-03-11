@@ -1,21 +1,22 @@
 ﻿using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Clients.BaseApi;
-using HyperLiquid.Net.Signing;
 using HyperLiquid.Net.Utils;
 using Secp256k1Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography;
 
 namespace HyperLiquid.Net
 {
     internal class HyperLiquidAuthenticationProvider : AuthenticationProvider
     {
-        public override ApiCredentialsType[] SupportedCredentialTypes => [ApiCredentialsType.Hmac];
+        public override ApiCredentialsType[] SupportedCredentialTypes => [
+            ApiCredentialsType.Hmac, // For compatibility allow HMAC since it's a default credential type, but signing will be done with ECDSA
+            ApiCredentialsType.Ecdsa
+            ];
 
         private static IEnumerable<(string Name, string Type, object Value)> GetDomainFields(
             string action,
@@ -36,18 +37,8 @@ namespace HyperLiquid.Net
             { typeof(string), "string" },
             { typeof(long), "uint64" },
             { typeof(bool), "bool" },
-            { typeof(byte[]), "bytes32" }, // Can be address?
+            { typeof(byte[]), "bytes32" }
         };
-
-        private static readonly List<string[]> _eip721Domain = new List<string[]>
-        {
-            new string[] { "name", "string" },
-            new string[] { "version", "string" },
-            new string[] { "chainId", "uint256" },
-            new string[] { "verifyingContract", "address" },
-            new string[] { "salt", "bytes32" }
-        };
-
 
         public HyperLiquidAuthenticationProvider(ApiCredentials credentials) : base(credentials)
         {
@@ -61,6 +52,8 @@ namespace HyperLiquid.Net
             var action = (Dictionary<string, object>)request.BodyParameters!["action"];
             var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
             request.BodyParameters!.Add("nonce", nonce);
+
+            byte[] messageBytes;
             if (action.TryGetValue("signatureChainId", out var chainId))
             {
                 // User action
@@ -69,24 +62,11 @@ namespace HyperLiquid.Net
                     actionName = "withdraw";
 
                 actionName = actionName.Substring(0, 1).ToUpperInvariant() + actionName.Substring(1);
-
-#warning signing is not working correctly
+                var primary = "HyperliquidTransaction:" + actionName;
                 var messageInnerFields = GetMessageFields(action.Where(x => x.Key != "type" && x.Key != "signatureChainId").ToDictionary(x => x.Key, x => x.Value));
-                var messageFields = new (string, string, object)[]
-                {
-                    ("HyperliquidSignTransaction:" + actionName, actionName, messageInnerFields.Select(x => new MemberValue { TypeName = x.Type, Value = x.Value }).ToArray())
-                };
+
                 var domainFields = GetDomainFields("HyperliquidSignTransaction", "1", Convert.ToInt32((string)chainId, 16), "0x0000000000000000000000000000000000000000");
-                var msg = EncodeEip721(actionName, domainFields, messageFields);
-                var keccakSigned = InternalSha3Keccack.CalculateHash(msg);
-
-                Dictionary<string, object> signature;
-                if (HyperLiquidExchange.SignRequestDelegate != null)
-                    signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), _credentials.Secret);
-                else
-                    signature = SignRequest(keccakSigned, _credentials.Secret);
-
-                request.BodyParameters["signature"] = signature;
+                messageBytes = CeEip712TypedDataEncoder.EncodeEip721(primary, domainFields, messageInnerFields);
             }
             else
             {
@@ -109,20 +89,21 @@ namespace HyperLiquid.Net
                     { "connectionId", hash },
                 };
 
-#warning seems to work correctly
                 var messageFields = GetMessageFields(phantomAgent);
                 var domainFields = GetDomainFields("Exchange", "1", 1337, "0x0000000000000000000000000000000000000000");
-                var msg = EncodeEip721("Agent", domainFields, messageFields);
-                var keccakSigned = InternalSha3Keccack.CalculateHash(msg);
-
-                Dictionary<string, object> signature;
-                if (HyperLiquidExchange.SignRequestDelegate != null)
-                    signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), _credentials.Secret);
-                else
-                    signature = SignRequest(keccakSigned, _credentials.Secret);
-
-                request.BodyParameters["signature"] = signature;
+                messageBytes = CeEip712TypedDataEncoder.EncodeEip721("Agent", domainFields, messageFields);                
             }
+
+            var keccakSigned = CeSha3Keccack.CalculateHash(messageBytes);
+
+            var pk = Credential.CredentialType == ApiCredentialsType.Ecdsa ? ((ECDSACredential)Credential).PrivateKey : ((HMACCredential)Credential).Secret;
+            Dictionary<string, object> signature;
+            if (HyperLiquidExchange.SignRequestDelegate != null)
+                signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), pk);
+            else
+                signature = SignRequest(keccakSigned, pk);
+
+            request.BodyParameters["signature"] = signature;
         }
 
         private List<(string Name, string Type, object Value)> GetMessageFields(Dictionary<string, object> parameters)
@@ -155,50 +136,6 @@ namespace HyperLiquid.Net
             };
         }
 
-        public byte[] EncodeEip721(
-            string primaryType,
-            IEnumerable<(string Name, string Type, object Value)> domainFields,
-            IEnumerable<(string Name, string Type, object Value)> messageFields)
-        {
-            var data = new TypedDataRaw()
-            {
-                PrimaryType = primaryType,
-                DomainRawValues = domainFields.Select(x => new MemberValue
-                {
-                    TypeName = x.Type,
-                    Value = x.Value,
-                }).ToArray(),
-                
-                Message = messageFields.Select(x => new MemberValue
-                {
-                    TypeName = x.Type,
-                    Value = x.Value,
-                }).ToArray(),
-                Types = new Dictionary<string, Signing.MemberDescription[]>
-                {
-                    { 
-                        "EIP712Domain",
-                        domainFields.Select(x => new MemberDescription
-                        {
-                            Name = x.Name,
-                            Type = x.Type
-                        }).ToArray()                        
-                    },
-                    {
-                        primaryType,
-                        messageFields.Select(x => new MemberDescription
-                        {
-                            Name = x.Name,
-                            Type = x.Type
-                        }).ToArray()
-                    }
-                }
-            };
-
-            return LightEip712TypedDataEncoder.EncodeTypedDataRaw(data);
-        }
-
-
         private byte[] GenerateActionHash(object action, long nonce, string? vaultAddress, long? expireAfter)
         {
             var packer = new PackConverter();
@@ -214,7 +151,7 @@ namespace HyperLiquid.Net
                 signHex += "00" + $"00000{(ulong)expireAfter:x}";
 
             var signBytes = signHex.HexToByteArray();
-            return InternalSha3Keccack.CalculateHash(signBytes);
+            return CeSha3Keccack.CalculateHash(signBytes);
         }
 
 
