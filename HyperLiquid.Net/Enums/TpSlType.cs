@@ -11,12 +11,12 @@ namespace HyperLiquid.Net.Enums
     public enum TpSlType
     {
         /// <summary>
-        /// Take profit
+        /// ["<c>tp</c>"] Take profit
         /// </summary>
         [Map("tp")]
         TakeProfit,
         /// <summary>
-        /// Stop loss
+        /// ["<c>sl</c>"] Stop loss
         /// </summary>
         [Map("sl")]
         StopLoss

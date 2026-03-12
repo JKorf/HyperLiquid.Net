@@ -11,12 +11,12 @@ namespace HyperLiquid.Net.Enums
     public enum OrderSide
     {
         /// <summary>
-        /// Buy
+        /// ["<c>B</c>"] Buy
         /// </summary>
         [Map("B")]
         Buy,
         /// <summary>
-        /// Sell
+        /// ["<c>A</c>"] Sell
         /// </summary>
         [Map("A")]
         Sell

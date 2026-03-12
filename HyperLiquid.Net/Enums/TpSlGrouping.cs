@@ -11,12 +11,12 @@ namespace HyperLiquid.Net.Enums
     public enum TpSlGrouping
     {
         /// <summary>
-        /// Normal TakeProfit/StopLoss
+        /// ["<c>normalTpsl</c>"] Normal TakeProfit/StopLoss
         /// </summary>
         [Map("normalTpsl")]
         NormalTpSl,
         /// <summary>
-        /// Position TakeProfit/StopLoss
+        /// ["<c>positionTpsl</c>"] Position TakeProfit/StopLoss
         /// </summary>
         [Map("positionTpsl")]
         PositionTpSl

@@ -11,22 +11,22 @@ namespace HyperLiquid.Net.Enums
     public enum TwapStatus
     {
         /// <summary>
-        /// Activated
+        /// ["<c>activated</c>"] Activated
         /// </summary>
         [Map("activated")]
         Activated,
         /// <summary>
-        /// Terminated
+        /// ["<c>terminated</c>"] Terminated
         /// </summary>
         [Map("terminated")]
         Terminated,
         /// <summary>
-        /// Finished
+        /// ["<c>finished</c>"] Finished
         /// </summary>
         [Map("finished")]
         Finished,
         /// <summary>
-        /// Error
+        /// ["<c>error</c>"] Error
         /// </summary>
         [Map("error")]
         Error

@@ -11,27 +11,27 @@ namespace HyperLiquid.Net.Enums
     public enum UserRole
     {
         /// <summary>
-        /// Missing
+        /// ["<c>missing</c>"] Missing
         /// </summary>
         [Map("missing")]
         Missing,
         /// <summary>
-        /// User
+        /// ["<c>user</c>"] User
         /// </summary>
         [Map("user")]
         User,
         /// <summary>
-        /// Agent
+        /// ["<c>agent</c>"] Agent
         /// </summary>
         [Map("agent")]
         Agent,
         /// <summary>
-        /// Vault
+        /// ["<c>vault</c>"] Vault
         /// </summary>
         [Map("vault")]
         Vault,
         /// <summary>
-        /// Sub account
+        /// ["<c>subAccount</c>"] Sub account
         /// </summary>
         [Map("subAccount")]
         SubAccount

@@ -11,32 +11,32 @@ namespace HyperLiquid.Net.Enums
     public enum OrderType
     {
         /// <summary>
-        /// Limit
+        /// ["<c>Limit</c>"] Limit
         /// </summary>
         [Map("Limit")]
         Limit,
         /// <summary>
-        /// Market
+        /// ["<c>Market</c>"] Market
         /// </summary>
         [Map("Market")]
         Market,
         /// <summary>
-        /// Stop Market
+        /// ["<c>Stop Market</c>"] Stop Market
         /// </summary>
         [Map("Stop Market")]
         StopMarket,
         /// <summary>
-        /// Stop Limit
+        /// ["<c>Stop Limit</c>"] Stop Limit
         /// </summary>
         [Map("Stop Limit")]
         StopLimit,
         /// <summary>
-        /// Stop Market
+        /// ["<c>Take Profit Market</c>"] Stop Market
         /// </summary>
         [Map("Take Profit Market")]
         TakeProfitMarket,
         /// <summary>
-        /// Stop Limit
+        /// ["<c>Take Profit</c>"] Stop Limit
         /// </summary>
         [Map("Take Profit", "Take Profit Limit")]
         TakeProfit

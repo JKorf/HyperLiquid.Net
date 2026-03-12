@@ -11,27 +11,27 @@ namespace HyperLiquid.Net.Enums
     public enum TimeInForce
     {
         /// <summary>
-        /// Post only
+        /// ["<c>Alo</c>"] Post only
         /// </summary>
         [Map("Alo")]
         PostOnly,
         /// <summary>
-        /// Immediate or cancel
+        /// ["<c>Ioc</c>"] Immediate or cancel
         /// </summary>
         [Map("Ioc")]
         ImmediateOrCancel,
         /// <summary>
-        /// Good till canceled
+        /// ["<c>Gtc</c>"] Good till canceled
         /// </summary>
         [Map("Gtc")]
         GoodTillCanceled,
         /// <summary>
-        /// Frontend market
+        /// ["<c>FrontendMarket</c>"] Frontend market
         /// </summary>
         [Map("FrontendMarket")]
         FrontendMarket,
         /// <summary>
-        /// Liquidation market
+        /// ["<c>LiquidationMarket</c>"] Liquidation market
         /// </summary>
         [Map("LiquidationMarket")]
         LiquidationMarket

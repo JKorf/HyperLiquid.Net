@@ -11,7 +11,7 @@ namespace HyperLiquid.Net.Enums
     public enum PositionType
     {
         /// <summary>
-        /// One way
+        /// ["<c>oneWay</c>"] One way
         /// </summary>
         [Map("oneWay")]
         OneWay

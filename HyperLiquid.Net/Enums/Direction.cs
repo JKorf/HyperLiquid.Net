@@ -11,52 +11,52 @@ namespace HyperLiquid.Net.Enums
     public enum Direction
     {
         /// <summary>
-        /// Open long
+        /// ["<c>Open Long</c>"] Open long
         /// </summary>
         [Map("Open Long")]
         OpenLong,
         /// <summary>
-        /// Close long
+        /// ["<c>Close Long</c>"] Close long
         /// </summary>
         [Map("Close Long")]
         CloseLong,
         /// <summary>
-        /// Open short
+        /// ["<c>Open Short</c>"] Open short
         /// </summary>
         [Map("Open Short")]
         OpenShort,
         /// <summary>
-        /// Close short
+        /// ["<c>Close Short</c>"] Close short
         /// </summary>
         [Map("Close Short")]
         CloseShort,
         /// <summary>
-        /// Buy spot order
+        /// ["<c>Buy</c>"] Buy spot order
         /// </summary>
         [Map("Buy")]
         Buy,
         /// <summary>
-        /// Sell spot order
+        /// ["<c>Sell</c>"] Sell spot order
         /// </summary>
         [Map("Sell")]
         Sell,
         /// <summary>
-        /// Long to short order
+        /// ["<c>Long > Short</c>"] Long to short order
         /// </summary>
         [Map("Long > Short")]
         LongToShort,
         /// <summary>
-        /// Short to long order
+        /// ["<c>Short > Long</c>"] Short to long order
         /// </summary>
         [Map("Short > Long")]
         ShortToLong,
         /// <summary>
-        /// Spot dust conversion
+        /// ["<c>Spot Dust Conversion</c>"] Spot dust conversion
         /// </summary>
         [Map("Spot Dust Conversion")]
         SpotDustConversion,
         /// <summary>
-        /// Auto deleveraging
+        /// ["<c>Auto-Deleveraging</c>"] Auto deleveraging
         /// </summary>
         [Map("Auto-Deleveraging")]
         AutoDeleveraging

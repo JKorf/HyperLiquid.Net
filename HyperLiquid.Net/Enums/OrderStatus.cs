@@ -11,67 +11,67 @@ namespace HyperLiquid.Net.Enums
     public enum OrderStatus
     {
         /// <summary>
-        /// Filled
+        /// ["<c>filled</c>"] Filled
         /// </summary>
         [Map("filled")]
         Filled,
         /// <summary>
-        /// Open
+        /// ["<c>open</c>"] Open
         /// </summary>
         [Map("open")]
         Open,
         /// <summary>
-        /// Canceled
+        /// ["<c>canceled</c>"] Canceled
         /// </summary>
         [Map("canceled", "reduceOnlyCanceled")]
         Canceled,
         /// <summary>
-        /// Trigger
+        /// ["<c>triggered</c>"] Trigger
         /// </summary>
         [Map("triggered")]
         Triggered,
         /// <summary>
-        /// Rejected
+        /// ["<c>rejected</c>"] Rejected
         /// </summary>
         [Map("rejected")]
         Rejected,
         /// <summary>
-        /// Margin canceled
+        /// ["<c>marginCanceled</c>"] Margin canceled
         /// </summary>
         [Map("marginCanceled")]
         MarginCanceled,
         /// <summary>
-        /// Rejected; insufficient balance
+        /// ["<c>insufficientSpotBalanceRejected</c>"] Rejected; insufficient balance
         /// </summary>
         [Map("insufficientSpotBalanceRejected")]
         RejectedInsufficientBalance,
         /// <summary>
-        /// Rejected; IOC 
+        /// ["<c>iocCancelRejected</c>"] Rejected; IOC 
         /// </summary>
         [Map("iocCancelRejected")]
         RejectedIOC,
         /// <summary>
-        /// Rejected; price rejected 
+        /// ["<c>badAloPxRejected</c>"] Rejected; price rejected 
         /// </summary>
         [Map("badAloPxRejected")]
         RejectedBadPrice,
         /// <summary>
-        /// Rejected; insufficient margin
+        /// ["<c>perpMarginRejected</c>"] Rejected; insufficient margin
         /// </summary>
         [Map("perpMarginRejected")]
         RejectedInsufficientMargin,
         /// <summary>
-        /// Rejected; order value too small
+        /// ["<c>minTradeNtlRejected</c>"] Rejected; order value too small
         /// </summary>
         [Map("minTradeNtlRejected")]
         RejectedMinValue,
         /// <summary>
-        /// Rejected; sibling filled/canceled
+        /// ["<c>siblingFilledCanceled</c>"] Rejected; sibling filled/canceled
         /// </summary>
         [Map("siblingFilledCanceled")]
         RejectedSiblingFilledCanceled,
         /// <summary>
-        /// Reduce only rejected
+        /// ["<c>reduceOnlyRejected</c>"] Reduce only rejected
         /// </summary>
         [Map("reduceOnlyRejected")]
         ReduceOnlyRejected,
