@@ -9,11 +9,12 @@ using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Clients.FuturesApi;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients
 {
     /// <inheritdoc cref="IHyperLiquidSocketClient" />
-    public class HyperLiquidSocketClient : BaseSocketClient, IHyperLiquidSocketClient
+    public class HyperLiquidSocketClient : BaseSocketClient<HyperLiquidEnvironment, HyperLiquidCredentials>, IHyperLiquidSocketClient
     {
         #region fields
         #endregion

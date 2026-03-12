@@ -33,7 +33,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userFees" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.Credential.PublicIdentifier }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<HyperLiquidFeeInfo>(request, parameters, ct).ConfigureAwait(false);

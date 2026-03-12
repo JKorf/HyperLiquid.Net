@@ -6,7 +6,7 @@ namespace HyperLiquid.Net.Objects.Options
     /// <summary>
     /// Options for the HyperLiquidRestClient
     /// </summary>
-    public class HyperLiquidRestOptions : RestExchangeOptions<HyperLiquidEnvironment>
+    public class HyperLiquidRestOptions : RestExchangeOptions<HyperLiquidEnvironment, HyperLiquidCredentials>
     {
         /// <summary>
         /// Default options for new clients
@@ -43,11 +43,11 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public RestApiOptions SpotOptions { get; private set; } = new RestApiOptions();
+        public RestApiOptions<HyperLiquidCredentials> SpotOptions { get; private set; } = new RestApiOptions<HyperLiquidCredentials>();
         /// <summary>
         /// Futures API options
         /// </summary>
-        public RestApiOptions FuturesOptions { get; private set; } = new RestApiOptions();
+        public RestApiOptions<HyperLiquidCredentials> FuturesOptions { get; private set; } = new RestApiOptions<HyperLiquidCredentials>();
 
         internal HyperLiquidRestOptions Set(HyperLiquidRestOptions targetOptions)
         {

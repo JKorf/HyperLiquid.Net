@@ -5,7 +5,7 @@ namespace HyperLiquid.Net.Objects.Options
     /// <summary>
     /// Options for the HyperLiquidSocketClient
     /// </summary>
-    public class HyperLiquidSocketOptions : SocketExchangeOptions<HyperLiquidEnvironment>
+    public class HyperLiquidSocketOptions : SocketExchangeOptions<HyperLiquidEnvironment, HyperLiquidCredentials>
     {
         /// <summary>
         /// Default options for new clients
@@ -27,7 +27,7 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public SocketApiOptions SpotOptions { get; private set; } = new SocketApiOptions()
+        public SocketApiOptions<HyperLiquidCredentials> SpotOptions { get; private set; } = new SocketApiOptions<HyperLiquidCredentials>()
         {
             MaxSocketConnections = 100
         };
@@ -35,7 +35,7 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public SocketApiOptions FuturesOptions { get; private set; } = new SocketApiOptions()
+        public SocketApiOptions<HyperLiquidCredentials> FuturesOptions { get; private set; } = new SocketApiOptions<HyperLiquidCredentials>()
         {
             MaxSocketConnections = 100
         };

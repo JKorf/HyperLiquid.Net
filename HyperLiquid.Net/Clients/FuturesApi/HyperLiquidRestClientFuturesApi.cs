@@ -27,7 +27,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #endregion
 
         #region constructor/destructor
-        internal HyperLiquidRestClientFuturesApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
+        internal HyperLiquidRestClientFuturesApi(
+            ILogger logger,
+            IHyperLiquidRestClient baseClient,
+            HttpClient? httpClient,
+            HyperLiquidRestOptions options)
             : base(logger, baseClient, httpClient, options, options.FuturesOptions)
         {
             Account = new HyperLiquidRestClientFuturesApiAccount(this);

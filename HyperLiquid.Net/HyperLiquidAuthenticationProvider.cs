@@ -3,6 +3,7 @@ using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Objects;
 using HyperLiquid.Net.Utils;
 using Secp256k1Net;
 using System;
@@ -11,7 +12,7 @@ using System.Linq;
 
 namespace HyperLiquid.Net
 {
-    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider
+    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, ECDSACredential>
     {
         public override ApiCredentialsType[] SupportedCredentialTypes => [
             ApiCredentialsType.Hmac, // For compatibility allow HMAC since it's a default credential type, but signing will be done with ECDSA
@@ -40,7 +41,7 @@ namespace HyperLiquid.Net
             { typeof(byte[]), "bytes32" }
         };
 
-        public HyperLiquidAuthenticationProvider(ApiCredentials credentials) : base(credentials)
+        public HyperLiquidAuthenticationProvider(HyperLiquidCredentials credentials) : base(credentials)
         {
         }
 
@@ -96,12 +97,11 @@ namespace HyperLiquid.Net
 
             var keccakSigned = CeSha3Keccack.CalculateHash(messageBytes);
 
-            var pk = Credential.CredentialType == ApiCredentialsType.Ecdsa ? ((ECDSACredential)Credential).PrivateKey : ((HMACCredential)Credential).Secret;
             Dictionary<string, object> signature;
             if (HyperLiquidExchange.SignRequestDelegate != null)
-                signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), pk);
+                signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), Credential.PrivateKey);
             else
-                signature = SignRequest(keccakSigned, pk);
+                signature = SignRequest(keccakSigned, Credential.PrivateKey);
 
             request.BodyParameters["signature"] = signature;
         }

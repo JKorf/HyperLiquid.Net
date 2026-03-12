@@ -7,13 +7,14 @@ using HyperLiquid.Net.Objects.Models;
 using System.Collections.Generic;
 using HyperLiquid.Net.Enums;
 using CryptoExchange.Net.Interfaces.Clients;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 {
     /// <summary>
     /// HyperLiquid  streams
     /// </summary>
-    public interface IHyperLiquidSocketClientApi : ISocketApiClient, IDisposable
+    public interface IHyperLiquidSocketClientApi : ISocketApiClient<HyperLiquidCredentials>, IDisposable
     {
         /// <summary>
         /// Subscribe to mid price updates, will send updates for both Spot and Futures symbols

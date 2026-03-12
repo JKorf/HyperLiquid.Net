@@ -6,7 +6,7 @@ namespace HyperLiquid.Net.Objects.Options
     /// <summary>
     /// HyperLiquid options
     /// </summary>
-    public class HyperLiquidOptions : LibraryOptions<HyperLiquidRestOptions, HyperLiquidSocketOptions, ApiCredentials, HyperLiquidEnvironment>
+    public class HyperLiquidOptions : LibraryOptions<HyperLiquidRestOptions, HyperLiquidSocketOptions, HyperLiquidCredentials, HyperLiquidEnvironment>
     {
     }
 }

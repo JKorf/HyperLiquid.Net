@@ -18,10 +18,11 @@ using CryptoExchange.Net.Objects.Errors;
 using System.Net.Http.Headers;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using HyperLiquid.Net.Clients.MessageHandlers;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
-    internal abstract partial class HyperLiquidRestClientApi : RestApiClient
+    internal abstract partial class HyperLiquidRestClientApi : RestApiClient<HyperLiquidEnvironment, HyperLiquidCredentials>
     {
         /// <inheritdoc />
         public string ExchangeName => "HyperLiquid";
@@ -33,7 +34,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override IRestMessageHandler MessageHandler { get; } = new HyperLiquidRestMessageHandler();
 
         #region constructor/destructor
-        internal HyperLiquidRestClientApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options, RestApiOptions apiOptions)
+        internal HyperLiquidRestClientApi(
+            ILogger logger, 
+            IHyperLiquidRestClient baseClient,
+            HttpClient? httpClient,
+            HyperLiquidRestOptions options,
+            RestApiOptions<HyperLiquidCredentials> apiOptions)
             : base(logger, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
             BaseClient = baseClient;
@@ -45,7 +51,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
 
         /// <inheritdoc />
-        protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials)
+        protected override AuthenticationProvider<HyperLiquidCredentials> CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
         internal Task<WebCallResult> SendAsync(RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)

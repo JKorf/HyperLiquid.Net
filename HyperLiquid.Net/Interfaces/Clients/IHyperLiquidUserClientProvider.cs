@@ -1,5 +1,6 @@
 ﻿using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces.Clients
 {
@@ -14,7 +15,7 @@ namespace HyperLiquid.Net.Interfaces.Clients
         /// <param name="userIdentifier">The identifier for the user</param>
         /// <param name="credentials">The credentials for the user</param>
         /// <param name="environment">The environment to use</param>
-        void InitializeUserClient(string userIdentifier, ApiCredentials credentials, HyperLiquidEnvironment? environment = null);
+        void InitializeUserClient(string userIdentifier, HyperLiquidCredentials credentials, HyperLiquidEnvironment? environment = null);
 
         /// <summary>
         /// Reset the cached clients for a user. This can be useful when a user changes API credentials.
@@ -27,7 +28,7 @@ namespace HyperLiquid.Net.Interfaces.Clients
         /// <param name="userIdentifier">The identifier for user</param>
         /// <param name="credentials">The credentials for the user. Required the first time a client is requested for this user unless <see cref="InitializeUserClient" /> has been called prior for this user.</param>
         /// <param name="environment">The environment to use</param>
-        IHyperLiquidRestClient GetRestClient(string userIdentifier, ApiCredentials? credentials = null, HyperLiquidEnvironment? environment = null);
+        IHyperLiquidRestClient GetRestClient(string userIdentifier, HyperLiquidCredentials? credentials = null, HyperLiquidEnvironment? environment = null);
 
         /// <summary>
         /// Get the Socket client for a specific user. In case the client does not exist yet it will be created and the <paramref name="credentials"/> should be provided, unless <see cref="InitializeUserClient" /> has been called prior for this user.
@@ -35,6 +36,6 @@ namespace HyperLiquid.Net.Interfaces.Clients
         /// <param name="userIdentifier">The identifier for user</param>
         /// <param name="credentials">The credentials for the user. Required the first time a client is requested for this user unless <see cref="InitializeUserClient" /> has been called prior for this user.</param>
         /// <param name="environment">The environment to use</param>
-        IHyperLiquidSocketClient GetSocketClient(string userIdentifier, ApiCredentials? credentials = null, HyperLiquidEnvironment? environment = null);
+        IHyperLiquidSocketClient GetSocketClient(string userIdentifier, HyperLiquidCredentials? credentials = null, HyperLiquidEnvironment? environment = null);
     }
 }
