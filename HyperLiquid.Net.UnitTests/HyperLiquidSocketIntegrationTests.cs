@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -28,7 +29,7 @@ namespace HyperLiquid.Net.UnitTests
             return new HyperLiquidSocketClient(Options.Create(new HyperLiquidSocketOptions
             {
                 OutputOriginalData = true,
-                ApiCredentials = Authenticated ? new CryptoExchange.Net.Authentication.ApiCredentials(key, sec) : null
+                ApiCredentials = Authenticated ? new HyperLiquidCredentials(key, sec) : null
             }), loggerFactory);
         }
 

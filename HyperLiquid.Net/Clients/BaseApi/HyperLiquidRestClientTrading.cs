@@ -39,7 +39,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "openOrders" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier  }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicKey  }
             };
             parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
@@ -81,7 +81,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "frontendOpenOrders" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicKey }
             };
             parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
@@ -123,7 +123,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userFills" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicKey }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidUserTrade[]>(request, parameters, ct).ConfigureAwait(false);
@@ -169,7 +169,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userFillsByTime" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicKey }
             };
             parameters.AddMilliseconds("startTime", startTime);
             parameters.AddOptionalMilliseconds("endTime", endTime);
@@ -214,7 +214,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "orderStatus" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
+                { "user", address ?? _baseClient.AuthenticationProvider!.PublicKey }
             };
 
             parameters.AddOptional("oid", orderId);
@@ -259,7 +259,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "historicalOrders" },
-                { "user",  address ?? _baseClient.AuthenticationProvider!.PublicIdentifier }
+                { "user",  address ?? _baseClient.AuthenticationProvider!.PublicKey }
             };
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);

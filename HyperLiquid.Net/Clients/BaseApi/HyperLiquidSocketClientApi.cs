@@ -37,7 +37,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
     /// <summary>
     /// Client providing access to the HyperLiquid  websocket Api
     /// </summary>
-    internal partial class HyperLiquidSocketClientApi : SocketApiClient<HyperLiquidEnvironment, HyperLiquidCredentials>, IHyperLiquidSocketClientApi
+    internal partial class HyperLiquidSocketClientApi : SocketApiClient<HyperLiquidEnvironment, HyperLiquidAuthenticationProvider, HyperLiquidCredentials>, IHyperLiquidSocketClientApi
     {
         #region fields
         protected IHyperLiquidRestClient _restClient;
@@ -88,7 +88,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public override ISocketMessageHandler CreateMessageConverter(WebSocketMessageType messageType) => new HyperLiquidSocketMessageHandler();
 
         /// <inheritdoc />
-        protected override AuthenticationProvider<HyperLiquidCredentials> CreateAuthenticationProvider(HyperLiquidCredentials credentials)
+        protected override HyperLiquidAuthenticationProvider CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
         /// <inheritdoc />
@@ -317,7 +317,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, this, "orderUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -343,7 +343,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidLedgerUpdate>(_logger, this, "userNonFundingLedgerUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -372,7 +372,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, this, "webData2", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -425,7 +425,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, this, "userFills", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -483,7 +483,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidUserEventUpdate>(_logger, this, "userEvents", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -536,7 +536,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, this, "userTwapSliceFills", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -589,7 +589,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     );
             });
 
-            var addressSub = address ?? AuthenticationProvider!.PublicIdentifier;
+            var addressSub = address ?? AuthenticationProvider!.PublicKey;
             var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, this, "userTwapHistory", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },

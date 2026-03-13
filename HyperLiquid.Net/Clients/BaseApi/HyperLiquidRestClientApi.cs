@@ -22,7 +22,7 @@ using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
-    internal abstract partial class HyperLiquidRestClientApi : RestApiClient<HyperLiquidEnvironment, HyperLiquidCredentials>
+    internal abstract partial class HyperLiquidRestClientApi : RestApiClient<HyperLiquidEnvironment, HyperLiquidAuthenticationProvider, HyperLiquidCredentials>
     {
         /// <inheritdoc />
         public string ExchangeName => "HyperLiquid";
@@ -51,7 +51,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
 
         /// <inheritdoc />
-        protected override AuthenticationProvider<HyperLiquidCredentials> CreateAuthenticationProvider(HyperLiquidCredentials credentials)
+        protected override HyperLiquidAuthenticationProvider CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
         internal Task<WebCallResult> SendAsync(RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)

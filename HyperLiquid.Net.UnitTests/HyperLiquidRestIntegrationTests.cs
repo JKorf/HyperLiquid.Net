@@ -8,6 +8,7 @@ using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.SymbolOrderBooks;
 using CryptoExchange.Net.Objects.Errors;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -26,7 +27,7 @@ namespace HyperLiquid.Net.UnitTests
             {
                 AutoTimestamp = false,
                 OutputOriginalData = true,
-                ApiCredentials = Authenticated ? new CryptoExchange.Net.Authentication.ApiCredentials(key, sec) : null
+                ApiCredentials = Authenticated ? new HyperLiquidCredentials(key, sec) : null
             }));
         }
 
