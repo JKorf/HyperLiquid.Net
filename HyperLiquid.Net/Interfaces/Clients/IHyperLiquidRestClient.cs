@@ -3,7 +3,6 @@ using CryptoExchange.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces.Clients
 {

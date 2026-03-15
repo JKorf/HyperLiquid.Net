@@ -18,7 +18,6 @@ using CryptoExchange.Net.Objects.Errors;
 using System.Net.Http.Headers;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using HyperLiquid.Net.Clients.MessageHandlers;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {

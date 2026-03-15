@@ -11,7 +11,6 @@ using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Clients.FuturesApi;
 using CryptoExchange.Net.Authentication;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients
 {

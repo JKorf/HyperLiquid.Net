@@ -7,7 +7,6 @@ using HyperLiquid.Net.Objects.Models;
 using System.Collections.Generic;
 using HyperLiquid.Net.Enums;
 using CryptoExchange.Net.Interfaces.Clients;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 {

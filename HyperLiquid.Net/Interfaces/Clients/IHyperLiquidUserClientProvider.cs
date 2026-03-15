@@ -1,6 +1,5 @@
 ﻿using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces.Clients
 {

@@ -8,7 +8,6 @@ using CryptoExchange.Net.Trackers.UserData.Objects;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces;
 using HyperLiquid.Net.Interfaces.Clients;
-using HyperLiquid.Net.Objects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

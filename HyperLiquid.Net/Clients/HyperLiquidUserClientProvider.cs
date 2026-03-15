@@ -6,7 +6,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using CryptoExchange.Net.Authentication;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Clients
 {

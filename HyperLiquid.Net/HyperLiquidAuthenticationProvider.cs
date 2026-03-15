@@ -3,7 +3,6 @@ using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Clients.BaseApi;
-using HyperLiquid.Net.Objects;
 using HyperLiquid.Net.Utils;
 using Secp256k1Net;
 using System;

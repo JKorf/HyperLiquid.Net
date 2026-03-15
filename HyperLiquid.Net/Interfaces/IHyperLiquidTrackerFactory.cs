@@ -3,7 +3,6 @@ using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Trackers.UserData;
 using CryptoExchange.Net.Trackers.UserData.Interfaces;
 using CryptoExchange.Net.Trackers.UserData.Objects;
-using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.Interfaces
 {
