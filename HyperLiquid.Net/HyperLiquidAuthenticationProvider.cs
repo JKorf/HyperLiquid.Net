@@ -11,11 +11,10 @@ using System.Linq;
 
 namespace HyperLiquid.Net
 {
-    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, ECDSACredential>
+    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, ECDsaCredential>
     {
         public override ApiCredentialsType[] SupportedCredentialTypes => [
-            ApiCredentialsType.Hmac, // For compatibility allow HMAC since it's a default credential type, but signing will be done with ECDSA
-            ApiCredentialsType.Ecdsa
+            ApiCredentialsType.ECDsa
             ];
 
         private static IEnumerable<(string Name, string Type, object Value)> GetDomainFields(

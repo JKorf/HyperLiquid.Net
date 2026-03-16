@@ -18,18 +18,18 @@ namespace HyperLiquid.Net
         public HyperLiquidCredentials() { }
 
         /// <summary>
-        /// Create credentials using an HMAC key, and secret
+        /// Create credentials using an ECDsa key and secret
         /// </summary>
         /// <param name="apiKey">The API key</param>
         /// <param name="secret">The API secret</param>
         public HyperLiquidCredentials(string apiKey, string secret)
-            : this(new ECDSACredential(apiKey, secret)) { }
+            : this(new ECDsaCredential(apiKey, secret)) { }
 
         /// <summary>
-        /// Create HyperLiquid credentials using HMAC credentials
+        /// Create HyperLiquid credentials using ECDsa credentials
         /// </summary>
-        /// <param name="credential">The HMAC credentials</param>
-        public HyperLiquidCredentials(ECDSACredential credential)
+        /// <param name="credential">The ECDsa credentials</param>
+        public HyperLiquidCredentials(ECDsaCredential credential)
             : base(credential) { }
 
         /// <inheritdoc />
