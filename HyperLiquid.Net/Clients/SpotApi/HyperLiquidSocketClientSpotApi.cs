@@ -1,16 +1,5 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Objects.Sockets;
 using Microsoft.Extensions.Logging;
-using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Objects.Options;
-using HyperLiquid.Net.Objects.Sockets.Subscriptions;
-using System.Collections.Generic;
-using CryptoExchange.Net;
-using HyperLiquid.Net.Objects.Internal;
-using HyperLiquid.Net.Utils;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 
@@ -21,49 +10,23 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// </summary>
     internal partial class HyperLiquidSocketClientSpotApi : HyperLiquidSocketClientApi, IHyperLiquidSocketClientSpotApi
     {
+        public IHyperLiquidSocketClientSpotApiAccount Account { get; }
+        public IHyperLiquidSocketClientSpotApiExchangeData ExchangeData { get; }
+        public IHyperLiquidSocketClientSpotApiTrading Trading { get; }
+
         #region constructor/destructor
 
         /// <summary>
         /// ctor
         /// </summary>
-        internal HyperLiquidSocketClientSpotApi(ILogger logger, HyperLiquidSocketOptions options) :
-            base(logger, options, options.SpotOptions)
+        internal HyperLiquidSocketClientSpotApi(ILogger logger, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
+            base(logger, baseClient, options, options.SpotOptions)
         {
+            Account = new HyperLiquidSocketClientSpotApiAccount(logger, this);
+            ExchangeData = new HyperLiquidSocketClientSpotApiExchangeData(logger, this);
+            Trading = new HyperLiquidSocketClientSpotApiTrading(logger, this);
         }
         #endregion
-
-        /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default)
-        {
-            var coin = symbol;
-            if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
-            {
-                // Spot symbol
-                var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_restClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
-
-                coin = spotName.Data;
-            }
-
-            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTickerUpdate>>((receiveTime, originalData, invocation, data) =>
-            {
-                data.Data.Ticker.Symbol = symbol;
-                onMessage(
-                    new DataEvent<HyperLiquidTicker>(HyperLiquidExchange.ExchangeName, data.Data.Ticker, receiveTime, originalData)
-                        .WithUpdateType(SocketUpdateType.Update)
-                        .WithStreamId(data.Channel)
-                        .WithSymbol(symbol)
-                    );
-            });
-
-            var subscription = new HyperLiquidSubscription<HyperLiquidTickerUpdate>(_logger, this, "activeAssetCtx", coin, new Dictionary<string, object>
-            {
-                { "coin", coin },
-            },
-            internalHandler, false, "activeSpotAssetCtx");
-            return await SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct).ConfigureAwait(false);
-        }
 
         /// <inheritdoc />
         public IHyperLiquidSocketClientSpotApiShared SharedClient => this;

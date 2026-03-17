@@ -29,7 +29,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToSymbolUpdatesAsync(symbol, update => 
+            var result = await ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, update => 
             handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3))
             {
                 QuoteVolume = update.Data.QuoteVolume
@@ -49,7 +49,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToTradeUpdatesAsync(symbol, update =>
+            var result = await ExchangeData.SubscribeToTradeUpdatesAsync(symbol, update =>
             {
                 if (update.UpdateType == SocketUpdateType.Snapshot)
                     return;
@@ -93,7 +93,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToKlineUpdatesAsync(symbol, interval, 
+            var result = await ExchangeData.SubscribeToKlineUpdatesAsync(symbol, interval, 
                 update =>
                 {
                     if (update.UpdateType == SocketUpdateType.Snapshot)
@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToOrderBookUpdatesAsync(symbol, update => handler(update.ToType(new SharedOrderBook(update.Data.Levels.Asks, update.Data.Levels.Bids))), ct: ct).ConfigureAwait(false);
+            var result = await ExchangeData.SubscribeToOrderBookUpdatesAsync(symbol, update => handler(update.ToType(new SharedOrderBook(update.Data.Levels.Asks, update.Data.Levels.Bids))), ct: ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);
         }
@@ -130,7 +130,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
-            var result = await SubscribeToOrderUpdatesAsync(null,
+            var result = await Trading.SubscribeToOrderUpdatesAsync(null,
                 update =>
                 {
                     if (update.UpdateType == SocketUpdateType.Snapshot)
@@ -201,7 +201,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
-            var result = await SubscribeToUserTradeUpdatesAsync(null,
+            var result = await Trading.SubscribeToUserTradeUpdatesAsync(null,
                 update =>
                 {
                     if (update.UpdateType == SocketUpdateType.Snapshot)
@@ -242,7 +242,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
-            var result = await SubscribeToUserUpdatesAsync(
+            var result = await Account.SubscribeToUserUpdatesAsync(
                 null,
                 update => handler(update.ToType<SharedBalance[]>(update.Data.SpotBalances.Balances.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray())),
                 ct: ct).ConfigureAwait(false);
@@ -262,7 +262,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 return new ExchangeResult<UpdateSubscription>(Exchange, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await SubscribeToBookTickerUpdatesAsync(symbol, update => 
+            var result = await ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, update => 
             handler(update.ToType(
                 new SharedBookTicker(
                     ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol),

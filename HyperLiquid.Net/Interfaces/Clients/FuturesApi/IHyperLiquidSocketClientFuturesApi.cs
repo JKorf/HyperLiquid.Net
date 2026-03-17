@@ -1,65 +1,30 @@
-using CryptoExchange.Net.Objects;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CryptoExchange.Net.Objects.Sockets;
-using HyperLiquid.Net.Objects.Models;
-using HyperLiquid.Net.Interfaces.Clients.BaseApi;
+using CryptoExchange.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 {
     /// <summary>
-    /// HyperLiquid futures streams
+    /// HyperLiquid futures WebSocket endpoints and streams
     /// </summary>
-    /// <see cref="IHyperLiquidSocketClientApi"/>
-    public interface IHyperLiquidSocketClientFuturesApi : IHyperLiquidSocketClientApi
+    public interface IHyperLiquidSocketClientFuturesApi : ISocketApiClient<HyperLiquidCredentials>
     {
         /// <summary>
-        /// Subscribe to symbol updates
-        /// <para>
-        /// Docs:<br />
-        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
-        /// Endpoint:<br />
-        /// WS /ws (type: activeAssetCtx)
-        /// </para>
+        /// Endpoints and streams related to account settings, info or actions
         /// </summary>
-        /// <param name="symbol">Symbol name, for example `ETH`</param>
-        /// <param name="onMessage">The data handler</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidFuturesTicker>> onMessage, CancellationToken ct = default);
+        /// <see cref="IHyperLiquidSocketClientFuturesApiAccount"/>
+        public IHyperLiquidSocketClientFuturesApiAccount Account { get; }
 
         /// <summary>
-        /// Subscribe to user symbol updates
-        /// <para>
-        /// Docs:<br />
-        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
-        /// Endpoint:<br />
-        /// WS /ws (type: activeAssetData)
-        /// </para>
+        /// Endpoints and streams related to retrieving market and system data
         /// </summary>
-        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
-        /// <param name="symbol">Symbol name, for example `ETH`</param>
-        /// <param name="onMessage">The data handler</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserSymbolUpdatesAsync(string? address, string symbol, Action<DataEvent<HyperLiquidFuturesUserSymbolUpdate>> onMessage, CancellationToken ct = default);
+        /// <see cref="IHyperLiquidRestClientFuturesApiExchangeData"/>
+        public IHyperLiquidSocketClientFuturesApiExchangeData ExchangeData { get; }
 
         /// <summary>
-        /// Subscribe to user funding updates
-        /// <para>
-        /// Docs:<br />
-        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
-        /// Endpoint:<br />
-        /// WS /ws (type: userFundings)
-        /// </para>
+        /// Endpoints and streams related to orders and trades
         /// </summary>
-        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
-        /// <param name="onMessage">The data handler</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default);
-
+        /// <see cref="IHyperLiquidRestClientFuturesApiTrading"/>
+        public IHyperLiquidSocketClientFuturesApiTrading Trading { get; }
+        
         /// <summary>
         /// Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
         /// </summary>

@@ -11,7 +11,7 @@ using HyperLiquid.Net.Utils;
 namespace HyperLiquid.Net.Clients.SpotApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientSpotApiExchangeData : HyperLiquidRestClientExchangeData, IHyperLiquidRestClientSpotApiExchangeData
+    internal class HyperLiquidRestClientSpotApiExchangeData : HyperLiquidRestClientApiExchangeData, IHyperLiquidRestClientSpotApiExchangeData
     {
         private readonly HyperLiquidRestClientSpotApi _baseClient;
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();

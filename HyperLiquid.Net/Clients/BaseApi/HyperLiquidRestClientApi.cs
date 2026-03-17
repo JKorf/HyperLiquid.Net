@@ -1,4 +1,3 @@
-using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,12 +9,10 @@ using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.SharedApis;
-using CryptoExchange.Net.Converters.MessageParsing;
 using HyperLiquid.Net.Objects.Models;
 using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects.Errors;
-using System.Net.Http.Headers;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using HyperLiquid.Net.Clients.MessageHandlers;
 
@@ -27,7 +24,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public string ExchangeName => "HyperLiquid";
 
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
-        internal IHyperLiquidRestClient BaseClient { get; }
+        internal HyperLiquidRestClient BaseClient { get; }
 
         protected override ErrorMapping ErrorMapping => HyperLiquidErrors.Errors;
         protected override IRestMessageHandler MessageHandler { get; } = new HyperLiquidRestMessageHandler();
@@ -35,7 +32,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region constructor/destructor
         internal HyperLiquidRestClientApi(
             ILogger logger, 
-            IHyperLiquidRestClient baseClient,
+            HyperLiquidRestClient baseClient,
             HttpClient? httpClient,
             HyperLiquidRestOptions options,
             RestApiOptions<HyperLiquidCredentials> apiOptions)

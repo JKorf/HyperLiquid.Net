@@ -5,21 +5,22 @@ using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using CryptoExchange.Net.Clients;
 using Microsoft.Extensions.Options;
-using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Clients.FuturesApi;
-using CryptoExchange.Net.Authentication;
 
 namespace HyperLiquid.Net.Clients
 {
     /// <inheritdoc cref="IHyperLiquidRestClient" />
     public class HyperLiquidRestClient : BaseRestClient<HyperLiquidEnvironment, HyperLiquidCredentials>, IHyperLiquidRestClient
     {
+        /// <inheritdoc />
+        internal new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
+
         #region Api clients
-                
-         /// <inheritdoc />
+
+        /// <inheritdoc />
         public IHyperLiquidRestClientSpotApi SpotApi { get; }
          /// <inheritdoc />
         public IHyperLiquidRestClientFuturesApi FuturesApi { get; }

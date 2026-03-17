@@ -1,49 +1,58 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using CryptoExchange.Net.Objects;
-using Microsoft.Extensions.Logging;
-using HyperLiquid.Net.Objects.Models;
-using System.Linq;
+using CryptoExchange.Net.Objects.Sockets;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
-using CryptoExchange.Net.Objects.Errors;
-using System.Net;
+using HyperLiquid.Net.Objects.Internal;
+using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Objects.Sockets;
+using HyperLiquid.Net.Objects.Sockets.Subscriptions;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
-    /// <inheritdoc />
-    internal class HyperLiquidRestClientFuturesApiExchangeData : HyperLiquidRestClientApiExchangeData, IHyperLiquidRestClientFuturesApiExchangeData
+    /// <summary>
+    /// Client providing access to the HyperLiquid  websocket Api
+    /// </summary>
+    internal partial class HyperLiquidSocketClientFuturesApiExchangeData : HyperLiquidSocketClientApiExchangeData, IHyperLiquidSocketClientFuturesApiExchangeData
     {
-        private readonly HyperLiquidRestClientFuturesApi _baseClient;
-        private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
+        #region constructor/destructor
 
-        internal HyperLiquidRestClientFuturesApiExchangeData(ILogger logger, HyperLiquidRestClientFuturesApi baseClient) : base(logger, baseClient)
+        /// <summary>
+        /// ctor
+        /// </summary>
+        internal HyperLiquidSocketClientFuturesApiExchangeData(ILogger logger, HyperLiquidSocketClientApi baseClient)
+            : base(logger, baseClient)
         {
-            _baseClient = baseClient;
         }
+        #endregion
 
-        public async Task<WebCallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default)
+        /// <inheritdoc />
+        public async Task<CallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "perpDexs" }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            var result = await _baseClient.SendAsync<HyperLiquidPerpDex[]>(request, parameters, ct).ConfigureAwait(false);
 
-            return result;
+            return await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidPerpDex[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
 
-        public async Task<WebCallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default)
+
+        public async Task<CallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "allPerpMetas" }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo[]>(request, parameters, ct).ConfigureAwait(false);
+
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidFuturesExchangeInfo[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
 
             for (var j = 0; j < result.Data.Length; j++)
             {
@@ -87,7 +96,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Exchange Info
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
@@ -95,8 +104,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
             parameters.AddOptional("dex", dex);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidFuturesExchangeInfo>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             if (!result)
                 return result.As<HyperLiquidFuturesSymbol[]>(default);
 
@@ -130,14 +139,15 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Exchange Info And Tickers
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "metaAndAssetCtxs" }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfoAndTickers>(request, parameters, ct).ConfigureAwait(false);
+
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidFuturesExchangeInfoAndTickers>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             if (!result)
                 return result;
 
@@ -155,7 +165,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Funding Rate History
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
         {
             var innerParameters = new ParameterCollection();
             var parameters = new ParameterCollection()
@@ -166,10 +176,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             parameters.AddMilliseconds("startTime", startTime);
             parameters.AddOptionalMilliseconds("endTime", endTime);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            var result = await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
-            if (result.ResponseStatusCode == (HttpStatusCode)500 && result.Error?.ErrorType == ErrorType.Unknown)
-                return result.AsError<HyperLiquidFundingRate[]>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidFundingRate[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
+            //if (result.ResponseStatusCode == (HttpStatusCode)500 && result.Error?.ErrorType == ErrorType.Unknown)
+            //    return result.AsError<HyperLiquidFundingRate[]>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return result;
         }
@@ -179,15 +189,15 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Symbols At Max Open Interest
 
         /// <inheritdoc />
-        public async Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<CallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "perpsAtOpenInterestCap" },
             };
             parameters.AddOptional("dex", dex);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<string[]>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<string[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -195,15 +205,16 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Perp DEX Market Limits
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "perpDexLimits" },
             };
             parameters.AddOptional("dex", dex);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<HyperLiquidPerpDexLimit>(request, parameters, ct).ConfigureAwait(false);
+
+            return await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidPerpDexLimit>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -211,17 +222,39 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Perp Market Status
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new ParameterCollection()
             {
                 { "type", "perpDexStatus" },
             };
             parameters.AddOptional("dex", dex);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
-            return await _baseClient.SendAsync<HyperLiquidPerpDexStatus>(request, parameters, ct).ConfigureAwait(false);
+            return await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidPerpDexStatus>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidFuturesTicker>> onMessage, CancellationToken ct = default)
+        {
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidFuturesTickerUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                data.Data.Ticker.Symbol = symbol;
+                onMessage(
+                    new DataEvent<HyperLiquidFuturesTicker>(HyperLiquidExchange.ExchangeName, data.Data.Ticker, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithSymbol(symbol)
+                    );
+            });
+
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesTickerUpdate>(_logger, _baseClient, "activeAssetCtx", symbol, new Dictionary<string, object>
+            {
+                { "coin", symbol },
+            },
+            internalHandler, false);
+            return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
+        }
     }
 }

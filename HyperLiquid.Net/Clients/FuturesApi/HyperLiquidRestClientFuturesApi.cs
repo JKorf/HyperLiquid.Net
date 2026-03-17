@@ -29,7 +29,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region constructor/destructor
         internal HyperLiquidRestClientFuturesApi(
             ILogger logger,
-            IHyperLiquidRestClient baseClient,
+            HyperLiquidRestClient baseClient,
             HttpClient? httpClient,
             HyperLiquidRestOptions options)
             : base(logger, baseClient, httpClient, options, options.FuturesOptions)

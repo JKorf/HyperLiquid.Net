@@ -14,12 +14,12 @@ using System.Net;
 namespace HyperLiquid.Net.Clients.BaseApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientExchangeData
+    internal class HyperLiquidRestClientApiExchangeData
     {
         private readonly HyperLiquidRestClientApi _baseClient;
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
 
-        internal HyperLiquidRestClientExchangeData(ILogger logger, HyperLiquidRestClientApi baseClient)
+        internal HyperLiquidRestClientApiExchangeData(ILogger logger, HyperLiquidRestClientApi baseClient)
         {
             _baseClient = baseClient;
         }

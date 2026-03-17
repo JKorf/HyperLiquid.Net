@@ -72,7 +72,13 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
         }
 
         protected override MessageTypeDefinition[] TypeEvaluators { get; } = [
-
+             new MessageTypeDefinition {
+                Fields = [
+                    new PropertyFieldReference("channel"),
+                    new PropertyFieldReference("id") { Depth = 2 }
+                ],
+                TypeIdentifierCallback = x => $"{x.FieldValue("id")}"
+            },
             new MessageTypeDefinition {
                 Fields = [
                     new PropertyFieldReference("channel"),

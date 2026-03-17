@@ -68,7 +68,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         protected override async Task<CallResult<UpdateSubscription>> DoStartAsync(CancellationToken ct)
         {
             // Uses SpotApi but can also be used for futures
-            var sub = await _socketClient.SpotApi.SubscribeToOrderBookUpdatesAsync(Symbol, HandleUpdate, nSigFigs: _nSigFigs, mantissa: _mantissa,  ct: ct).ConfigureAwait(false);
+            var sub = await _socketClient.SpotApi.ExchangeData.SubscribeToOrderBookUpdatesAsync(Symbol, HandleUpdate, nSigFigs: _nSigFigs, mantissa: _mantissa,  ct: ct).ConfigureAwait(false);
             if (!sub)
                 return sub;
 

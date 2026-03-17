@@ -1,33 +1,29 @@
-using CryptoExchange.Net.Objects;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CryptoExchange.Net.Objects.Sockets;
-using HyperLiquid.Net.Objects.Models;
-using HyperLiquid.Net.Interfaces.Clients.BaseApi;
+using CryptoExchange.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
 {
     /// <summary>
-    /// HyperLiquid spot streams
+    /// HyperLiquid spot WebSocket endpoints and streams
     /// </summary>
-    /// <see cref="IHyperLiquidSocketClientApi"/>
-    public interface IHyperLiquidSocketClientSpotApi : IHyperLiquidSocketClientApi
+    public interface IHyperLiquidSocketClientSpotApi : ISocketApiClient<HyperLiquidCredentials>
     {
         /// <summary>
-        /// Subscribe to spot symbol updates
-        /// <para>
-        /// Docs:<br />
-        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
-        /// Endpoint:<br />
-        /// WS /ws (type: activeAssetCtx)
-        /// </para>
+        /// Endpoints and streams related to account settings, info or actions
         /// </summary>
-        /// <param name="symbol">Symbol name, for example `HYPE/USDC`</param>
-        /// <param name="onMessage">The data handler</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default);
+        /// <see cref="IHyperLiquidSocketClientSpotApiAccount"/>
+        public IHyperLiquidSocketClientSpotApiAccount Account { get; }
+
+        /// <summary>
+        /// Endpoints and streams related to retrieving market and system data
+        /// </summary>
+        /// <see cref="IHyperLiquidSocketClientSpotApiExchangeData"/>
+        public IHyperLiquidSocketClientSpotApiExchangeData ExchangeData { get; }
+
+        /// <summary>
+        /// Endpoints and streams related to orders and trades
+        /// </summary>
+        /// <see cref="IHyperLiquidSocketClientSpotApiTrading"/>
+        public IHyperLiquidSocketClientSpotApiTrading Trading { get; }
 
         /// <summary>
         /// Get the shared socket requests client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.

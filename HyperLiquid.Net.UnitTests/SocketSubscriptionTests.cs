@@ -30,8 +30,8 @@ namespace HyperLiquid.Net.UnitTests
 
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
             await tester.ValidateConcurrentAsync<HyperLiquidKline>(
-                (client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler),
-                (client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneHour, handler),
+                (client, handler) => client.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler),
+                (client, handler) => client.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneHour, handler),
                 "Concurrent");
         }
 
@@ -47,13 +47,13 @@ namespace HyperLiquid.Net.UnitTests
                 ApiCredentials = new HyperLiquidCredentials("MTIz", "MTIz")
             }), loggerFactory);
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
-            await tester.ValidateAsync<HyperLiquidTrade[]>((client, handler) => client.SpotApi.SubscribeToTradeUpdatesAsync("HYPE", handler), "Trades");
-            await tester.ValidateAsync<HyperLiquidBookTicker>((client, handler) => client.SpotApi.SubscribeToBookTickerUpdatesAsync("HYPE", handler), "BookTicker", ignoreProperties: ["coin"]);
-            await tester.ValidateAsync<Dictionary<string, decimal>>((client, handler) => client.SpotApi.SubscribeToPriceUpdatesAsync(handler), "Prices", nestedJsonProperty: "data.mids");
-            await tester.ValidateAsync<HyperLiquidKline>((client, handler) => client.SpotApi.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler), "Klines");
-            await tester.ValidateAsync<HyperLiquidOrderBook>((client, handler) => client.SpotApi.SubscribeToOrderBookUpdatesAsync("HYPE", handler), "OrderBook");
-            await tester.ValidateAsync<HyperLiquidOrderStatus[]>((client, handler) => client.SpotApi.SubscribeToOrderUpdatesAsync(null, handler), "Order");
-            await tester.ValidateAsync<HyperLiquidUserTrade[]>((client, handler) => client.SpotApi.SubscribeToUserEventUpdatesAsync(null, handler), "UserEventTrade", nestedJsonProperty: "data.fills");
+            await tester.ValidateAsync<HyperLiquidTrade[]>((client, handler) => client.SpotApi.ExchangeData.SubscribeToTradeUpdatesAsync("HYPE", handler), "Trades");
+            await tester.ValidateAsync<HyperLiquidBookTicker>((client, handler) => client.SpotApi.ExchangeData.SubscribeToBookTickerUpdatesAsync("HYPE", handler), "BookTicker", ignoreProperties: ["coin"]);
+            await tester.ValidateAsync<Dictionary<string, decimal>>((client, handler) => client.SpotApi.ExchangeData.SubscribeToPriceUpdatesAsync(handler), "Prices", nestedJsonProperty: "data.mids");
+            await tester.ValidateAsync<HyperLiquidKline>((client, handler) => client.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler), "Klines");
+            await tester.ValidateAsync<HyperLiquidOrderBook>((client, handler) => client.SpotApi.ExchangeData.SubscribeToOrderBookUpdatesAsync("HYPE", handler), "OrderBook");
+            await tester.ValidateAsync<HyperLiquidOrderStatus[]>((client, handler) => client.SpotApi.Trading.SubscribeToOrderUpdatesAsync(null, handler), "Order");
+            await tester.ValidateAsync<HyperLiquidUserTrade[]>((client, handler) => client.SpotApi.Account.SubscribeToUserEventUpdatesAsync(null, handler), "UserEventTrade", nestedJsonProperty: "data.fills");
         }
     }
 }

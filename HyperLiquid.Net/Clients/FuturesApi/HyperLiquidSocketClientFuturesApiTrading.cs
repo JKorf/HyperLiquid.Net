@@ -1,34 +1,37 @@
 using CryptoExchange.Net.Objects;
-using Microsoft.Extensions.Logging;
-using HyperLiquid.Net.Objects.Models;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
-using HyperLiquid.Net.Utils;
-using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
+using HyperLiquid.Net.Objects.Sockets;
+using HyperLiquid.Net.Utils;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
-    /// <inheritdoc />
-    internal class HyperLiquidRestClientFuturesApiTrading : HyperLiquidRestClientApiTrading, IHyperLiquidRestClientFuturesApiTrading
+    /// <summary>
+    /// Client providing access to the HyperLiquid  websocket Api
+    /// </summary>
+    internal partial class HyperLiquidSocketClientFuturesApiTrading : HyperLiquidSocketClientApiTrading, IHyperLiquidSocketClientFuturesApiTrading
     {
-        private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
-        private readonly HyperLiquidRestClientFuturesApi _baseClient;
-        private readonly ILogger _logger;
+        #region constructor/destructor
 
-        internal HyperLiquidRestClientFuturesApiTrading(ILogger logger, HyperLiquidRestClientFuturesApi baseClient) : base(logger, baseClient)
+        /// <summary>
+        /// ctor
+        /// </summary>
+        internal HyperLiquidSocketClientFuturesApiTrading(ILogger logger, HyperLiquidSocketClientApi baseClient)
+            : base(logger, baseClient)
         {
-            _baseClient = baseClient;
-            _logger = logger;
         }
+        #endregion
+
 
         #region Set Leverage
 
         /// <inheritdoc />
-        public async Task<WebCallResult> SetLeverageAsync(
+        public async Task<CallResult> SetLeverageAsync(
             string symbol,
             int leverage,
             MarginType marginType,
@@ -56,8 +59,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 
@@ -66,7 +69,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Update Isolated Margin
 
         /// <inheritdoc />
-        public async Task<WebCallResult> UpdateIsolatedMarginAsync(
+        public async Task<CallResult> UpdateIsolatedMarginAsync(
             string symbol,
             decimal updateValue,
             string? vaultAddress = null,
@@ -93,8 +96,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
             return result.AsDataless();
         }
 

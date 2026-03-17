@@ -1,5 +1,4 @@
-﻿using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Interfaces;
+﻿using CryptoExchange.Net.Interfaces;
 
 namespace HyperLiquid.Net.Interfaces.Clients
 {

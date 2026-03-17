@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
-using CryptoExchange.Net.Authentication;
 
 namespace HyperLiquid.Net.Clients
 {

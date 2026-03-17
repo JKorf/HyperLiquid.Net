@@ -1,30 +1,36 @@
 using CryptoExchange.Net.Objects;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
-using HyperLiquid.Net.Objects.Models;
-using System;
-using HyperLiquid.Net.Utils;
-using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Interfaces.Clients.SpotApi;
+using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Objects.Sockets;
+using HyperLiquid.Net.Utils;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.Clients.SpotApi
 {
-    /// <inheritdoc />
-    internal class HyperLiquidRestClientSpotApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientSpotApiAccount
+    /// <summary>
+    /// Client providing access to the HyperLiquid  websocket Api
+    /// </summary>
+    internal partial class HyperLiquidSocketClientSpotApiAccount : HyperLiquidSocketClientApiAccount, IHyperLiquidSocketClientSpotApiAccount
     {
-        private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
-        private readonly new HyperLiquidRestClientSpotApi _baseClient;
+        #region constructor/destructor
 
-        internal HyperLiquidRestClientSpotApiAccount(HyperLiquidRestClientSpotApi baseClient): base(baseClient)
+        /// <summary>
+        /// ctor
+        /// </summary>
+        internal HyperLiquidSocketClientSpotApiAccount(ILogger logger, HyperLiquidSocketClientApi baseClient) :
+            base(logger, baseClient)
         {
-            _baseClient = baseClient;
         }
+        #endregion
 
         #region Get Spot Balances
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
+        public async Task<CallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -36,8 +42,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "type", "spotClearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
-            var result = await _baseClient.SendAsync<HyperLiquidBalances>(request, parameters, ct).ConfigureAwait(false);
+
+            var result = await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<HyperLiquidBalances>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             return result.As<HyperLiquidBalance[]>(result.Data?.Balances);
         }
 
@@ -46,7 +53,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Spot Transfer
 
         /// <inheritdoc />
-        public async Task<WebCallResult> TransferSpotAsync(
+        public async Task<CallResult> TransferSpotAsync(
             string destinationAddress,
             string asset,
             decimal quantity,
@@ -71,12 +78,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
             actionParameters.AddMilliseconds("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
-            return result.AsDataless();
+            return await _baseClient.QueryInternalAsync(
+                new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
         }
 
         #endregion
-
     }
 }

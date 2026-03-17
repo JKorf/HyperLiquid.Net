@@ -2,12 +2,16 @@
 using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Sockets.Default;
 using HyperLiquid.Net.Clients.BaseApi;
+using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.Utils;
 using Secp256k1Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace HyperLiquid.Net
 {
@@ -52,6 +56,38 @@ namespace HyperLiquid.Net
             var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
             request.BodyParameters!.Add("nonce", nonce);
 
+            var signature = GenerateSignature(
+                ((HyperLiquidRestOptions)apiClient.ClientOptions).Environment,
+                action,
+                nonce,
+                request.BodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
+                request.BodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
+            request.BodyParameters["signature"] = signature;
+        }
+
+        public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
+        {
+            var action = (Dictionary<string, object>)request["action"];
+            var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n :
+                GetMillisecondTimestampLong(apiClient);
+            request.Add("nonce", nonce);
+
+            var signature = GenerateSignature(
+                ((HyperLiquidSocketOptions)apiClient.ClientOptions).Environment,
+                action,
+                nonce,
+                request.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
+                request.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
+            request["signature"] = signature;
+        }
+
+        internal Dictionary<string, object> GenerateSignature(
+            HyperLiquidEnvironment environment,
+            Dictionary<string, object> action,
+            long nonce,
+            string? vaultAddress,
+            long? expiresAfter)
+        {
             byte[] messageBytes;
             if (action.TryGetValue("signatureChainId", out var chainId))
             {
@@ -70,27 +106,19 @@ namespace HyperLiquid.Net
             else
             {
                 // Exchange action
-                string? vaultAddress = null;
-                if (request.BodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj))
-                {
-                    vaultAddress = (string)vaultAddressObj;
-                    vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;
-                }
-
-                long? expiresAfter = null;
-                if (request.BodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj))
-                    expiresAfter = (long)expiresAfterObj;
+                if (vaultAddress != null)
+                    vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;                
 
                 var hash = GenerateActionHash(action, nonce, vaultAddress, expiresAfter);
                 var phantomAgent = new Dictionary<string, object>()
                 {
-                    { "source", ((HyperLiquidRestClientApi)apiClient).ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "b" : "a" },
+                    { "source", environment.Name == TradeEnvironmentNames.Testnet ? "b" : "a" },
                     { "connectionId", hash },
                 };
 
                 var messageFields = GetMessageFields(phantomAgent);
                 var domainFields = GetDomainFields("Exchange", "1", 1337, "0x0000000000000000000000000000000000000000");
-                messageBytes = CeEip712TypedDataEncoder.EncodeEip721("Agent", domainFields, messageFields);                
+                messageBytes = CeEip712TypedDataEncoder.EncodeEip721("Agent", domainFields, messageFields);
             }
 
             var keccakSigned = CeSha3Keccack.CalculateHash(messageBytes);
@@ -101,7 +129,7 @@ namespace HyperLiquid.Net
             else
                 signature = SignRequest(keccakSigned, Credential.PrivateKey);
 
-            request.BodyParameters["signature"] = signature;
+            return signature;
         }
 
         private List<(string Name, string Type, object Value)> GetMessageFields(Dictionary<string, object> parameters)

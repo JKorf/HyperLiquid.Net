@@ -2,8 +2,8 @@ using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Utils;
 using System;
-using System.Drawing;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientFuturesApiAccount : HyperLiquidRestClientAccount, IHyperLiquidRestClientFuturesApiAccount
+    internal class HyperLiquidRestClientFuturesApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientFuturesApiAccount
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
-        private readonly HyperLiquidRestClientFuturesApi _baseClient;
+        private readonly new HyperLiquidRestClientFuturesApi _baseClient;
 
         internal HyperLiquidRestClientFuturesApiAccount(HyperLiquidRestClientFuturesApi baseClient) : base(baseClient)
         {
@@ -28,6 +28,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var parameters = new ParameterCollection()
             {
@@ -48,6 +50,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var parameters = new ParameterCollection()
             {
@@ -70,6 +74,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+
             var parameters = new ParameterCollection()
             {
                 { "type", "activeAssetData" },
@@ -90,6 +96,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
 
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+
             var parameters = new ParameterCollection()
             {
                 { "type", "userDexAbstraction" },
@@ -108,6 +116,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var parameters = new ParameterCollection();
             var actionParameters = new ParameterCollection()

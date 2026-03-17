@@ -89,8 +89,10 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public void CheckInterfaces()
         {
-            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingRestInterfaces<HyperLiquidRestClient>(["IHyperLiquidRestClientAccount", "IHyperLiquidRestClientExchangeData", "IHyperLiquidRestClientTrading"]);
-            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<HyperLiquidSocketClient>(["IHyperLiquidSocketClientApi"]);
+            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingRestInterfaces<HyperLiquidRestClient>(
+                ["IHyperLiquidRestClientAccount", "IHyperLiquidRestClientExchangeData", "IHyperLiquidRestClientTrading"]);
+            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<HyperLiquidSocketClient>(
+                ["IHyperLiquidSocketClientApiAccount", "IHyperLiquidSocketClientApiExchangeData", "IHyperLiquidSocketClientApiTrading"]);
         }
     }
 }
