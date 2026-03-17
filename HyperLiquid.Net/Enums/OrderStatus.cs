@@ -75,6 +75,31 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("reduceOnlyRejected")]
         ReduceOnlyRejected,
+        /// <summary>
+        /// Position increase at open interest cap rejected
+        /// </summary>
+        [Map("positionIncreaseAtOpenInterestCapRejected")]
+        PositionIncreaseAtOpenInterestCapRejected,
+        /// <summary>
+        /// Position flip at open interest cap rejected
+        /// </summary>
+        [Map("positionFlipAtOpenInterestCapRejected")]
+        PositionFlipAtOpenInterestCapRejected,
+        /// <summary>
+        /// Too aggressive at open interest cap rejected
+        /// </summary>
+        [Map("tooAggressiveAtOpenInterestCapRejected")]
+        TooAggressiveAtOpenInterestCapRejected,
+        /// <summary>
+        /// Open interest increase rejected
+        /// </summary>
+        [Map("openInterestIncreaseRejected")]
+        OpenInterestIncreaseRejected,
+        /// <summary>
+        /// Open interest cap canceled
+        /// </summary>
+        [Map("openInterestCapCanceled")]
+        OpenInterestCapCanceled,
 
         /// <summary>
         /// Waiting for main order to fill before placing this order

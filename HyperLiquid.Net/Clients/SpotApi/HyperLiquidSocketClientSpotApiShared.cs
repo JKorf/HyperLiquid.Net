@@ -169,7 +169,26 @@ namespace HyperLiquid.Net.Clients.SpotApi
         {
             if (status == Enums.OrderStatus.Open) return SharedOrderStatus.Open;
             if (status == Enums.OrderStatus.Filled) return SharedOrderStatus.Filled;
-            return SharedOrderStatus.Canceled;
+            if (status == Enums.OrderStatus.Canceled
+                || status == Enums.OrderStatus.Rejected
+                || status == Enums.OrderStatus.MarginCanceled
+                || status == Enums.OrderStatus.RejectedInsufficientBalance
+                || status == Enums.OrderStatus.RejectedIOC
+                || status == Enums.OrderStatus.RejectedBadPrice
+                || status == Enums.OrderStatus.RejectedInsufficientMargin
+                || status == Enums.OrderStatus.RejectedSiblingFilledCanceled
+                || status == Enums.OrderStatus.ReduceOnlyRejected
+                || status == Enums.OrderStatus.RejectedMinValue
+                || status == Enums.OrderStatus.PositionIncreaseAtOpenInterestCapRejected
+                || status == Enums.OrderStatus.PositionFlipAtOpenInterestCapRejected
+                || status == Enums.OrderStatus.TooAggressiveAtOpenInterestCapRejected
+                || status == Enums.OrderStatus.OpenInterestIncreaseRejected
+                || status == Enums.OrderStatus.OpenInterestCapCanceled)
+            {
+                return SharedOrderStatus.Canceled;
+            }
+
+            return SharedOrderStatus.Unknown;
         }
         #endregion
 
