@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects.Options;
 using System;
 
@@ -42,11 +43,11 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public RestApiOptions<HyperLiquidCredentials> SpotOptions { get; private set; } = new RestApiOptions<HyperLiquidCredentials>();
+        public RestApiOptions SpotOptions { get; private set; } = new RestApiOptions();
         /// <summary>
         /// Futures API options
         /// </summary>
-        public RestApiOptions<HyperLiquidCredentials> FuturesOptions { get; private set; } = new RestApiOptions<HyperLiquidCredentials>();
+        public RestApiOptions FuturesOptions { get; private set; } = new RestApiOptions();
 
         internal HyperLiquidRestOptions Set(HyperLiquidRestOptions targetOptions)
         {

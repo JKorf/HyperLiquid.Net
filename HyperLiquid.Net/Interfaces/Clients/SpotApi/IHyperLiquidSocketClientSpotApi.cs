@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces.Clients;
 
 namespace HyperLiquid.Net.Interfaces.Clients.SpotApi

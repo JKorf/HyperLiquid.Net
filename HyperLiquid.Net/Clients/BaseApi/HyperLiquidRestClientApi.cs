@@ -15,6 +15,7 @@ using HyperLiquid.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects.Errors;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using HyperLiquid.Net.Clients.MessageHandlers;
+using CryptoExchange.Net.Authentication;
 
 namespace HyperLiquid.Net.Clients.BaseApi
 {
@@ -35,7 +36,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             HyperLiquidRestClient baseClient,
             HttpClient? httpClient,
             HyperLiquidRestOptions options,
-            RestApiOptions<HyperLiquidCredentials> apiOptions)
+            RestApiOptions apiOptions)
             : base(logger, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
             BaseClient = baseClient;

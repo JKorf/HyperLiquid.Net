@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects.Options;
 using System;
 
@@ -43,7 +44,7 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public SocketApiOptions<HyperLiquidCredentials> SpotOptions { get; private set; } = new SocketApiOptions<HyperLiquidCredentials>()
+        public SocketApiOptions SpotOptions { get; private set; } = new SocketApiOptions()
         {
             MaxSocketConnections = 100
         };
@@ -51,7 +52,7 @@ namespace HyperLiquid.Net.Objects.Options
         /// <summary>
         /// Spot API options
         /// </summary>
-        public SocketApiOptions<HyperLiquidCredentials> FuturesOptions { get; private set; } = new SocketApiOptions<HyperLiquidCredentials>()
+        public SocketApiOptions FuturesOptions { get; private set; } = new SocketApiOptions()
         {
             MaxSocketConnections = 100
         };

@@ -15,12 +15,8 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace HyperLiquid.Net
 {
-    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, ECDsaCredential>
+    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, HyperLiquidCredentials>
     {
-        public override ApiCredentialsType[] SupportedCredentialTypes => [
-            ApiCredentialsType.ECDsa
-            ];
-
         private static IEnumerable<(string Name, string Type, object Value)> GetDomainFields(
             string action,
             string version,
@@ -43,7 +39,7 @@ namespace HyperLiquid.Net
             { typeof(byte[]), "bytes32" }
         };
 
-        public HyperLiquidAuthenticationProvider(HyperLiquidCredentials credentials) : base(credentials)
+        public HyperLiquidAuthenticationProvider(HyperLiquidCredentials credentials) : base(credentials, credentials)
         {
         }
 

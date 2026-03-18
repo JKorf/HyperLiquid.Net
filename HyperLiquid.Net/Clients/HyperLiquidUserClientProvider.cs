@@ -1,4 +1,5 @@
-﻿using HyperLiquid.Net.Interfaces.Clients;
+﻿using CryptoExchange.Net.Authentication;
+using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

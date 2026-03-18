@@ -1,4 +1,5 @@
 using CryptoExchange.Net;
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -43,7 +44,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             ILogger logger,
             HyperLiquidSocketClient baseClient,
             HyperLiquidSocketOptions options,
-            SocketApiOptions<HyperLiquidCredentials> apiOptions) :
+            SocketApiOptions apiOptions) :
             base(logger, options.Environment.SocketClientAddress!, options, apiOptions)
         {
             BaseClient = baseClient;
