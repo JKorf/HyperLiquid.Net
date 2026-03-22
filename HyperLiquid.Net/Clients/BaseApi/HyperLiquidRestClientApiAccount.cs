@@ -108,7 +108,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #endregion
 
-
         #region Get Rate Limits
 
         /// <inheritdoc />

@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Objects.Options
         }
 
         /// <summary>
-        /// The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to 1bps/0.01%, but can be set to 0/null. Value be between 0.001% and 0.1%.
+        /// The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to 1bps/0.01%, but can be set to 0/null. Value can be between 0.001% and 0.1%.
         /// </summary>
         public decimal? BuilderFeePercentage { get; set; } = 0.01m;
 

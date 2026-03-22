@@ -109,8 +109,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }).SetHandlerLifetime(Timeout.InfiniteTimeSpan);
             services.Add(new ServiceDescriptor(typeof(IHyperLiquidSocketClient), x => { return new HyperLiquidSocketClient(x.GetRequiredService<IOptions<HyperLiquidSocketOptions>>(), x.GetRequiredService<ILoggerFactory>()); }, socketClientLifeTime ?? ServiceLifetime.Singleton));
 
-            services.AddTransient<ICryptoRestClient, CryptoRestClient>();
-            services.AddSingleton<ICryptoSocketClient, CryptoSocketClient>();
             services.AddTransient<IHyperLiquidOrderBookFactory, HyperLiquidOrderBookFactory>();
             services.AddTransient<IHyperLiquidTrackerFactory, HyperLiquidTrackerFactory>();
             services.AddTransient<ITrackerFactory, HyperLiquidTrackerFactory>();
