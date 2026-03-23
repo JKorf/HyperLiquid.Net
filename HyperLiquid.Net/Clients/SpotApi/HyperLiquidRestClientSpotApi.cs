@@ -27,7 +27,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         #region constructor/destructor
-        internal HyperLiquidRestClientSpotApi(ILogger logger, IHyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
+        internal HyperLiquidRestClientSpotApi(ILogger logger, HyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
             : base(logger, baseClient, httpClient, options, options.SpotOptions)
         {
             Account = new HyperLiquidRestClientSpotApiAccount(this);

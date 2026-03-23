@@ -49,6 +49,9 @@ namespace HyperLiquid.Net
                         msg.StartsWith("Order would cause position to exceed margin tier limit at current leverage"))
                         return new ErrorInfo(ErrorType.MaxPosition, false, "Max position size exceeded", code);
 
+                    if (msg.StartsWith("Order was never placed, already canceled, or filled"))
+                        return new ErrorInfo(ErrorType.UnknownOrder, false, "Order was not found or in incorrect state", code);
+
                     return new ErrorInfo(ErrorType.Unknown, false, msg, code);
                 }),
                 new ErrorEvaluator("Subscription", (code, msg) => {

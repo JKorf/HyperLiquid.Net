@@ -115,7 +115,7 @@ namespace HyperLiquid.Net
         }
 
         /// <inheritdoc />
-        public IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, ApiCredentials credentials, SpotUserDataTrackerConfig? config = null, HyperLiquidEnvironment? environment = null)
+        public IUserSpotDataTracker CreateUserSpotDataTracker(string userIdentifier, HyperLiquidCredentials credentials, SpotUserDataTrackerConfig? config = null, HyperLiquidEnvironment? environment = null)
         {
             var clientProvider = _serviceProvider?.GetRequiredService<IHyperLiquidUserClientProvider>() ?? new HyperLiquidUserClientProvider();
             var restClient = clientProvider.GetRestClient(userIdentifier, credentials, environment);
@@ -144,7 +144,7 @@ namespace HyperLiquid.Net
         }
 
         /// <inheritdoc />
-        public IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, ApiCredentials credentials, FuturesUserDataTrackerConfig? config = null, HyperLiquidEnvironment? environment = null)
+        public IUserFuturesDataTracker CreateUserFuturesDataTracker(string userIdentifier, HyperLiquidCredentials credentials, FuturesUserDataTrackerConfig? config = null, HyperLiquidEnvironment? environment = null)
         {
             var clientProvider = _serviceProvider?.GetRequiredService<IHyperLiquidUserClientProvider>() ?? new HyperLiquidUserClientProvider();
             var restClient = clientProvider.GetRestClient(userIdentifier, credentials, environment);

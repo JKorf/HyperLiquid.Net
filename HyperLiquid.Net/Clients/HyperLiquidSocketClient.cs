@@ -1,27 +1,27 @@
-using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
-using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Clients.FuturesApi;
+using CryptoExchange.Net.Authentication;
 
 namespace HyperLiquid.Net.Clients
 {
     /// <inheritdoc cref="IHyperLiquidSocketClient" />
-    public class HyperLiquidSocketClient : BaseSocketClient, IHyperLiquidSocketClient
+    public class HyperLiquidSocketClient : BaseSocketClient<HyperLiquidEnvironment, HyperLiquidCredentials>, IHyperLiquidSocketClient
     {
         #region fields
+        internal new HyperLiquidSocketOptions ClientOptions => (HyperLiquidSocketOptions)base.ClientOptions;
         #endregion
 
         #region Api clients
-                
-         /// <inheritdoc />
+
+        /// <inheritdoc />
         public IHyperLiquidSocketClientSpotApi SpotApi { get; }
          /// <inheritdoc />
         public IHyperLiquidSocketClientFuturesApi FuturesApi { get; }
@@ -48,17 +48,10 @@ namespace HyperLiquid.Net.Clients
         {
             Initialize(options.Value);
 
-            SpotApi = AddApiClient(new HyperLiquidSocketClientSpotApi(_logger, options.Value));
-            FuturesApi = AddApiClient(new HyperLiquidSocketClientFuturesApi(_logger, options.Value));
+            SpotApi = AddApiClient(new HyperLiquidSocketClientSpotApi(_logger, this, options.Value));
+            FuturesApi = AddApiClient(new HyperLiquidSocketClientFuturesApi(_logger, this, options.Value));
         }
         #endregion
-
-        /// <inheritdoc />
-        public void SetOptions(UpdateOptions options)
-        {
-            SpotApi.SetOptions(options);
-            FuturesApi.SetOptions(options);
-        }
 
         /// <summary>
         /// Set the default options to be used when creating new clients
@@ -67,13 +60,6 @@ namespace HyperLiquid.Net.Clients
         public static void SetDefaultOptions(Action<HyperLiquidSocketOptions> optionsDelegate)
         {
             HyperLiquidSocketOptions.Default = ApplyOptionsDelegate(optionsDelegate);
-        }
-
-        /// <inheritdoc />
-        public void SetApiCredentials(ApiCredentials credentials)
-        {
-            SpotApi.SetApiCredentials(credentials);
-            FuturesApi.SetApiCredentials(credentials);
         }
     }
 }

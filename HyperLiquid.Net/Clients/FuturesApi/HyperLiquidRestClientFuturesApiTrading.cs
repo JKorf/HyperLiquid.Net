@@ -13,7 +13,7 @@ using System;
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientFuturesApiTrading : HyperLiquidRestClientTrading, IHyperLiquidRestClientFuturesApiTrading
+    internal class HyperLiquidRestClientFuturesApiTrading : HyperLiquidRestClientApiTrading, IHyperLiquidRestClientFuturesApiTrading
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientFuturesApi _baseClient;
@@ -39,6 +39,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var parameters = new ParameterCollection();
             var actionParameters = new ParameterCollection()
@@ -74,6 +76,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var parameters = new ParameterCollection();
             var actionParameters = new ParameterCollection()

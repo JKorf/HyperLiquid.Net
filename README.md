@@ -76,6 +76,9 @@ The library uses `[BaseAsset]/[QuoteAsset]` notation for Spot symbols and `[Base
 
 For information on the clients, dependency injection, response processing and more see the [documentation](https://cryptoexchange.jkorf.dev?library=HyperLiquid.Net), or have a look at the examples [here](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples) or [here](https://github.com/JKorf/CryptoExchange.Net/tree/master/Examples).
 
+**NOTE**  
+HyperLiquid.Net uses the Builder Code mechanism for HyperLiquid, which means that an additional 1bps / 0.01% fee is charged on top of orders placed with the library to fund development. This is entirely optional and can be disabled in the client options by setting `BuilderFeePercentage` to `0` or `null` in the client options.
+
 ## CryptoExchange.Net
 HyperLiquid.Net is based on the [CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net) base library. Other exchange API implementations based on the CryptoExchange.Net base library are available and follow the same logic.
 
@@ -138,7 +141,9 @@ Dictionary<string, object> Sign(string request, string secret)
 
 ## Supported functionality
 
-### Rest
+### Rest & WebSocket
+*Requests are available on both the WebSocket and REST client*  
+
 |API|Supported|Location|
 |--|--:|--|
 |Info|✓|`restClient.SpotApi.Account` / `restClient.SpotApi.ExchangeData` / `restClient.SpotApi.Trading` `restClient.FuturesApi.Account` / `restClient.FuturesApi.ExchangeData` / `restClient.FuturesApi.Trading`|
@@ -146,7 +151,7 @@ Dictionary<string, object> Sign(string request, string secret)
 |Info Spot|✓|`restClient.SpotApi.Account` / `restClient.SpotApi.ExchangeData`|
 |Exchange|✓|`restClient.SpotApi.Account` / `restClient.SpotApi.Trading` `restClient.FuturesApi.Account` / `restClient.FuturesApi.Trading`|
 
-### Websocket
+### Websocket streams
 |API|Supported|Location|
 |--|--:|--|
 |*|✓|`socketClient.SpotApi` / `socketClient.FuturesApi`|

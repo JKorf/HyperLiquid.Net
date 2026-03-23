@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces.Clients;
 using System;
 
@@ -6,7 +7,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
     /// <summary>
     /// HyperLiquid futures API endpoints
     /// </summary>
-    public interface IHyperLiquidRestClientFuturesApi : IRestApiClient, IDisposable
+    public interface IHyperLiquidRestClientFuturesApi : IRestApiClient<HyperLiquidCredentials>, IDisposable
     {
         /// <summary>
         /// Endpoints related to account settings, info or actions

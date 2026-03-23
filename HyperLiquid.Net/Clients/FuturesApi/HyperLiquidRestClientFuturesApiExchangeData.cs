@@ -10,12 +10,11 @@ using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using CryptoExchange.Net.Objects.Errors;
 using System.Net;
-using System.Collections.Generic;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientFuturesApiExchangeData : HyperLiquidRestClientExchangeData, IHyperLiquidRestClientFuturesApiExchangeData
+    internal class HyperLiquidRestClientFuturesApiExchangeData : HyperLiquidRestClientApiExchangeData, IHyperLiquidRestClientFuturesApiExchangeData
     {
         private readonly HyperLiquidRestClientFuturesApi _baseClient;
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();

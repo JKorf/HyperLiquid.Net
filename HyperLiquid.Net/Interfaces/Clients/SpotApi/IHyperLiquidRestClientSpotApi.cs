@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces.Clients;
 using System;
 
@@ -6,7 +7,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     /// <summary>
     /// HyperLiquid spot API endpoints
     /// </summary>
-    public interface IHyperLiquidRestClientSpotApi : IRestApiClient, IDisposable
+    public interface IHyperLiquidRestClientSpotApi : IRestApiClient<HyperLiquidCredentials>, IDisposable
     {
         /// <summary>
         /// Endpoints related to account settings, info or actions

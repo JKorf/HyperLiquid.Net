@@ -1,3 +1,4 @@
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects.Options;
 using System;
 
@@ -6,7 +7,7 @@ namespace HyperLiquid.Net.Objects.Options
     /// <summary>
     /// Options for the HyperLiquidRestClient
     /// </summary>
-    public class HyperLiquidRestOptions : RestExchangeOptions<HyperLiquidEnvironment>
+    public class HyperLiquidRestOptions : RestExchangeOptions<HyperLiquidEnvironment, HyperLiquidCredentials>
     {
         /// <summary>
         /// Default options for new clients
@@ -25,10 +26,9 @@ namespace HyperLiquid.Net.Objects.Options
         }
 
         /// <summary>
-        /// The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to null/0. Can be between 0.001% and 0.1%.<br />
-        /// If set to a non-null value the address has to be whitelisted using <see cref="Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.ApproveBuilderFeeAsync(System.Threading.CancellationToken)">restClient.SpotApi.Account.ApproveBuilderFeeAsync</see>
+        /// The builder fee percentage to apply to orders. This refers to a fee percentage being paid to the developer to support development. Defaults to 1bps/0.01%, but can be set to 0/null. Value can be between 0.001% and 0.1%.
         /// </summary>
-        public decimal? BuilderFeePercentage { get; set; }
+        public decimal? BuilderFeePercentage { get; set; } = 0.01m;
 
         /// <summary>
         /// Address of the builder

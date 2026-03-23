@@ -1,25 +1,27 @@
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System;
-using CryptoExchange.Net.Authentication;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using CryptoExchange.Net.Clients;
 using Microsoft.Extensions.Options;
-using CryptoExchange.Net.Objects.Options;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Clients.SpotApi;
 using HyperLiquid.Net.Clients.FuturesApi;
+using CryptoExchange.Net.Authentication;
 
 namespace HyperLiquid.Net.Clients
 {
     /// <inheritdoc cref="IHyperLiquidRestClient" />
-    public class HyperLiquidRestClient : BaseRestClient, IHyperLiquidRestClient
+    public class HyperLiquidRestClient : BaseRestClient<HyperLiquidEnvironment, HyperLiquidCredentials>, IHyperLiquidRestClient
     {
+        /// <inheritdoc />
+        internal new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
+
         #region Api clients
-                
-         /// <inheritdoc />
+
+        /// <inheritdoc />
         public IHyperLiquidRestClientSpotApi SpotApi { get; }
          /// <inheritdoc />
         public IHyperLiquidRestClientFuturesApi FuturesApi { get; }
@@ -53,13 +55,6 @@ namespace HyperLiquid.Net.Clients
 
         #endregion
 
-        /// <inheritdoc />
-        public void SetOptions(UpdateOptions options)
-        {
-            SpotApi.SetOptions(options);
-            FuturesApi.SetOptions(options);
-        }
-
         /// <summary>
         /// Set the default options to be used when creating new clients
         /// </summary>
@@ -67,13 +62,6 @@ namespace HyperLiquid.Net.Clients
         public static void SetDefaultOptions(Action<HyperLiquidRestOptions> optionsDelegate)
         {
             HyperLiquidRestOptions.Default = ApplyOptionsDelegate(optionsDelegate);
-        }
-
-        /// <inheritdoc />
-        public void SetApiCredentials(ApiCredentials credentials)
-        {            
-            SpotApi.SetApiCredentials(credentials);
-            FuturesApi.SetApiCredentials(credentials);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using HyperLiquid.Net.Interfaces.Clients;
+﻿using CryptoExchange.Net.Authentication;
+using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
-using CryptoExchange.Net.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -49,7 +49,7 @@ namespace HyperLiquid.Net.Clients
         }
 
         /// <inheritdoc />
-        public void InitializeUserClient(string userIdentifier, ApiCredentials credentials, HyperLiquidEnvironment? environment = null)
+        public void InitializeUserClient(string userIdentifier, HyperLiquidCredentials credentials, HyperLiquidEnvironment? environment = null)
         {
             CreateRestClient(userIdentifier, credentials, environment);
             CreateSocketClient(userIdentifier, credentials, environment);
@@ -63,7 +63,7 @@ namespace HyperLiquid.Net.Clients
         }
 
         /// <inheritdoc />
-        public IHyperLiquidRestClient GetRestClient(string userIdentifier, ApiCredentials? credentials = null, HyperLiquidEnvironment? environment = null)
+        public IHyperLiquidRestClient GetRestClient(string userIdentifier, HyperLiquidCredentials? credentials = null, HyperLiquidEnvironment? environment = null)
         {
             if (!_restClients.TryGetValue(userIdentifier, out var client) || client.Disposed)
                 client = CreateRestClient(userIdentifier, credentials, environment);
@@ -72,7 +72,7 @@ namespace HyperLiquid.Net.Clients
         }
 
         /// <inheritdoc />
-        public IHyperLiquidSocketClient GetSocketClient(string userIdentifier, ApiCredentials? credentials = null, HyperLiquidEnvironment? environment = null)
+        public IHyperLiquidSocketClient GetSocketClient(string userIdentifier, HyperLiquidCredentials? credentials = null, HyperLiquidEnvironment? environment = null)
         {
             if (!_socketClients.TryGetValue(userIdentifier, out var client) || client.Disposed)
                 client = CreateSocketClient(userIdentifier, credentials, environment);
@@ -80,7 +80,7 @@ namespace HyperLiquid.Net.Clients
             return client;
         }
 
-        private IHyperLiquidRestClient CreateRestClient(string userIdentifier, ApiCredentials? credentials, HyperLiquidEnvironment? environment)
+        private IHyperLiquidRestClient CreateRestClient(string userIdentifier, HyperLiquidCredentials? credentials, HyperLiquidEnvironment? environment)
         {
             var clientRestOptions = SetRestEnvironment(environment);
             var client = new HyperLiquidRestClient(_httpClient, _loggerFactory, clientRestOptions);
@@ -92,7 +92,7 @@ namespace HyperLiquid.Net.Clients
             return client;
         }
 
-        private IHyperLiquidSocketClient CreateSocketClient(string userIdentifier, ApiCredentials? credentials, HyperLiquidEnvironment? environment)
+        private IHyperLiquidSocketClient CreateSocketClient(string userIdentifier, HyperLiquidCredentials? credentials, HyperLiquidEnvironment? environment)
         {
             var clientSocketOptions = SetSocketEnvironment(environment);
             var client = new HyperLiquidSocketClient(clientSocketOptions!, _loggerFactory);
