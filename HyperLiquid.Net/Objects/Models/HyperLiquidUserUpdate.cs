@@ -45,5 +45,20 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("clearinghouseState")]
         public HyperLiquidFuturesAccount FuturesInfo { get; set; } = default!;
+        /// <summary>
+        /// ["<c>meta</c>"] Futures exchange info
+        /// </summary>
+        [JsonPropertyName("meta")]
+        public HyperLiquidFuturesExchangeInfo FuturesExchangeInfo { get; set; } = default!;
+        /// <summary>
+        /// ["<c>spotAssetCtxs</c>"] Spot tickers
+        /// </summary>
+        [JsonPropertyName("spotAssetCtxs")]
+        public HyperLiquidTicker[] SpotTickers { get; set; } = default!;
+        /// <summary>
+        /// ["<c>perpsAtOpenInterestCap</c>"] Spot tickers
+        /// </summary>
+        [JsonPropertyName("perpsAtOpenInterestCap")]
+        public string[] PerpsAtOpenInterestCap { get; set; } = [];
     }
 }
