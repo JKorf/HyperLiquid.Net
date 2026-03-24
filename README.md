@@ -192,6 +192,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.0.1 - 24 Mar 2026
+    * Fix issue in credentials copying
+
 * Version 4.0.0 - 24 Mar 2026
     * Updated CryptoExchange.Net to version 11.0.1, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
     * Updated class for supplying API credentials from ApiCredentials to HyperLiquidCredentials
