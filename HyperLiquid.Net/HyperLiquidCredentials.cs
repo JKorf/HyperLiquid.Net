@@ -44,5 +44,8 @@ namespace HyperLiquid.Net
             PrivateKey = privateKey;
             return this;
         }
+
+        /// <inheritdoc />
+        public override ApiCredentials Copy() => new HyperLiquidCredentials(this);
     }
 }
