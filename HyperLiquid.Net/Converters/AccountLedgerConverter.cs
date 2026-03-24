@@ -27,6 +27,7 @@ namespace HyperLiquid.Net.Converters
                     case "deposit":
                         deposits.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidDeposit>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidDeposit>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidDeposit>)))!);
                         break;
+                    case "withdraw":
                     case "withdrawal":
                         withdrawals.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidWithdrawal>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidWithdrawal>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidWithdrawal>)))!);
                         break;
@@ -36,9 +37,10 @@ namespace HyperLiquid.Net.Converters
                     case "liquidation":
                         liquidations.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidLiquidation>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidLiquidation>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidLiquidation>)))!);
                         break;
+                    case "send":
                     case "spotTransfer":
                         spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)))!);
-                        break;
+                        break;                    
                 }
             }
 
