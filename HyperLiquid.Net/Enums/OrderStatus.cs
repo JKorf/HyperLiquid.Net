@@ -75,6 +75,7 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("reduceOnlyRejected")]
         ReduceOnlyRejected,
+
         /// <summary>
         /// Position increase at open interest cap rejected
         /// </summary>
@@ -100,6 +101,57 @@ namespace HyperLiquid.Net.Enums
         /// </summary>
         [Map("openInterestCapCanceled")]
         OpenInterestCapCanceled,
+
+        /// <summary>
+        /// Vaults only. Canceled due to a user's withdrawal from vault
+        /// </summary>
+        [Map("vaultWithdrawalCanceled")]
+        VaultWithdrawalCanceled,
+        /// <summary>
+        /// Canceled due to self-trade prevention
+        /// </summary>
+        [Map("selfTradeCanceled")]
+        SelfTradeCanceled,
+        /// <summary>
+        /// Canceled due to asset delisting
+        /// </summary>
+        [Map("delistedCanceled")]
+        DelistedCanceled,
+        /// <summary>
+        /// Canceled due to liquidation
+        /// </summary>
+        [Map("liquidatedCanceled")]
+        LiquidatedCanceled,
+        /// <summary>
+        /// API only. Canceled due to exceeding scheduled cancel deadline (dead man's switch)
+        /// </summary>
+        [Map("scheduledCancel")]
+        ScheduledCancel,
+        /// <summary>
+        /// Rejected due to invalid tick price
+        /// </summary>
+        [Map("tickRejected")]
+        RejectedTick,
+        /// <summary>
+        /// Rejected due to invalid TP/SL price
+        /// </summary>
+        [Map("badTriggerPxRejected")]
+        RejectedBadTriggerPrice,
+        /// <summary>
+        /// Rejected due to lack of liquidity for market order
+        /// </summary>
+        [Map("marketOrderNoLiquidityRejected")]
+        RejectedNoLiquidity,
+        /// <summary>
+        /// Rejected due to price too far from oracle
+        /// </summary>
+        [Map("oracleRejected")]
+        RejectedOracle,
+        /// <summary>
+        /// Rejected due to exceeding margin tier limit at current leverage
+        /// </summary>
+        [Map("perpMaxPositionRejected")]
+        RejectedPerpMaxPosition,
 
         /// <summary>
         /// Waiting for main order to fill before placing this order

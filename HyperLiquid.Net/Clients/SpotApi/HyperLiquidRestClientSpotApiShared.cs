@@ -582,7 +582,17 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 || status == Enums.OrderStatus.PositionFlipAtOpenInterestCapRejected
                 || status == Enums.OrderStatus.TooAggressiveAtOpenInterestCapRejected
                 || status == Enums.OrderStatus.OpenInterestIncreaseRejected
-                || status == Enums.OrderStatus.OpenInterestCapCanceled)
+                || status == Enums.OrderStatus.OpenInterestCapCanceled
+                || status == Enums.OrderStatus.VaultWithdrawalCanceled
+                || status == Enums.OrderStatus.SelfTradeCanceled
+                || status == Enums.OrderStatus.DelistedCanceled
+                || status == Enums.OrderStatus.LiquidatedCanceled
+                || status == Enums.OrderStatus.ScheduledCancel
+                || status == Enums.OrderStatus.RejectedTick
+                || status == Enums.OrderStatus.RejectedBadTriggerPrice
+                || status == Enums.OrderStatus.RejectedNoLiquidity
+                || status == Enums.OrderStatus.RejectedOracle
+                || status == Enums.OrderStatus.RejectedPerpMaxPosition)
             {
                 return SharedOrderStatus.Canceled;
             }
