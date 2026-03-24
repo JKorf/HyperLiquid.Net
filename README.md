@@ -50,29 +50,46 @@ The library uses `[BaseAsset]/[QuoteAsset]` notation for Spot symbols and `[Base
 **Spot symbol**: `HYPE/USDC`  
 **Futures symbol**: `HYPE` 
 
-* REST Endpoints
-	```csharp	
-	var restClient = new HyperLiquidRestClient();
-	
-	// Spot HYPE/USDC info
-	var spotTickerResult = await restClient.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync();
-	var hypeInfo = spotTickerResult.Data.Tickers.Single(x => x.Symbol == "HYPE/USDC");
-	var currentHypePrice = hypeInfo.MidPrice;
+*Basic request:*  
+```csharp	
+var restClient = new HyperLiquidRestClient();
 
-	// Futures ETH perpetual contract info
-	var futuresTickerResult = await restClient.FuturesApi.ExchangeData.GetExchangeInfoAndTickersAsync();
-	var ethInfo = futuresTickerResult.Data.Tickers.Single(x => x.Symbol == "ETH");
-	var currentEthPrice = ethInfo.MidPrice;
-	```
-* Websocket streams
-	```csharp
-	// Subscribe to HYPE/USDC Spot ticker updates via the websocket API
-	var socketClient = new HyperLiquidSocketClient();
-	var tickerSubscriptionResult = await hyperLiquidSocketClient.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", (update) =>
-	{
-		var lastPrice = update.Data.MidPrice;
-	});
-	```
+// Spot HYPE/USDC info
+var spotTickerResult = await restClient.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync();
+var hypeInfo = spotTickerResult.Data.Tickers.Single(x => x.Symbol == "HYPE/USDC");
+var currentHypePrice = hypeInfo.MidPrice;
+
+// Futures ETH perpetual contract info
+var futuresTickerResult = await restClient.FuturesApi.ExchangeData.GetExchangeInfoAndTickersAsync();
+var ethInfo = futuresTickerResult.Data.Tickers.Single(x => x.Symbol == "ETH");
+var currentEthPrice = ethInfo.MidPrice;
+```
+
+*Place order:*
+```csharp
+var restClient = new HyperLiquidRestClient(opts => {
+	opts.ApiCredentials = new HyperLiquidCredentials("PUBLICKEY", "PRIVATEKEY");
+});
+
+// Place Limit order to go long for 0.1 ETH at 2000
+var orderResult = await restClient.FuturesApi.Trading.PlaceOrderAsync(
+    "ETH",
+    OrderSide.Buy,
+    OrderType.Limit,
+    0.1m,
+    2000
+    );
+```
+
+*WebSocket subscription:*
+```csharp
+// Subscribe to HYPE/USDC Spot ticker updates via the websocket API
+var socketClient = new HyperLiquidSocketClient();
+var tickerSubscriptionResult = await hyperLiquidSocketClient.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", (update) =>
+{
+	var lastPrice = update.Data.MidPrice;
+});
+```
 
 For information on the clients, dependency injection, response processing and more see the [documentation](https://cryptoexchange.jkorf.dev?library=HyperLiquid.Net), or have a look at the examples [here](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples) or [here](https://github.com/JKorf/CryptoExchange.Net/tree/master/Examples).
 
