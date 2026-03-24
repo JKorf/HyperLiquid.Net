@@ -192,6 +192,22 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.0.0 - 24 Mar 2026
+    * Updated CryptoExchange.Net to version 11.0.1, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
+    * Updated class for supplying API credentials from ApiCredentials to HyperLiquidCredentials
+    * Added 1bps builder fee enabled by default, can be disabled in the options
+    * Added full WebSocket request API
+    * Split WebSocket client into Account, ExchangeData and Trading topics
+    * Updated Shared order status parsing to default to Unknown value if not parsable
+    * Added missing order status Enum values
+    * Updated signing logic to unified logic in the CryptoExchange.Net library
+    * Updated HyperLiquidUserUpdate model
+    * Added UnknownOrder error response mapping
+
+    * Notes for updating:
+        * Update ApiCredentials to HyperLiquidCredentials for authentication, i.e. `ApiCredentials = new ApiCredentials(..)` => `ApiCredentials = new HyperLiquidCredentials(..)`
+        * A default builder fee of 0.01% / 1bps has been enabled by default to support development, this can be turned of in the client options by setting BuilderFeePercentage to 0/null
+
 * Version 3.10.0 - 06 Mar 2026
     * Updated CryptoExchange.Net to version 10.8.0, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
     * Improved method XML comments
