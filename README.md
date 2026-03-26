@@ -192,6 +192,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.1.0 - 26 Mar 2026
+    * Added SubscribeToOpenOrderUpdatesAsync stream to socket client
+    * Added SubscribeToBalanceUpdatesAsync stream to spot socket client
+    * Added SubscribeToBalanceAndPositionUpdatesAsync stream to futures socket client
+    * Added SubscribeToBalanceAndPositionUpdatesAllDexesAsync stream to futures socket client
+    * Added SubscribeToPriceUpdatesAsync accepting `dex` parameter to futures socket client
+
 * Version 4.0.1 - 24 Mar 2026
     * Fix issue in credentials copying
 
