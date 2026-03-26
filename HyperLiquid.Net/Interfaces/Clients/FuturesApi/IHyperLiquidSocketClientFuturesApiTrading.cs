@@ -58,5 +58,36 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
             string? vaultAddress = null,
             DateTime? expireAfter = null,
             CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to futures account margin and position snapshot updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: clearinghouseState)
+        /// </para>
+        /// </summary>
+        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="dex">Optional DEX selection</param>
+        /// <param name="onMessage">The data handler</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidPositionUpdate>> onMessage, CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to futures account margin and position snapshot updates for all dexes
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: clearinghouseState)
+        /// </para>
+        /// </summary>
+        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="onMessage">The data handler</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAllDexesAsync(string? address, Action<DataEvent<HyperLiquidAllDexPositionUpdate>> onMessage, CancellationToken ct = default);
     }
 }

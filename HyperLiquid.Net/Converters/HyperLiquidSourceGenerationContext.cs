@@ -7,6 +7,12 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOpenOrderUpdate>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidPositionUpdate>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidAllDexPositionUpdate>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidBalanceUpdate>))]
+
     [JsonSerializable(typeof(HyperLiquidRequest))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidSocketResponse<Dictionary<string, decimal>>>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidSocketResponse<HyperLiquidKline[]>>))]

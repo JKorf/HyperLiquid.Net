@@ -1,11 +1,15 @@
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
+using HyperLiquid.Net.Objects.Internal;
 using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Objects.Sockets;
+using HyperLiquid.Net.Objects.Sockets.Subscriptions;
 using HyperLiquid.Net.Utils;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -83,5 +87,31 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToBalanceUpdatesAsync(string? address, Action<DataEvent<HyperLiquidBalanceUpdate>> onMessage, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            _baseClient.ValidateAddress(address);
+
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidBalanceUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                onMessage(
+                    new DataEvent<HyperLiquidBalanceUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                    );
+            });
+
+            var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
+            var subscription = new HyperLiquidSubscription<HyperLiquidBalanceUpdate>(_logger, _baseClient, "spotState", null, new Dictionary<string, object>
+            {
+                { "user", addressSub.ToLowerInvariant() }
+            },
+            internalHandler, false);
+            return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
+        }
     }
 }

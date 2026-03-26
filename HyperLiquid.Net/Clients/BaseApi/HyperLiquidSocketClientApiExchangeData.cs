@@ -128,7 +128,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
+        public Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
+            => SubscribeToPriceUpdatesAsync(null, onMessage, ct);
+
+        /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(string? dex, Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
         {
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
             if (!result)
@@ -153,7 +157,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
 
-            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, _baseClient, "allMids", null, null, internalHandler, false);
+            var subscription = new HyperLiquidSubscription<HyperLiquidMidsUpdate>(_logger, _baseClient, "allMids", null, new Dictionary<string, object>
+            {
+                { "dex", dex ?? "" }
+            }, internalHandler, false);
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 

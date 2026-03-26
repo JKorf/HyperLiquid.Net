@@ -1,10 +1,11 @@
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
+using HyperLiquid.Net.Interfaces.Clients.BaseApi;
+using HyperLiquid.Net.Objects.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CryptoExchange.Net.Objects.Sockets;
-using HyperLiquid.Net.Objects.Models;
-using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 
 namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
 {
@@ -129,6 +130,21 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
         Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidFuturesTicker>> onMessage, CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to mid price updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: allMids)
+        /// </para>
+        /// </summary>
+        /// <param name="dex">Dex</param>
+        /// <param name="onMessage">The event handler for the received data</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(string? dex, Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default);
 
     }
 }

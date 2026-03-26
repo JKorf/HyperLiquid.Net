@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
+using CryptoExchange.Net.Objects.Sockets;
+using System;
 
 namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
 {
@@ -39,5 +41,21 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
             string asset,
             decimal quantity,
             CancellationToken ct = default);
+
+
+        /// <summary>
+        /// Subscribe to spot balance updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: spotState)
+        /// </para>
+        /// </summary>
+        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="onMessage">The data handler</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToBalanceUpdatesAsync(string? address, Action<DataEvent<HyperLiquidBalanceUpdate>> onMessage, CancellationToken ct = default);
     }
 }
