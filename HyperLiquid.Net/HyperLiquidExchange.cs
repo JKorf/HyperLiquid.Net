@@ -10,6 +10,7 @@ using CryptoExchange.Net.Converters;
 using System.Collections.Generic;
 using System.Text.Json;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Threading;
 
 namespace HyperLiquid.Net
 {
@@ -82,6 +83,33 @@ namespace HyperLiquid.Net
         /// First parameter is the request string to sign, second parameter is the secret to sign it with.
         /// </summary>
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
+
+        /// <summary>
+        /// Async-context-scoped signing delegate. Takes priority over SignRequestDelegate when set.
+        /// Scoped to the current async execution context via AsyncLocal, making it thread-safe for concurrent calls.
+        /// First parameter is the keccak256 hash hex string to sign, second parameter is the private key.
+        /// </summary>
+        private static readonly AsyncLocal<Func<string, string, Dictionary<string, object>>?> _asyncSignRequestDelegate = new();
+        public static Func<string, string, Dictionary<string, object>>? AsyncSignRequestDelegate
+        {
+            get => _asyncSignRequestDelegate.Value;
+            set => _asyncSignRequestDelegate.Value = value;
+        }
+
+        /// <summary>
+        /// Async-context-scoped structured typed data signing delegate. Takes priority over AsyncSignRequestDelegate and SignRequestDelegate when set.
+        /// Receives the EIP-712 typed data components (primaryType, domainFields, messageFields) before they are encoded or hashed,
+        /// enabling external signers (e.g. MPC/HSM providers such as Turnkey) to reconstruct the full typed data structure
+        /// and satisfy policy engine requirements that inspect decoded EIP-712 fields (e.g. Turnkey's eth.eip_712.* conditions).
+        /// Scoped to the current async execution context via AsyncLocal, making it thread-safe for concurrent calls.
+        /// Parameters: primaryType, domainFields (name/type/value tuples), messageFields (name/type/value tuples).
+        /// </summary>
+        private static readonly AsyncLocal<Func<string, IEnumerable<(string Name, string Type, object Value)>, IEnumerable<(string Name, string Type, object Value)>, Dictionary<string, object>>?> _asyncTypedDataSignRequestDelegate = new();
+        public static Func<string, IEnumerable<(string Name, string Type, object Value)>, IEnumerable<(string Name, string Type, object Value)>, Dictionary<string, object>>? AsyncTypedDataSignRequestDelegate
+        {
+            get => _asyncTypedDataSignRequestDelegate.Value;
+            set => _asyncTypedDataSignRequestDelegate.Value = value;
+        }
 
         internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>());
 
