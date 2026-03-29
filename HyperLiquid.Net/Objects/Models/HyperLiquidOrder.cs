@@ -1,6 +1,7 @@
 using CryptoExchange.Net.Converters.SystemTextJson;
 using HyperLiquid.Net.Enums;
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -96,5 +97,10 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("triggerPx")]
         public decimal? TriggerPrice { get; set; }
+        /// <summary>
+        /// Children orders of this order
+        /// </summary>
+        [JsonPropertyName("children")]
+        public List<HyperLiquidOrder>? Children { get; set; }
     }
 }
