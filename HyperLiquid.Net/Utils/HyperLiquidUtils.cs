@@ -1,10 +1,12 @@
-﻿using CryptoExchange.Net.Objects;
+﻿using CryptoExchange.Net;
+using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Errors;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Clients.BaseApi;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Objects.Options;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +32,8 @@ namespace HyperLiquid.Net.Utils
         private static readonly SemaphoreSlim _semaphoreFutures = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreBuilderFee = new SemaphoreSlim(1, 1);
         private static bool _checkedBuilderFee = false;
+        // We should only send builder credentials if the check has succeeded
+        internal static bool _builderFeeSuccess = false;
 
         internal static async Task<CallResult> CheckBuilderFeeAsync(HyperLiquidSocketClient client)
         {
@@ -42,10 +46,15 @@ namespace HyperLiquid.Net.Utils
                 return CallResult.SuccessResult;
 
             var options = client.ClientOptions;
-            return await CheckBuilderFeeAsync(
+            var result = await CheckBuilderFeeAsync(
                 options.BuilderFeePercentage, 
                 () => client.SpotApi.Account.GetApprovedBuilderFeeAsync(),
                 () => client.SpotApi.Account.ApproveBuilderFeeAsync()).ConfigureAwait(false);
+
+            if (!result.Success)
+                LibraryHelpers.StaticLogger?.LogDebug("Builder fee approval failed: {Error}", result.Error);
+
+            return result;
         }
 
         internal static async Task<CallResult> CheckBuilderFeeAsync(HyperLiquidRestClient client)
@@ -59,10 +68,15 @@ namespace HyperLiquid.Net.Utils
                 return CallResult.SuccessResult;
 
             var options = client.ClientOptions;
-            return await CheckBuilderFeeAsync(
+            var result = await CheckBuilderFeeAsync(
                 options.BuilderFeePercentage,
                 async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
                 async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+            if (!result.Success)
+                LibraryHelpers.StaticLogger?.LogDebug("Builder fee approval failed: {Error}", result.Error);
+
+            return result;
         }
 
         internal static async Task<CallResult> CheckBuilderFeeAsync(
@@ -92,11 +106,17 @@ namespace HyperLiquid.Net.Utils
 
                 var targetBps = (int)(builderFeePercentage.Value * 1000);
                 if (approvedResult.Data >= targetBps)
+                {
                     // Builder fee is approved, we're good
+                    _builderFeeSuccess = true;
                     return CallResult.SuccessResult;
+                }
 
                 var approveResult = await approveFee().ConfigureAwait(false);
-                return approvedResult;
+                if (approveResult)
+                    _builderFeeSuccess = true;
+
+                return approveResult;
             }
             finally
             {

@@ -426,7 +426,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             else
                 actionParameters.Add("grouping", "na");
 
-            if (_baseClient.ClientOptions.BuilderFeePercentage > 0 && _baseClient.ClientOptions.BuilderAddress != null)
+            if (_baseClient.ClientOptions.BuilderFeePercentage > 0
+                && _baseClient.ClientOptions.BuilderAddress != null
+                && HyperLiquidUtils._builderFeeSuccess)
             {
                 // Convert from percentage to 1/10 basis point
                 var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
