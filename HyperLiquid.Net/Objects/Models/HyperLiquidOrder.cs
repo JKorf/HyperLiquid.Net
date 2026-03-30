@@ -96,5 +96,10 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("triggerPx")]
         public decimal? TriggerPrice { get; set; }
+        /// <summary>
+        /// Children orders of this order
+        /// </summary>
+        [JsonPropertyName("children")]
+        public HyperLiquidOrder[]? Children { get; set; }
     }
 }
