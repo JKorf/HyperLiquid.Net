@@ -26,6 +26,6 @@ namespace HyperLiquid.Net.Objects.Models
         /// Open orders
         /// </summary>
         [JsonPropertyName("orders")]
-        public HyperLiquidOpenOrder[] Orders { get; set; } = [];
+        public HyperLiquidOrder[] Orders { get; set; } = [];
     }
 }
