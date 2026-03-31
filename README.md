@@ -192,6 +192,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.2.0 - 31 Mar 2026
+    * Added children property to HyperLiquidOrder response model
+    * Added log message if builder fee approval fails
+    * Added check whether builder fee check was successful before adding builder code
+    * Updated open orders websocket subscription to full order model
+    * Fixed order book subscription message matching when using mantissa parameter
+
 * Version 4.1.0 - 26 Mar 2026
     * Added SubscribeToOpenOrderUpdatesAsync stream to socket client
     * Added SubscribeToBalanceUpdatesAsync stream to spot socket client
