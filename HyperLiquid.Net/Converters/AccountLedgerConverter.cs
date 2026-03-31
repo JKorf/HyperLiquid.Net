@@ -17,6 +17,7 @@ namespace HyperLiquid.Net.Converters
             var transfers = new List<HyperLiquidUserLedger<HyperLiquidInternalTransfer>>();
             var liquidations = new List<HyperLiquidUserLedger<HyperLiquidLiquidation>>();
             var spotTransfers = new List<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>();
+            var externalTransfers = new List<HyperLiquidUserLedger<HyperLiquidExternalTransfer>>();
 
             var document = JsonDocument.ParseValue(ref reader);
             foreach (var item in document.RootElement.EnumerateArray())
@@ -38,9 +39,11 @@ namespace HyperLiquid.Net.Converters
                         liquidations.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidLiquidation>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidLiquidation>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidLiquidation>)))!);
                         break;
                     case "send":
+                        externalTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidExternalTransfer>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidExternalTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidExternalTransfer>)))!);
+                        break;
                     case "spotTransfer":
                         spotTransfers.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)))!);
-                        break;                    
+                        break;
                 }
             }
 
@@ -49,6 +52,7 @@ namespace HyperLiquid.Net.Converters
             result.InternalTransfer = transfers.ToArray();
             result.Liquidations = liquidations.ToArray();
             result.SpotTransfers = spotTransfers.ToArray();
+            result.ExternalTransfers = externalTransfers.ToArray();
             return result;
         }
 
@@ -64,7 +68,9 @@ namespace HyperLiquid.Net.Converters
             foreach (var item in value.SpotTransfers)
                 JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)));
             foreach (var item in value.InternalTransfer)
-                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidSpotTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidSpotTransfer>)));
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidInternalTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidInternalTransfer>)));
+            foreach (var item in value.ExternalTransfers)
+                JsonSerializer.Serialize(writer, item, (JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidExternalTransfer>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidExternalTransfer>)));
             writer.WriteEndArray();
         }
     }

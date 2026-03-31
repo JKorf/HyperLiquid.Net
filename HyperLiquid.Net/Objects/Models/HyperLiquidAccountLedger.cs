@@ -32,6 +32,10 @@ namespace HyperLiquid.Net.Objects.Models
         /// Spot transfers
         /// </summary>
         public HyperLiquidUserLedger<HyperLiquidSpotTransfer>[] SpotTransfers { get; set; } = [];
+        /// <summary>
+        /// External transfers (send type)
+        /// </summary>
+        public HyperLiquidUserLedger<HyperLiquidExternalTransfer>[] ExternalTransfers { get; set; } = [];
     }
 
     /// <summary>
@@ -165,5 +169,68 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("fee")]
         public decimal Fee { get; set; }
+    }
+
+    /// <summary>
+    /// External transfer info (send type)
+    /// </summary>
+    [SerializationModel]
+    public record HyperLiquidExternalTransfer
+    {
+        /// <summary>
+        /// Token
+        /// </summary>
+        [JsonPropertyName("token")]
+        public string Token { get; set; } = string.Empty;
+        /// <summary>
+        /// Quantity
+        /// </summary>
+        [JsonPropertyName("amount")]
+        public decimal Quantity { get; set; }
+        /// <summary>
+        /// USDC value
+        /// </summary>
+        [JsonPropertyName("usdcValue")]
+        public decimal UsdcValue { get; set; }
+        /// <summary>
+        /// User
+        /// </summary>
+        [JsonPropertyName("user")]
+        public string User { get; set; } = string.Empty;
+        /// <summary>
+        /// Destination
+        /// </summary>
+        [JsonPropertyName("destination")]
+        public string Destination { get; set; } = string.Empty;
+        /// <summary>
+        /// Source dex
+        /// </summary>
+        [JsonPropertyName("sourceDex")]
+        public string SourceDex { get; set; } = string.Empty;
+        /// <summary>
+        /// Destination dex
+        /// </summary>
+        [JsonPropertyName("destinationDex")]
+        public string DestinationDex { get; set; } = string.Empty;
+        /// <summary>
+        /// Fee
+        /// </summary>
+        [JsonPropertyName("fee")]
+        public decimal Fee { get; set; }
+        /// <summary>
+        /// Native token fee
+        /// </summary>
+        [JsonPropertyName("nativeTokenFee")]
+        public decimal NativeTokenFee { get; set; }
+        /// <summary>
+        /// Nonce
+        /// </summary>
+        [JsonPropertyName("nonce")]
+        public long Nonce { get; set; }
+        /// <summary>
+        /// Fee token
+        /// </summary>
+        [JsonPropertyName("feeToken")]
+        public string FeeToken { get; set; } = string.Empty;
     }
 }
