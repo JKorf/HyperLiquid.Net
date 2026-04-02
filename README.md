@@ -192,6 +192,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.2.1 - 02 Apr 2026
+    * Fixed SubscribeToOpenOrderUpdatesAsync subscription message matching when using dex parameter
+
 * Version 4.2.0 - 31 Mar 2026
     * Added children property to HyperLiquidOrder response model
     * Added log message if builder fee approval fails
