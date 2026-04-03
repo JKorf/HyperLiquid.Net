@@ -128,7 +128,7 @@ namespace HyperLiquid.Net
             var keccakSigned = CeSha3Keccack.CalculateHash(messageBytes);
 
             Dictionary<string, object> signature;
-            var effectiveDelegate = HyperLiquidExchange.AsyncSignRequestDelegate ?? HyperLiquidExchange.SignRequestDelegate;
+            var effectiveDelegate = HyperLiquidExchange.SignRequestDelegate;
             if (effectiveDelegate != null)
                 signature = effectiveDelegate(BytesToHexString(keccakSigned), Credential.PrivateKey);
             else

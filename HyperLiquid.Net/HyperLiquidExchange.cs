@@ -85,18 +85,6 @@ namespace HyperLiquid.Net
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
         /// <summary>
-        /// Async-context-scoped signing delegate. Takes priority over SignRequestDelegate when set.
-        /// Scoped to the current async execution context via AsyncLocal, making it thread-safe for concurrent calls.
-        /// First parameter is the keccak256 hash hex string to sign, second parameter is the private key.
-        /// </summary>
-        private static readonly AsyncLocal<Func<string, string, Dictionary<string, object>>?> _asyncSignRequestDelegate = new();
-        public static Func<string, string, Dictionary<string, object>>? AsyncSignRequestDelegate
-        {
-            get => _asyncSignRequestDelegate.Value;
-            set => _asyncSignRequestDelegate.Value = value;
-        }
-
-        /// <summary>
         /// Async-context-scoped structured typed data signing delegate. Takes priority over AsyncSignRequestDelegate and SignRequestDelegate when set.
         /// Receives the EIP-712 typed data components (primaryType, domainFields, messageFields) before they are encoded or hashed,
         /// enabling external signers (e.g. MPC/HSM providers such as Turnkey) to reconstruct the full typed data structure
