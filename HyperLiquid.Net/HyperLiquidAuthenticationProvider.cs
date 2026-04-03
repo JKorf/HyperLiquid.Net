@@ -97,13 +97,17 @@ namespace HyperLiquid.Net
                 var messageInnerFields = GetMessageFields(action.Where(x => x.Key != "type" && x.Key != "signatureChainId").ToDictionary(x => x.Key, x => x.Value));
 
                 var domainFields = GetDomainFields("HyperliquidSignTransaction", "1", Convert.ToInt32((string)chainId, 16), "0x0000000000000000000000000000000000000000");
+
+                if (HyperLiquidExchange.AsyncTypedDataSignRequestDelegate != null)
+                    return HyperLiquidExchange.AsyncTypedDataSignRequestDelegate(primary, domainFields, messageInnerFields);
+
                 messageBytes = CeEip712TypedDataEncoder.EncodeEip721(primary, domainFields, messageInnerFields);
             }
             else
             {
                 // Exchange action
                 if (vaultAddress != null)
-                    vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;                
+                    vaultAddress = vaultAddress.StartsWith("0x") ? vaultAddress.Substring(2) : vaultAddress;
 
                 var hash = GenerateActionHash(action, nonce, vaultAddress, expiresAfter);
                 var phantomAgent = new Dictionary<string, object>()
@@ -114,14 +118,19 @@ namespace HyperLiquid.Net
 
                 var messageFields = GetMessageFields(phantomAgent);
                 var domainFields = GetDomainFields("Exchange", "1", 1337, "0x0000000000000000000000000000000000000000");
+
+                if (HyperLiquidExchange.AsyncTypedDataSignRequestDelegate != null)
+                    return HyperLiquidExchange.AsyncTypedDataSignRequestDelegate("Agent", domainFields, messageFields);
+
                 messageBytes = CeEip712TypedDataEncoder.EncodeEip721("Agent", domainFields, messageFields);
             }
 
             var keccakSigned = CeSha3Keccack.CalculateHash(messageBytes);
 
             Dictionary<string, object> signature;
-            if (HyperLiquidExchange.SignRequestDelegate != null)
-                signature = HyperLiquidExchange.SignRequestDelegate(BytesToHexString(keccakSigned), Credential.PrivateKey);
+            var effectiveDelegate = HyperLiquidExchange.SignRequestDelegate;
+            if (effectiveDelegate != null)
+                signature = effectiveDelegate(BytesToHexString(keccakSigned), Credential.PrivateKey);
             else
                 signature = SignRequest(keccakSigned, Credential.PrivateKey);
 
