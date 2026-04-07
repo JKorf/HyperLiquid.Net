@@ -84,6 +84,7 @@ namespace HyperLiquid.Net
         /// </summary>
         public static Func<string, string, Dictionary<string, object>>? SignRequestDelegate { get; set; }
 
+        private static readonly AsyncLocal<Func<string, IEnumerable<(string Name, string Type, object Value)>, IEnumerable<(string Name, string Type, object Value)>, Dictionary<string, object>>?> _asyncTypedDataSignRequestDelegate = new();
         /// <summary>
         /// Async-context-scoped structured typed data signing delegate. Takes priority over AsyncSignRequestDelegate and SignRequestDelegate when set.
         /// Receives the EIP-712 typed data components (primaryType, domainFields, messageFields) before they are encoded or hashed,
@@ -92,7 +93,6 @@ namespace HyperLiquid.Net
         /// Scoped to the current async execution context via AsyncLocal, making it thread-safe for concurrent calls.
         /// Parameters: primaryType, domainFields (name/type/value tuples), messageFields (name/type/value tuples).
         /// </summary>
-        private static readonly AsyncLocal<Func<string, IEnumerable<(string Name, string Type, object Value)>, IEnumerable<(string Name, string Type, object Value)>, Dictionary<string, object>>?> _asyncTypedDataSignRequestDelegate = new();
         public static Func<string, IEnumerable<(string Name, string Type, object Value)>, IEnumerable<(string Name, string Type, object Value)>, Dictionary<string, object>>? AsyncTypedDataSignRequestDelegate
         {
             get => _asyncTypedDataSignRequestDelegate.Value;
