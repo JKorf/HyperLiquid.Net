@@ -192,6 +192,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.3.0 - 09 Apr 2026
+    * Updated CryptoExchange.Net to version 11.1.0, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
+    * Add AsyncLocal signing delegates for external key custodian support
+
 * Version 4.2.1 - 02 Apr 2026
     * Fixed SubscribeToOpenOrderUpdatesAsync subscription message matching when using dex parameter
 
