@@ -3,6 +3,7 @@ using CryptoExchange.Net.Sockets;
 using HyperLiquid.Net.Objects.Internal;
 using System;
 using CryptoExchange.Net.Sockets.Default;
+using CryptoExchange.Net.Sockets.Default.Routing;
 using CryptoExchange.Net;
 using HyperLiquid.Net.Clients.BaseApi;
 using CryptoExchange.Net.Objects.Errors;

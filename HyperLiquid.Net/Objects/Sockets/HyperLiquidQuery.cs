@@ -6,6 +6,7 @@ using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Converters.MessageParsing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Sockets.Default;
+using CryptoExchange.Net.Sockets.Default.Routing;
 
 namespace HyperLiquid.Net.Objects.Sockets
 {

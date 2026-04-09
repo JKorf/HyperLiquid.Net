@@ -7,6 +7,7 @@ using HyperLiquid.Net.Objects.Internal;
 using System.Linq;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Sockets.Default;
+using CryptoExchange.Net.Sockets.Default.Routing;
 
 namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
 {
