@@ -77,7 +77,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
             var set = await WaitForSetOrderBookAsync(_initialDataTimeout, ct).ConfigureAwait(false);
             if (!set)
             {
-                _ = sub.Data.CloseAsync();
+                await sub.Data.CloseAsync().ConfigureAwait(false);
                 return new CallResult<UpdateSubscription>(set.Error!);
             }
 
