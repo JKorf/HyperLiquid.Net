@@ -1,6 +1,7 @@
 ﻿using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
+using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Sockets.Default;
@@ -11,12 +12,14 @@ using Secp256k1Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Collections.Specialized.BitVector32;
 
 namespace HyperLiquid.Net
 {
     internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, HyperLiquidCredentials>
     {
+        private static readonly object _nonceLock = new object();
+        private static long? _lastNonce;
+
         private static IEnumerable<(string Name, string Type, object Value)> GetDomainFields(
             string action,
             string version,
@@ -49,7 +52,7 @@ namespace HyperLiquid.Net
                 return;
 
             var action = (Dictionary<string, object>)request.BodyParameters!["action"];
-            var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n : GetMillisecondTimestampLong(apiClient);
+            var nonce = GetNonce(action);
             request.BodyParameters!.Add("nonce", nonce);
 
             var signature = GenerateSignature(
@@ -64,8 +67,7 @@ namespace HyperLiquid.Net
         public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
         {
             var action = (Dictionary<string, object>)request["action"];
-            var nonce = action.TryGetValue("time", out var time) ? (long)time : action.TryGetValue("nonce", out var n) ? (long)n :
-                GetMillisecondTimestampLong(apiClient);
+            var nonce = GetNonce(action);
             request.Add("nonce", nonce);
 
             var signature = GenerateSignature(
@@ -75,6 +77,26 @@ namespace HyperLiquid.Net
                 request.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
                 request.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
             request["signature"] = signature;
+        }
+
+        private long GetNonce(Dictionary<string, object> actionParameters)
+        {
+            if (actionParameters.TryGetValue("time", out var time))
+                return (long)time;
+
+            if (actionParameters.TryGetValue("nonce", out var n))
+                return (long)n;
+
+            var nonce = DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value;
+            lock (_nonceLock)
+            {
+                if (nonce <= _lastNonce)
+                    nonce = _lastNonce.Value + 1;
+
+                _lastNonce = nonce;
+            }
+
+            return nonce;
         }
 
         internal Dictionary<string, object> GenerateSignature(
