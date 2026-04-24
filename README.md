@@ -193,6 +193,11 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.4.0 - 24 Apr 2026
+    * Added socket SubscribeToWebData3UpdatesAsync stream
+    * Fixed HyperLiquidSymbolOrderBook not waiting for subscription to close when start fails
+    * Fixed duplicate nonce error with simultaneous requests
+
 * Version 4.3.0 - 09 Apr 2026
     * Updated CryptoExchange.Net to version 11.1.0, see https://github.com/JKorf/CryptoExchange.Net/releases/ for full release notes
     * Add AsyncLocal signing delegates for external key custodian support
