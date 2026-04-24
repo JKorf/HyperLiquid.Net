@@ -589,6 +589,35 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            _baseClient.ValidateAddress(address);
+
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidWebDataV3Update>>((receiveTime, originalData, invocation, data) =>
+            {
+                _baseClient.UpdateTimeOffset(data.Data.UserState.ServerTime);
+
+                onMessage(
+                    new DataEvent<HyperLiquidWebDataV3Update>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                        .WithDataTimestamp(data.Data.UserState.ServerTime, _baseClient.GetTimeOffset())
+                    );
+            });
+
+            var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
+            var subscription = new HyperLiquidSubscription<HyperLiquidWebDataV3Update>(_logger, _baseClient, "webData3", null, new Dictionary<string, object>
+            {
+                { "user", addressSub.ToLowerInvariant() },
+            },
+            internalHandler, false);
+            return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
         public async Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
             string? address,
             Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,

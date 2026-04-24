@@ -340,5 +340,20 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
         Task<CallResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to webData3 updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
+        /// Endpoint:<br />
+        /// WS /ws (type: webData3)
+        /// </para>
+        /// </summary>
+        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="onMessage">The data handler</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default);
     }
 }
