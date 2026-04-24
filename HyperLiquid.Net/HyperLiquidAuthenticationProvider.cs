@@ -52,7 +52,7 @@ namespace HyperLiquid.Net
                 return;
 
             var action = (Dictionary<string, object>)request.BodyParameters!["action"];
-            var nonce = GetNonce(action);
+            var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.BodyParameters!.Add("nonce", nonce);
 
             var signature = GenerateSignature(
@@ -67,7 +67,7 @@ namespace HyperLiquid.Net
         public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
         {
             var action = (Dictionary<string, object>)request["action"];
-            var nonce = GetNonce(action);
+            var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.Add("nonce", nonce);
 
             var signature = GenerateSignature(
@@ -79,7 +79,7 @@ namespace HyperLiquid.Net
             request["signature"] = signature;
         }
 
-        private long GetNonce(Dictionary<string, object> actionParameters)
+        private long GetNonce(Dictionary<string, object> actionParameters, Func<long> getTimestamp)
         {
             if (actionParameters.TryGetValue("time", out var time))
                 return (long)time;
@@ -87,7 +87,7 @@ namespace HyperLiquid.Net
             if (actionParameters.TryGetValue("nonce", out var n))
                 return (long)n;
 
-            var nonce = DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow).Value;
+            var nonce = getTimestamp();
             lock (_nonceLock)
             {
                 if (nonce <= _lastNonce)
