@@ -36,7 +36,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
             parameters.AddOptional("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<Dictionary<string, decimal>>(request, parameters, ct).ConfigureAwait(false);
-            
+            if (!result)
+                return result.As<Dictionary<string, decimal>>(default);
+
             var resultMapped = new Dictionary<string, decimal>();
             foreach (var item in result.Data)
             {
