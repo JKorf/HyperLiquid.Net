@@ -193,6 +193,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.4.1 - 28 Apr 2026
+    * Fixed GetPricesAsync throwing exception on failed request
+
 * Version 4.4.0 - 24 Apr 2026
     * Added socket SubscribeToWebData3UpdatesAsync stream
     * Fixed HyperLiquidSymbolOrderBook not waiting for subscription to close when start fails
