@@ -193,6 +193,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.5.0 - 01 May 2026
+    * Added support for dex ExchangeParameter in various endpoints for Shared REST FuturesApi
+    * Added dex recognition in Shared GetOpenFuturesOrdersAsync if symbol is provided
+
 * Version 4.4.1 - 28 Apr 2026
     * Fixed GetPricesAsync throwing exception on failed request
 
