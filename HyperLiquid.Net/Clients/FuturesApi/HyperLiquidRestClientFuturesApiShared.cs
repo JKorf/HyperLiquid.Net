@@ -24,7 +24,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
 
         #region Balance Client
-        GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new GetBalancesOptions(AccountTypeFilter.Futures);
+        GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new GetBalancesOptions(AccountTypeFilter.Futures)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("dex", typeof(string), "DEX to retrieve balances for", "xyz")
+            }
+        };
 
         async Task<ExchangeWebResult<SharedBalance[]>> IBalanceRestClient.GetBalancesAsync(GetBalancesRequest request, CancellationToken ct)
         {
@@ -32,7 +38,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return new ExchangeWebResult<SharedBalance[]>(Exchange, validationError);
 
-            var result = await Account.GetAccountInfoAsync(ct: ct).ConfigureAwait(false);
+            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<SharedBalance[]>(Exchange, null, default);
 
@@ -203,7 +210,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #endregion
 
         #region Futures Symbol client
-        EndpointOptions<GetSymbolsRequest> IFuturesSymbolRestClient.GetFuturesSymbolsOptions { get; } = new EndpointOptions<GetSymbolsRequest>(false);
+        EndpointOptions<GetSymbolsRequest> IFuturesSymbolRestClient.GetFuturesSymbolsOptions { get; } = new EndpointOptions<GetSymbolsRequest>(false)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("dex", typeof(string), "DEX to retrieve symbols for", "xyz")
+            }
+        };
 
         async Task<ExchangeWebResult<SharedFuturesSymbol[]>> IFuturesSymbolRestClient.GetFuturesSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)
         {
@@ -211,27 +224,42 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return new ExchangeWebResult<SharedFuturesSymbol[]>(Exchange, validationError);
 
-            var result = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            var result = await ExchangeData.GetExchangeInfoAllDexesAsync(ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, null, default);
 
-            var response = result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, SupportedTradingModes, result.Data.Where(x => !x.IsDelisted).Select(s => new SharedFuturesSymbol(TradingMode.PerpetualLinear, s.Name, "USDC", s.Name + "/USDC", true)
-            {
-                MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.QuantityDecimals)),
-                MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
-                QuantityDecimals = s.QuantityDecimals,
-                PriceSignificantFigures = 5,
-                PriceDecimals = 6 - s.QuantityDecimals,
-                MaxLongLeverage = s.MaxLeverage,
-                MaxShortLeverage = s.MaxLeverage
-            }).ToArray());
+            var data = result.Data.SelectMany(x => x.Symbols);
+            if (dex != null)
+                data = result.Data.SingleOrDefault(x => x.Name == dex)?.Symbols ?? [];
+
+            var response = result.AsExchangeResult<SharedFuturesSymbol[]>(Exchange, SupportedTradingModes, data.Where(x => !x.IsDelisted).Select(ParseSymbol).ToArray());
 
             // Register both HYPE/USDC and HYPE as symbol names
-            var symbolRegistrations = response.Data
-                .Concat(response.Data.Select(x => new SharedSpotSymbol(x.BaseAsset, x.QuoteAsset, x.BaseAsset, x.Trading, x.TradingMode))).ToArray();
+            var symbolRegistrations = result.Data.SelectMany(x => x.Symbols.Where(x => !x.IsDelisted).Select(ParseSymbol))
+                .Concat(result.Data.SelectMany(x => x.Symbols.Select(x => new SharedSpotSymbol(x.Name, "USDC", x.Name, true, TradingMode.PerpetualLinear)))).ToArray();
 
             ExchangeSymbolCache.UpdateSymbolInfo(_topicId, symbolRegistrations);
             return response;
+        }
+
+        private SharedFuturesSymbol ParseSymbol(HyperLiquidFuturesSymbol symbol)
+        {
+            return new SharedFuturesSymbol(
+                TradingMode.PerpetualLinear,
+                symbol.Name,
+                "USDC",
+                symbol.Name + "/USDC",
+                true)
+            {
+                MinTradeQuantity = 1m / (decimal)(Math.Pow(10, symbol.QuantityDecimals)),
+                MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
+                QuantityDecimals = symbol.QuantityDecimals,
+                PriceSignificantFigures = 5,
+                PriceDecimals = 6 - symbol.QuantityDecimals,
+                MaxLongLeverage = symbol.MaxLeverage,
+                MaxShortLeverage = symbol.MaxLeverage
+            };
         }
 
         async Task<ExchangeResult<SharedSymbol[]>> IFuturesSymbolRestClient.GetFuturesSymbolsForBaseAssetAsync(string baseAsset)
@@ -327,14 +355,21 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Leverage client
         SharedLeverageSettingMode ILeverageRestClient.LeverageSettingType => SharedLeverageSettingMode.PerSymbol;
 
-        EndpointOptions<GetLeverageRequest> ILeverageRestClient.GetLeverageOptions { get; } = new EndpointOptions<GetLeverageRequest>(true);
+        EndpointOptions<GetLeverageRequest> ILeverageRestClient.GetLeverageOptions { get; } = new EndpointOptions<GetLeverageRequest>(true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("dex", typeof(string), "DEX to retrieve leverage for", "xyz")
+            }
+        };
         async Task<ExchangeWebResult<SharedLeverage>> ILeverageRestClient.GetLeverageAsync(GetLeverageRequest request, CancellationToken ct)
         {
             var validationError = ((ILeverageRestClient)this).GetLeverageOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
             if (validationError != null)
                 return new ExchangeWebResult<SharedLeverage>(Exchange, validationError);
 
-            var result = await Account.GetAccountInfoAsync(ct: ct).ConfigureAwait(false);
+            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<SharedLeverage>(Exchange, null, default);
 
@@ -478,7 +513,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
         }
 
-        EndpointOptions<GetOpenOrdersRequest> IFuturesOrderRestClient.GetOpenFuturesOrdersOptions { get; } = new EndpointOptions<GetOpenOrdersRequest>(true);
+        EndpointOptions<GetOpenOrdersRequest> IFuturesOrderRestClient.GetOpenFuturesOrdersOptions { get; } = new EndpointOptions<GetOpenOrdersRequest>(true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("dex", typeof(string), "DEX to retrieve open orders for", "xyz")
+            }
+        };
         async Task<ExchangeWebResult<SharedFuturesOrder[]>> IFuturesOrderRestClient.GetOpenFuturesOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetOpenFuturesOrdersOptions.ValidateRequest(Exchange, request, request.Symbol?.TradingMode ?? request.TradingMode, SupportedTradingModes);
@@ -486,7 +527,17 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return new ExchangeWebResult<SharedFuturesOrder[]>(Exchange, validationError);
 
             var symbol = request.Symbol?.GetSymbol(FormatSymbol);
-            var orders = await Trading.GetOpenOrdersExtendedAsync(ct: ct).ConfigureAwait(false);
+
+            // Get dex from parameters or symbol (if symbol is in format DEX:SYMBOL)
+            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            if (dex == null && symbol != null)
+            {
+                var dexSeparatorIndex = symbol.IndexOf(':');
+                if (dexSeparatorIndex != -1)
+                    dex = symbol.Substring(0, dexSeparatorIndex);
+            }
+
+            var orders = await Trading.GetOpenOrdersExtendedAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!orders)
                 return orders.AsExchangeResult<SharedFuturesOrder[]>(Exchange, null, default);
 
@@ -660,14 +711,21 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return order.AsExchangeResult(Exchange, TradingMode.PerpetualLinear, new SharedId(request.OrderId));
         }
 
-        EndpointOptions<GetPositionsRequest> IFuturesOrderRestClient.GetPositionsOptions { get; } = new EndpointOptions<GetPositionsRequest>(true);
+        EndpointOptions<GetPositionsRequest> IFuturesOrderRestClient.GetPositionsOptions { get; } = new EndpointOptions<GetPositionsRequest>(true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("dex", typeof(string), "DEX to retrieve leverage for", "xyz")
+            }
+        };
         async Task<ExchangeWebResult<SharedPosition[]>> IFuturesOrderRestClient.GetPositionsAsync(GetPositionsRequest request, CancellationToken ct)
         {
             var validationError = ((IFuturesOrderRestClient)this).GetPositionsOptions.ValidateRequest(Exchange, request, request.Symbol?.TradingMode ?? request.TradingMode, SupportedTradingModes);
             if (validationError != null)
                 return new ExchangeWebResult<SharedPosition[]>(Exchange, validationError);
 
-            var result = await Account.GetAccountInfoAsync(ct: ct).ConfigureAwait(false);
+            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.AsExchangeResult<SharedPosition[]>(Exchange, null, default);
 
