@@ -15,7 +15,7 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace HyperLiquid.Net.Clients.SpotApi
 {
     /// <inheritdoc />
-    internal class HyperLiquidRestClientSpotApiAccount : HyperLiquidRestClientAccount, IHyperLiquidRestClientSpotApiAccount
+    internal class HyperLiquidRestClientSpotApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientSpotApiAccount
     {
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientSpotApi _baseClient;
@@ -36,7 +36,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "spotClearinghouseState" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidBalances>(request, parameters, ct).ConfigureAwait(false);
@@ -56,7 +56,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userNonFundingLedgerUpdates" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             parameters.AddMilliseconds("startTime", startTime);
             parameters.AddOptionalMilliseconds("endTime", endTime);
@@ -77,7 +77,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userRateLimit" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<HyperLiquidRateLimit>(request, parameters, ct).ConfigureAwait(false);
@@ -93,7 +93,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "maxBuilderFee" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey },
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key },
                 { "builder", builderAddress ?? _baseClient.ClientOptions.BuilderAddress }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
@@ -396,7 +396,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "subAccounts" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidSubAccount[]>(request, parameters, ct).ConfigureAwait(false);
@@ -419,7 +419,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userRole" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 60, false);
             return await _baseClient.SendAsync<HyperLiquidUserRole>(request, parameters, ct).ConfigureAwait(false);
@@ -435,7 +435,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "extraAgents" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, false);
             return await _baseClient.SendAsync<HyperLiquidUserAgent[]>(request, parameters, ct).ConfigureAwait(false);
@@ -537,7 +537,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var parameters = new ParameterCollection()
             {
                 { "type", "referral" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperliquidReferralInfo>(request, parameters, ct).ConfigureAwait(false);

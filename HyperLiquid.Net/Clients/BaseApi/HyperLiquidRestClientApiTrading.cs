@@ -221,7 +221,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var parameters = new ParameterCollection()
             {
                 { "type", "userTwapSliceFills" },
-                { "user", address ?? _baseClient.AuthenticationProvider!.ApiKey }
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidUserTwapFillResult[]>(request, parameters, ct).ConfigureAwait(false);
@@ -395,13 +395,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             string? builderAddress = null,
             CancellationToken ct = default)
         {
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+
             builderFeePercentage ??= _baseClient.ClientOptions.BuilderFeePercentage;
             builderAddress ??= _baseClient.ClientOptions.BuilderAddress;
-
-            await HyperLiquidUtils.CheckBuilderFeeAsync(
-                builderFeePercentage,
-                async () => await _baseClient.BaseClient.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
-                async () => await _baseClient.BaseClient.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
             var orderRequests = new List<ParameterCollection>();
             foreach (var order in orders)

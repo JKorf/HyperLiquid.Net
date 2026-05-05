@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TypedDataRaw = HyperLiquid.Net.Signing.TypedDataRaw;
 using MemberValue = HyperLiquid.Net.Signing.MemberValue;
+using MemberDescription = HyperLiquid.Net.Signing.MemberDescription;
 
 namespace HyperLiquid.Net.Converters
 {
@@ -166,7 +167,7 @@ namespace HyperLiquid.Net.Converters
             return typedDataRaw.Types.ContainsKey(typeName);
         }
 
-        private void WriteTypeDefinition(Utf8JsonWriter writer, string typeName, HyperLiquid.Net.Signing.MemberDescription[] members)
+        private void WriteTypeDefinition(Utf8JsonWriter writer, string typeName, MemberDescription[] members)
         {
             writer.WritePropertyName(typeName);
             writer.WriteStartArray();

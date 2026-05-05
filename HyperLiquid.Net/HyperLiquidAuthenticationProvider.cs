@@ -320,8 +320,7 @@ namespace HyperLiquid.Net
             IEnumerable<KeyValuePair<string, object>> messageTypes,
             IEnumerable<KeyValuePair<string, object>> messageData)
         {
-            var typeRaw = EncodeTypedData(domain, messageTypes, messageData);
-            return LightEip712TypedDataEncoder.EncodeTypedDataRaw(typeRaw);
+            throw new NotSupportedException("Binary EIP-712 encoding is not used in this code path.");
         }
 
         public static string EncodeEip712Json(

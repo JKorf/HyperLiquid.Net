@@ -35,11 +35,11 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task TestSubscriptions()
         {
-            await RunAndCheckUpdate<HyperLiquidUserUpdate>((client, updateHandler) => client.SpotApi.SubscribeToUserUpdatesAsync(default , updateHandler, default), false, true);
-            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
+            await RunAndCheckUpdate<HyperLiquidUserUpdate>((client, updateHandler) => client.SpotApi.Account.SubscribeToUserUpdatesAsync(default, updateHandler, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
 
-            await RunAndCheckUpdate<HyperLiquidUserTrade[]>((client, updateHandler) => client.FuturesApi.SubscribeToTwapTradeUpdatesAsync(default, updateHandler, default), false, true);
-            await RunAndCheckUpdate<HyperLiquidTwapHistoryStatus[]>((client, updateHandler) => client.FuturesApi.SubscribeToTwapOrderUpdatesAsync(default, updateHandler, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidUserTrade[]>((client, updateHandler) => client.FuturesApi.Trading.SubscribeToTwapTradeUpdatesAsync(default, updateHandler, default), false, true);
+            await RunAndCheckUpdate<HyperLiquidTwapHistoryStatus[]>((client, updateHandler) => client.FuturesApi.Trading.SubscribeToTwapOrderUpdatesAsync(default, updateHandler, default), false, true);
         } 
     }
 }
