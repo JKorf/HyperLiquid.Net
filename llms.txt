@@ -1,0 +1,41 @@
+# HyperLiquid.Net
+
+> Strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. Supports spot, perpetual futures, staking, vaults, HIP-3 DEX metadata, REST requests, WebSocket subscriptions, local order books, and CryptoExchange.Net SharedApis.
+
+HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, `WebCallResult<T>` / `CallResult<T>` result handling, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. Current version in this repository: 4.5.0. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
+
+## Documentation
+
+- [README](https://github.com/JKorf/HyperLiquid.Net/blob/main/README.md): Overview, installation, supported features, basic usage examples, release notes
+- [Documentation Site](https://cryptoexchange.jkorf.dev/HyperLiquid.Net/): Full documentation hub including client reference, WebSocket subscriptions, dependency injection, and shared interfaces
+- [AI API Quick Map](https://github.com/JKorf/HyperLiquid.Net/blob/main/docs/ai-api-map.md): Quick intent-to-method map for routing common user requests to the correct client member
+- [Full LLM Context](https://github.com/JKorf/HyperLiquid.Net/blob/main/llms-full.txt): Detailed AI/LLM guide with code patterns, endpoint map, common mistakes, and anti-hallucination rules
+
+## Examples
+
+- [AI-friendly examples directory](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples/ai-friendly): Compact, fully runnable examples optimized for AI assistants and quick onboarding
+- [Spot Quickstart](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/01-spot-quickstart.cs): Client setup, prices, spot ticker metadata, authenticated balances, spot order pattern
+- [Futures Trading](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/02-futures.cs): Perp metadata, leverage, futures account positions, market/reduce-only order pattern
+- [WebSocket Streams](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/03-websocket.cs): Spot ticker, futures ticker, order book, authenticated order stream, proper teardown
+- [Multi-Exchange Pattern](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/04-multi-exchange.cs): CryptoExchange.Net SharedApis for exchange-agnostic spot/futures ticker and socket code
+- [Error Handling](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/05-error-handling.cs): WebCallResult pattern, retry logic, symbol formatting, builder fee checks
+- [Full Examples Repository](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples): Console, API, order book, custom order book, and tracker examples
+
+## Critical Usage Rules
+
+- Use `HyperLiquidRestClient` and `HyperLiquidSocketClient`; do not generate raw HTTP calls.
+- Use `HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY")`, not generic `ApiCredentials`.
+- Spot symbols use slash notation such as `HYPE/USDC`; futures symbols use base asset notation such as `ETH`.
+- Check `.Success` before reading `.Data` on every REST or socket result.
+- Market orders still require a `price` argument in `PlaceOrderAsync`.
+- Use `reduceOnly: true` when closing futures exposure.
+- Store `UpdateSubscription` values and unsubscribe on shutdown.
+- Inspect `HyperLiquid.Net/Interfaces/Clients/**` before generating uncertain endpoint names.
+
+## Reference
+
+- [CryptoExchange.Net base library](https://github.com/JKorf/CryptoExchange.Net): Base abstractions used by HyperLiquid.Net and other exchange libraries
+- [CryptoClients.Net](https://github.com/JKorf/CryptoClients.Net): Bundle package providing unified access to all exchange libraries
+- [NuGet Package](https://www.nuget.org/packages/HyperLiquid.Net): Latest stable release on NuGet
+- [Changelog](https://github.com/JKorf/HyperLiquid.Net/blob/main/README.md#release-notes): Version history
+- [Discord Community](https://discord.gg/MSpeEtSY8t): Maintainer-supported Discord for questions and discussion

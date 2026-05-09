@@ -1,0 +1,102 @@
+---
+description: Conventions for using HyperLiquid.Net when working with the HyperLiquid DEX in C#/.NET. Apply when generating code that interacts with the HyperLiquid API.
+globs:
+  - "**/*.cs"
+  - "**/*.csproj"
+alwaysApply: false
+---
+
+# HyperLiquid.Net Conventions
+
+This codebase uses **HyperLiquid.Net** for HyperLiquid DEX access. Do not write raw `HttpClient` calls to HyperLiquid API endpoints.
+
+## Client setup pattern
+
+```csharp
+using HyperLiquid.Net;
+using HyperLiquid.Net.Clients;
+
+var restClient = new HyperLiquidRestClient(options =>
+{
+    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+});
+```
+
+For public market data, no credentials are needed: `new HyperLiquidRestClient()`.
+
+## Result pattern
+
+All REST methods return `WebCallResult<T>` or `WebCallResult`; WebSocket methods return `CallResult<T>` or `CallResult`. Always check `.Success` before reading `.Data`.
+
+```csharp
+var prices = await restClient.SpotApi.ExchangeData.GetPricesAsync();
+if (!prices.Success) { Console.WriteLine(prices.Error); return; }
+Console.WriteLine(prices.Data["HYPE/USDC"]);
+```
+
+## API surface
+
+- `restClient.SpotApi.{ExchangeData|Account|Trading|SharedClient}`
+- `restClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
+- `socketClient.SpotApi.{ExchangeData|Account|Trading|SharedClient}`
+- `socketClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
+
+## Symbols
+
+Spot symbols use slash notation, for example `HYPE/USDC`. Futures/perp symbols use the base asset only, for example `ETH`.
+
+## Trading pattern
+
+```csharp
+var order = await restClient.FuturesApi.Trading.PlaceOrderAsync(
+    "ETH",
+    OrderSide.Buy,
+    OrderType.Limit,
+    quantity: 0.01m,
+    price: 3000m,
+    timeInForce: TimeInForce.GoodTillCanceled);
+```
+
+Market orders still require a price parameter for slippage calculation. Use `reduceOnly: true` when closing futures exposure.
+
+## WebSocket pattern
+
+```csharp
+var socketClient = new HyperLiquidSocketClient();
+var sub = await socketClient.FuturesApi.ExchangeData.SubscribeToSymbolUpdatesAsync(
+    "ETH",
+    update => Console.WriteLine(update.Data.MidPrice));
+if (!sub.Success) { Console.WriteLine(sub.Error); return; }
+
+await socketClient.UnsubscribeAsync(sub.Data);
+```
+
+## Multi-exchange code
+
+For exchange-agnostic code, use `CryptoExchange.Net.SharedApis`:
+
+```csharp
+using CryptoExchange.Net.SharedApis;
+
+var shared = new HyperLiquidRestClient().SpotApi.SharedClient;
+var ticker = await shared.GetSpotTickerAsync(
+    new GetTickerRequest(new SharedSymbol(TradingMode.Spot, "HYPE", "USDC")));
+```
+
+## Hard rules
+
+- Never write raw HTTP to HyperLiquid endpoints.
+- Never use generic `ApiCredentials`; use `HyperLiquidCredentials`.
+- Never use concatenated spot symbols such as `HYPEUSDC`.
+- Never skip checking `WebCallResult.Success` or `CallResult.Success`.
+- Never use `.Result` or `.Wait()`.
+- Never instantiate clients per request.
+- Always unsubscribe WebSocket subscriptions on shutdown.
+- Always inspect `HyperLiquid.Net/Interfaces/Clients/**` before using an uncertain method name.
+
+## Reference
+
+- Skill: `CLAUDE.md` in the repo root has fuller examples.
+- LLM indexes: `llms.txt` and `llms-full.txt`.
+- API map: `docs/ai-api-map.md`.
+- Examples: `Examples/ai-friendly/`.
