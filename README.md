@@ -102,7 +102,7 @@ HyperLiquid.Net includes AI-oriented documentation and examples for code generat
 
 |File|Purpose|
 |--|--|
-|[`CLAUDE.md`](CLAUDE.md)|Assistant skill with core HyperLiquid.Net patterns, pitfalls, and examples|
+|[`AGENTS.md`](AGENTS.md)|Assistant skill with core HyperLiquid.Net patterns, pitfalls, and examples|
 |[`llms.txt`](llms.txt)|Short LLM index with links to docs, examples, and critical usage rules|
 |[`llms-full.txt`](llms-full.txt)|Detailed LLM context with endpoint routing, code patterns, and anti-hallucination checks|
 |[`docs/ai-api-map.md`](docs/ai-api-map.md)|Table-style intent-to-method map for Spot, Futures, WebSocket, and SharedApis|
