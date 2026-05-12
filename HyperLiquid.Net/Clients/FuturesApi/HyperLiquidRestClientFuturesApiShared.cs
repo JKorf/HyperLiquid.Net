@@ -43,7 +43,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result)
                 return result.AsExchangeResult<SharedBalance[]>(Exchange, null, default);
 
-            return result.AsExchangeResult<SharedBalance[]>(Exchange, SupportedTradingModes, [new SharedBalance("USDC", result.Data.Withdrawable, result.Data.Withdrawable + result.Data.MarginSummary.TotalMarginUsed + result.Data.CrossMarginSummary.TotalMarginUsed)]);
+            return result.AsExchangeResult<SharedBalance[]>(Exchange, SupportedTradingModes, [
+                new SharedBalance(
+                    "USDC",
+                    result.Data.MarginSummary.AccountValue - result.Data.MarginSummary.TotalMarginUsed,
+                    result.Data.MarginSummary.AccountValue)
+                ]);
         }
 
         #endregion

@@ -255,7 +255,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var result = await Account.SubscribeToUserUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedBalance[]>([new SharedBalance("USDC", update.Data.FuturesInfo.Withdrawable, update.Data.FuturesInfo.Withdrawable + update.Data.FuturesInfo.MarginSummary.TotalMarginUsed + update.Data.FuturesInfo.CrossMarginSummary.TotalMarginUsed)])),
+                update => handler(update.ToType<SharedBalance[]>([
+                    new SharedBalance(
+                        "USDC",
+                        update.Data.FuturesInfo.MarginSummary.AccountValue - update.Data.FuturesInfo.MarginSummary.TotalMarginUsed,
+                        update.Data.FuturesInfo.MarginSummary.AccountValue
+                        )])),
                 ct: ct).ConfigureAwait(false);
 
             return new ExchangeResult<UpdateSubscription>(Exchange, result);
