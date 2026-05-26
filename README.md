@@ -207,6 +207,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.6.0 - 26 May 2026
+    * Updated CryptoExchange.Net to version 11.2.0
+
 * Version 4.5.1 - 12 May 2026
     * Fixed incorrect Shared interfaces balance calculation
 
