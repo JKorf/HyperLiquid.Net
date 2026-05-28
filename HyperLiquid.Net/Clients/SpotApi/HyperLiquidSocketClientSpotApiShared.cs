@@ -30,7 +30,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
             var result = await ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, update => 
-            handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3))
+            handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
             {
                 QuoteVolume = update.Data.QuoteVolume
             })), ct).ConfigureAwait(false);
