@@ -1,4 +1,7 @@
+using CryptoExchange.Net;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -30,10 +33,23 @@ namespace HyperLiquid.Net.Objects.Models
             {
                 if (_symbols == null)
                 {
-                    _symbols = SymbolsInt.Select(x => {
-                        var baseAsset = Assets.ElementAt(x.BaseAssetIndex);
-                        var quoteAsset = Assets.ElementAt(x.QuoteAssetIndex);
-                        return new HyperLiquidSymbol
+                    // Build a dictionary of assets by index for quick lookup
+                    var assetsByIndex = new Dictionary<int, HyperLiquidAsset>(Assets.Length);
+                    foreach (var asset in Assets)
+                        assetsByIndex[asset.Index] = asset;
+
+                    var symbols = new List<HyperLiquidSymbol>(SymbolsInt.Length);
+                    foreach (var x in SymbolsInt)
+                    {
+                        if (!assetsByIndex.TryGetValue(x.BaseAssetIndex, out var baseAsset)
+                            || !assetsByIndex.TryGetValue(x.QuoteAssetIndex, out var quoteAsset))
+                        {
+                            LibraryHelpers.StaticLogger?.Log(LogLevel.Warning, "Failed to find assets {BaseAssetIndex}, {QuoteAssetIndex} for symbol {SymbolIndex}",
+                                x.BaseAssetIndex, x.QuoteAssetIndex, x.Index);
+                            continue;
+                        }
+
+                        symbols.Add(new HyperLiquidSymbol
                         {
                             Index = x.Index,
                             IsCanonical = x.IsCanonical,
@@ -41,9 +57,10 @@ namespace HyperLiquid.Net.Objects.Models
                             ExchangeName = x.Name,
                             BaseAsset = baseAsset,
                             QuoteAsset = quoteAsset,
-                        };
-                        }
-                    ).ToArray();
+                        });
+                    }
+
+                    _symbols = symbols.ToArray();
                 }
 
                 return _symbols;
