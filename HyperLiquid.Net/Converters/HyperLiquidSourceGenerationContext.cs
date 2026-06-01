@@ -1,4 +1,5 @@
 using CryptoExchange.Net.Objects;
+using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Objects.Internal;
 using HyperLiquid.Net.Objects.Models;
 using System;
@@ -7,6 +8,12 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+    [JsonSerializable(typeof(UserAbstractionState))]
+    [JsonSerializable(typeof(HyperLiquidSettledOutcome))]
+    [JsonSerializable(typeof(HyperLiquidQuestionsAndOutcomesInfo))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidSocketResponse<HyperLiquidSettledOutcome>>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidSocketResponse<HyperLiquidQuestionsAndOutcomesInfo>>))]
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOutcomeUpdate[]>))]
 
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidOpenOrderUpdate>))]
     [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidPositionUpdate>))]

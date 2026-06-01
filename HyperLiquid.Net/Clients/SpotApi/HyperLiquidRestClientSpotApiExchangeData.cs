@@ -78,5 +78,37 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
+        #region Get Outcomes Info
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "outcomeMeta" }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidQuestionsAndOutcomesInfo>(request, parameters, ct).ConfigureAwait(false);
+            return result;
+        }
+
+        #endregion
+
+        #region Get Settled Outcome
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection()
+            {
+                { "type", "settledOutcome" },
+                { "outcome", outcomeId }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var result = await _baseClient.SendAsync<HyperLiquidSettledOutcome>(request, parameters, ct).ConfigureAwait(false);
+            return result;
+        }
+
+        #endregion
     }
 }

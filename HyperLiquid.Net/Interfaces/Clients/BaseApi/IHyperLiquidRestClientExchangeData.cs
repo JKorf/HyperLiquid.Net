@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Enums;
+using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Utils;
 
 namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
 {
@@ -14,7 +16,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
     public interface IHyperLiquidRestClientExchangeData
     {
         /// <summary>
-        /// Get mid prices for all assets, includes both Spot and Futures symbols
+        /// Get mid prices for all assets, includes both Spot, Futures and Outcomes symbols. <br />
+        /// Names starting with '@' failed to map to a live symbol, potentially due to delisting. <br />
+        /// Names starting with '#' are  HIP-4 outcomes, details can be retrieved with <see cref="HyperLiquidUtils.GetOutcomeInfoAsync(Net.Clients.HyperLiquidRestClient, string)" /> or <see cref="IHyperLiquidRestClientSpotApiExchangeData.GetQuestionsAndOutcomesInfoAsync(CancellationToken)"/>.
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-mids-for-all-actively-traded-coins" /><br />

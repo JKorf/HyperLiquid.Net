@@ -21,13 +21,16 @@ namespace HyperLiquid.Net.Utils
     /// </summary>
     public static class HyperLiquidUtils
     {
+        private static Dictionary<string, HyperLiquidQuestionsAndOutcomesInfo> _outcomesInfo = new Dictionary<string, HyperLiquidQuestionsAndOutcomesInfo>();
         private static Dictionary<string, HyperLiquidAsset[]> _spotAssetInfo = new Dictionary<string, HyperLiquidAsset[]>();
         private static Dictionary<string, HyperLiquidSymbol[]> _spotSymbolInfo = new Dictionary<string, HyperLiquidSymbol[]>();
         private static Dictionary<string, HyperLiquidFuturesDexInfo[]> _futuresSymbolInfo = new Dictionary<string, HyperLiquidFuturesDexInfo[]>();
 
+        private static Dictionary<string, DateTime> _lastOutcomesUpdateTime = new Dictionary<string, DateTime>();
         private static Dictionary<string, DateTime> _lastSpotUpdateTime = new Dictionary<string, DateTime>();
         private static Dictionary<string, DateTime> _lastFuturesUpdateTime = new Dictionary<string, DateTime>();
 
+        private static readonly SemaphoreSlim _semaphoreOutcomes = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreSpot = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreFutures = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreBuilderFee = new SemaphoreSlim(1, 1);
@@ -221,6 +224,53 @@ namespace HyperLiquid.Net.Utils
             finally
             {
                 _semaphoreSpot.Release();
+            }
+        }
+
+        /// <summary>
+        /// Update the internal spot symbol info
+        /// </summary>
+        public static async Task<CallResult> UpdateOutcomeInfoAsync(HyperLiquidRestClient client)
+        {
+            var envName = client.ClientOptions.Environment.Name;
+            if (envName.Equals("UnitTest", StringComparison.Ordinal))
+                return CallResult.SuccessResult;
+
+            return await UpdateOutcomeInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        ///// <summary>
+        ///// Update the internal spot symbol info
+        ///// </summary>
+        //public static async Task<CallResult> UpdateOutcomeInfoAsync(HyperLiquidSocketClient client)
+        //{
+        //    var envName = client.ClientOptions.Environment.Name;
+        //    if (envName.Equals("UnitTest", StringComparison.Ordinal))
+        //        return CallResult.SuccessResult;
+
+        //    return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        //}
+
+        private static async Task<CallResult> UpdateOutcomeInfoAsync(string envName, Func<Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>>> infoCall)
+        {
+            await _semaphoreOutcomes.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                _lastOutcomesUpdateTime.TryGetValue(envName, out var lastUpdateTime);
+                if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
+                    return CallResult.SuccessResult;
+
+                var infoResult = await infoCall().ConfigureAwait(false);
+                if (!infoResult)
+                    return infoResult.AsDataless();
+
+                _outcomesInfo[envName] = infoResult.Data;
+                _lastOutcomesUpdateTime[envName] = DateTime.UtcNow;
+                return CallResult.SuccessResult;
+            }
+            finally
+            {
+                _semaphoreOutcomes.Release();
             }
         }
 
@@ -512,6 +562,61 @@ namespace HyperLiquid.Net.Utils
 
             return new CallResult<string>(assetInfo.Name + ":" + assetInfo.AssetId);
         }
+
+        /// <summary>
+        /// Get outcome and side info for an encoded outcome id
+        /// </summary>
+        public static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(IHyperLiquidRestClient client, string outcomeId)
+            => await GetOutcomeInfoAsync((HyperLiquidRestClient)client, outcomeId).ConfigureAwait(false);
+
+        /// <summary>
+        /// Get outcome and side info for an encoded outcome id
+        /// </summary>
+        public static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(HyperLiquidRestClient client, string outcomeId)
+        {
+            var envName = client.ClientOptions.Environment.Name;
+            if (envName.Equals("UnitTest", StringComparison.Ordinal))
+                return new CallResult<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel { OutcomeInfo = new HyperLiquidOutcomeInfo { }, Side = { } });
+
+            return await GetOutcomeInfoAsync(envName, outcomeId, () => UpdateOutcomeInfoAsync(client)).ConfigureAwait(false);
+        }
+
+        //public static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(HyperLiquidSocketClient client, string outcomeId)
+        //{
+        //    var envName = client.ClientOptions.Environment.Name;
+        //    if (envName.Equals("UnitTest", StringComparison.Ordinal))
+        //        return new CallResult<HyperLiquidOutcomeSideModel>("HYPE");
+
+        //    return await GetOutcomeInfoAsync(envName, outcomeId, () => UpdateOutcomeInfoAsync(client)).ConfigureAwait(false);
+        //}
+
+        private static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(string envName, string outcomeId, Func<Task<CallResult>> outcomeInfoUpdate)
+        {
+            var update = await outcomeInfoUpdate().ConfigureAwait(false);
+            if (!update)
+                return new CallResult<HyperLiquidOutcomeSideModel>(update.Error!);
+
+            if (!outcomeId.StartsWith("#") && !outcomeId.StartsWith("#"))
+                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Invalid outcome id, should start with '#' (coin) or '+' (token name)" }));
+
+            var sideId = int.Parse(outcomeId[outcomeId.Length - 1].ToString());
+            var parsedOutcomeId = (long.Parse(outcomeId.Substring(1)) - sideId) / 10;
+            var outcomeInfo = _outcomesInfo[envName].Outcomes.SingleOrDefault(x => x.Id == parsedOutcomeId);
+            if (outcomeInfo == null)
+                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Outcome not found" }));
+
+            var sideInfo = outcomeInfo.Specs[sideId];
+            if (sideId >= outcomeInfo.Specs.Length || sideInfo == null)
+                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Side not found" }));
+
+            return new CallResult<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel
+            {
+                OutcomeInfo = outcomeInfo!,
+                Side = sideInfo!
+            });
+        }
+
+
 
         internal static bool ExchangeSymbolIsSpotSymbol(string symbol)
         {

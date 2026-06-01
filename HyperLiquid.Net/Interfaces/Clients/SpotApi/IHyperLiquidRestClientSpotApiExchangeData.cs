@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
 using HyperLiquid.Net.Objects.Models;
+using HyperLiquid.Net.Utils;
 
 namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
 {
@@ -25,7 +26,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         Task<WebCallResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default);
 
         /// <summary>
-        /// Get exchange and ticker info
+        /// Get exchange and ticker info. For tickers:
+        /// Names starting with '@' failed to map to a live symbol, potentially due to delisting. <br />
+        /// Names starting with '#' are HIP-4 outcomes, details can be retrieved with <see cref="HyperLiquidUtils.GetOutcomeInfoAsync(Net.Clients.HyperLiquidRestClient, string)" /> or <see cref="IHyperLiquidRestClientSpotApiExchangeData.GetQuestionsAndOutcomesInfoAsync(CancellationToken)"/>.
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-spot-asset-contexts" /><br />
@@ -48,5 +51,30 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="assetId">["<c>tokenId</c>"] The asset id</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get HIP-4 questions and outcomes info
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-outcome-metadata" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: outcomeMeta)
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get HIP-4 settled outcome info
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-information-about-a-settled-outcome" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: settledOutcome)
+        /// </para>
+        /// </summary>
+        /// <param name="outcomeId">The outcome id</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
     }
 }

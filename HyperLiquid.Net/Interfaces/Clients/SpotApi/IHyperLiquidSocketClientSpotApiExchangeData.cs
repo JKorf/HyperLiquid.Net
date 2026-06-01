@@ -51,6 +51,32 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="ct">Cancellation token</param>
         Task<CallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
 
+
+        /// <summary>
+        /// Get HIP-4 questions and outcomes info
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-outcome-metadata" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: outcomeMeta)
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get HIP-4 settled outcome info
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-information-about-a-settled-outcome" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: settledOutcome)
+        /// </para>
+        /// </summary>
+        /// <param name="outcomeId">The outcome id</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<CallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
+
         /// <summary>
         /// Subscribe to spot symbol updates
         /// <para>
@@ -65,5 +91,21 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
         Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to HIP-4 outcome updates 
+        /// </summary>
+        /// <param name="onOutcomeCreateUpdate">Outcome created data handler</param>
+        /// <param name="onOutcomeSettleUpdate">Outcome settled data handler</param>
+        /// <param name="onQuestionUpdate">Question updated data handler</param>
+        /// <param name="onQuestionSettleUpdate">Question settled data handler</param>
+        /// <param name="ct">Cancellation token for closing this subscription</param>
+        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToOutcomeInfoUpdatesAsync(
+            Action<DataEvent<long>>? onOutcomeCreateUpdate = null,
+            Action<DataEvent<HyperLiquidOutcomeInfo>>? onOutcomeSettleUpdate = null,
+            Action<DataEvent<HyperLiquidQuestion>>? onQuestionUpdate = null,
+            Action<DataEvent<long>>? onQuestionSettleUpdate = null,
+            CancellationToken ct = default);
     }
 }
