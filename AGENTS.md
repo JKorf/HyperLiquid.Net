@@ -1,6 +1,6 @@
 ---
 name: hyperliquid-net
-description: Use HyperLiquid.Net when generating C#/.NET code that interacts with the HyperLiquid DEX REST or WebSocket API, including spot, perpetual futures, account state, staking, vault, HIP-3 DEX, market data, order placement, or CryptoExchange.Net SharedApis. Triggers on requests mentioning HyperLiquid integration in C#, .NET, dotnet, F#, or VB.NET context.
+description: Use HyperLiquid.Net when generating C#/.NET code that interacts with the HyperLiquid DEX REST or WebSocket API, including spot, perpetual futures, account state, staking, vault, HIP-3 DEX, HIP-4 outcomes, market data, order placement, or CryptoExchange.Net SharedApis. Triggers on requests mentioning HyperLiquid integration in C#, .NET, dotnet, F#, or VB.NET context.
 ---
 
 # HyperLiquid.Net Skill
@@ -55,7 +55,7 @@ var hypePrice = prices.Data["HYPE/USDC"];
 ## Core Pattern: API Surface
 
 ```csharp
-restClient.SpotApi.ExchangeData       // spot metadata, tickers, prices, order book, klines
+restClient.SpotApi.ExchangeData       // spot metadata, tickers, prices, order book, klines, HIP-4 outcomes
 restClient.SpotApi.Account            // spot balances, transfers, staking, ledger, fee info
 restClient.SpotApi.Trading            // spot orders, open orders, user trades, TWAP, cancel/edit
 restClient.SpotApi.SharedClient       // shared spot REST interfaces
@@ -228,6 +228,7 @@ Trading clients may need builder fee approval. Use `GetApprovedBuilderFeeAsync()
 ## When the User Wants Other HyperLiquid Features
 
 - Spot balances: `restClient.SpotApi.Account.GetBalancesAsync()`
+- User abstraction state: `restClient.SpotApi.Account.GetUserAbstractionStateAsync()` or `restClient.FuturesApi.Account.GetUserAbstractionStateAsync()`
 - Futures account and positions: `restClient.FuturesApi.Account.GetAccountInfoAsync()`
 - Mid prices: `restClient.SpotApi.ExchangeData.GetPricesAsync()` or `restClient.FuturesApi.ExchangeData.GetPricesAsync()`
 - Order book: `ExchangeData.GetOrderBookAsync(symbol)`
@@ -239,6 +240,7 @@ Trading clients may need builder fee approval. Use `GetApprovedBuilderFeeAsync()
 - Staking: `Account.GetStaking*`, `DepositIntoStakingAsync`, `WithdrawFromStakingAsync`, `DelegateOrUndelegateStakeFromValidatorAsync`
 - Vaults: `Account.DepositOrWithdrawFromVaultAsync(...)`
 - HIP-3 DEX: `FuturesApi.ExchangeData.GetPerpDexesAsync()`, `GetExchangeInfoAllDexesAsync()`, `FuturesApi.Account.GetHip3DexAbstractionAsync()`
+- HIP-4 outcomes: `SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, `socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)`
 
 ## Reference
 

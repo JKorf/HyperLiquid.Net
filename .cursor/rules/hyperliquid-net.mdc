@@ -1,5 +1,5 @@
 ---
-description: Conventions for using HyperLiquid.Net when working with the HyperLiquid DEX in C#/.NET. Apply when generating code that interacts with the HyperLiquid API.
+description: Conventions for using HyperLiquid.Net when working with the HyperLiquid DEX in C#/.NET, including spot, futures, account, HIP-3 DEX, and HIP-4 outcome APIs. Apply when generating code that interacts with the HyperLiquid API.
 globs:
   - "**/*.cs"
   - "**/*.csproj"
@@ -40,6 +40,8 @@ Console.WriteLine(prices.Data["HYPE/USDC"]);
 - `restClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
 - `socketClient.SpotApi.{ExchangeData|Account|Trading|SharedClient}`
 - `socketClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
+
+Spot `ExchangeData` also includes HIP-4 outcome metadata via `GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, and `SubscribeToOutcomeInfoUpdatesAsync(...)`.
 
 ## Symbols
 

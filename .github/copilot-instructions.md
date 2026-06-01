@@ -28,7 +28,7 @@ Methods return `WebCallResult<T>` for REST or `CallResult<T>` for WebSocket. Alw
 
 ## API structure
 
-- `restClient.SpotApi.ExchangeData` - spot metadata, prices, order books, klines
+- `restClient.SpotApi.ExchangeData` - spot metadata, prices, order books, klines, HIP-4 outcomes
 - `restClient.SpotApi.Account` - spot balances, transfers, staking, ledger, fee info
 - `restClient.SpotApi.Trading` - spot order and trade endpoints
 - `restClient.FuturesApi.ExchangeData` - perp metadata, prices, funding, DEX info
@@ -36,6 +36,8 @@ Methods return `WebCallResult<T>` for REST or `CallResult<T>` for WebSocket. Alw
 - `restClient.FuturesApi.Trading` - futures order, leverage, margin endpoints
 - `socketClient.SpotApi.{Account|ExchangeData|Trading}` - spot WebSocket requests and subscriptions
 - `socketClient.FuturesApi.{Account|ExchangeData|Trading}` - futures WebSocket requests and subscriptions
+
+Use `SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, and `socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)` for HIP-4 outcome workflows.
 
 ## Symbols
 

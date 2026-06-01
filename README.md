@@ -208,6 +208,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.7.0 - 01 Jun 2026
+    * Added SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync endpoint
+    * Added SpotApi.ExchangeData.GetSettledOutcomeAsync endpoint
+    * Added SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync subscription
+    * Added HyperLiquidUtils.UpdateOutcomeInfoAsync and GetOutcomeInfoAsync methods
+    * Added Account.GetUserAbstractionStateAsync endpoint
+
 * Version 4.6.1 - 29 May 2026
     * Fixed exception when accessing restClient.SpotApi.ExchangeData.GetExchangeInfoAsync Symbols property
 

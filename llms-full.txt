@@ -4,8 +4,8 @@
 
 HyperLiquid.Net is a strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. It is part of the CryptoExchange.Net ecosystem and uses the same result, shared API, logging, rate limiting, dependency injection, and socket patterns as the other JKorf exchange libraries.
 
-Current package version in this repository: 4.5.0.
-CryptoExchange.Net dependency: 11.1.0.
+Current package version in this repository: 4.7.0.
+CryptoExchange.Net dependency: 11.2.0.
 Target frameworks: netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 Native AOT: supported on compatible .NET targets.
 
@@ -226,7 +226,11 @@ Common REST tasks:
 Get spot prices -> client.SpotApi.ExchangeData.GetPricesAsync()
 Get spot exchange info -> client.SpotApi.ExchangeData.GetExchangeInfoAsync()
 Get spot exchange info and tickers -> client.SpotApi.ExchangeData.GetExchangeInfoAndTickersAsync()
+Get HIP-4 questions and outcomes -> client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()
+Get HIP-4 settled outcome -> client.SpotApi.ExchangeData.GetSettledOutcomeAsync(outcomeId)
+Resolve HIP-4 encoded outcome side -> HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)
 Get spot balances -> client.SpotApi.Account.GetBalancesAsync()
+Get user abstraction state -> client.SpotApi.Account.GetUserAbstractionStateAsync() or client.FuturesApi.Account.GetUserAbstractionStateAsync()
 Place spot order -> client.SpotApi.Trading.PlaceOrderAsync(...)
 Get open spot orders -> client.SpotApi.Trading.GetOpenOrdersAsync()
 Cancel spot order -> client.SpotApi.Trading.CancelOrderAsync(symbol, orderId)
@@ -246,6 +250,7 @@ Common WebSocket tasks:
 
 ```text
 Subscribe spot ticker -> socketClient.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, handler)
+Subscribe HIP-4 outcome info updates -> socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)
 Subscribe spot balances -> socketClient.SpotApi.Account.SubscribeToBalanceUpdatesAsync(address, handler)
 Subscribe spot/futures order updates -> socketClient.SpotApi.Trading.SubscribeToOrderUpdatesAsync(address, handler)
 Subscribe futures ticker -> socketClient.FuturesApi.ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, handler)
