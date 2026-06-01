@@ -512,7 +512,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
         #endregion
 
-        #region Get Staking History
+        #region Get Staking Rewards
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default)
         {

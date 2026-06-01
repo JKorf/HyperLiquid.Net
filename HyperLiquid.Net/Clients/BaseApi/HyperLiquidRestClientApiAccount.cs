@@ -488,7 +488,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
         #endregion
 
-        #region Get Staking History
+        #region Get Staking Rewards
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default)
         {
@@ -505,6 +505,26 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidStakingReward[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Get User Abstraction State
+        /// <inheritdoc />
+        public async Task<WebCallResult<UserAbstractionState>> GetUserAbstractionStateAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+
+            var parameters = new ParameterCollection()
+            {
+                { "type", "userAbstraction" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<UserAbstractionState>(request, parameters, ct).ConfigureAwait(false);
         }
         #endregion
     }

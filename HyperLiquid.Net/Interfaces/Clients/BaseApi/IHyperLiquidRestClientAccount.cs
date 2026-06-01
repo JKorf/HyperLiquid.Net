@@ -285,5 +285,18 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<WebCallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get the user's abstraction status
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-abstraction-state" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: userAbstraction)
+        /// </para>
+        /// </summary>
+        /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult<UserAbstractionState>> GetUserAbstractionStateAsync(string? address = null, CancellationToken ct = default);
     }
 }
