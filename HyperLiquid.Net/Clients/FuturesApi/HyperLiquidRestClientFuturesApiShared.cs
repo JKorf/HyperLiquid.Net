@@ -91,8 +91,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var result = await ExchangeData.GetKlinesAsync(
                 symbol,
                 interval,
-                startTime: pageParams.StartTime!.Value,
-                endTime: pageParams.EndTime!.Value,
+                startTime: pageParams.StartTime ?? DateTime.UtcNow.Add(TimeSpan.FromSeconds(-((int)interval * 99))),
+                endTime: pageParams.EndTime ?? DateTime.UtcNow,
                 ct: ct
                 ).ConfigureAwait(false);
             if (!result)
