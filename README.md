@@ -208,6 +208,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.7.1 - 02 Jun 2026
+    * Fixed Shared GetKlinesAsync implementations throwing exception if no startTime provided
+    * Fixed user client provider not caching new client when previous client was disposed
+
 * Version 4.7.0 - 01 Jun 2026
     * Added SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync endpoint
     * Added SpotApi.ExchangeData.GetSettledOutcomeAsync endpoint
