@@ -18,6 +18,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientApiTrading : IHyperLiquidRestClientTrading
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientApi _baseClient;
         private readonly ILogger _logger;
@@ -319,11 +324,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null, 
 			string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            IDictionary<string, object>? rawParameters = null,
             CancellationToken ct = default)
         {
             var result = await PlaceMultipleOrdersAsync([
                 new HyperLiquidOrderRequest(symbol, side, orderType, quantity, price, timeInForce, reduceOnly, triggerPrice: triggerPrice, tpSlType: tpSlType, clientOrderId: clientOrderId)
-                ], tpSlGrouping, vaultAddress, expiresAfter, ct).ConfigureAwait(false);
+                ], tpSlGrouping, vaultAddress, expiresAfter, rawParameters, ct).ConfigureAwait(false);
 
             if (!result)
                 return result.As<HyperLiquidOrderResult>(default);
@@ -345,6 +351,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
 			string? vaultAddress = null,
             DateTime? expireAfter = null,
+            IDictionary<string, object>? rawParameters = null,
             CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
@@ -441,15 +448,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
-            {
-                { "action", actionParameters }
-            };
-            
+            var parameters = new Parameters(_parameterSerializationSettings);
+            parameters.AddRaw("action", actionParameters);
+
             if (vaultAddress != null)
                 parameters.Add("vaultAddress", vaultAddress);
 
             _baseClient.AddExpiresAfter(parameters, expireAfter);
+
+            parameters.ApplyRawParameters(rawParameters);
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);

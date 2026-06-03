@@ -51,23 +51,23 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override HyperLiquidAuthenticationProvider CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
-        internal Task<WebCallResult> SendAsync(RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal Task<WebCallResult> SendAsync(RequestDefinition definition, IParameters? parameters, CancellationToken cancellationToken, int? weight = null)
             => SendToAddressAsync(BaseAddress, definition, parameters, cancellationToken, weight);
 
-        internal async Task<WebCallResult> SendToAddressAsync(string baseAddress, RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<WebCallResult> SendToAddressAsync(string baseAddress, RequestDefinition definition, IParameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
             return await base.SendAsync(baseAddress, definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
         }
 
-        internal Task<WebCallResult<T>> SendAsync<T>(RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal Task<WebCallResult<T>> SendAsync<T>(RequestDefinition definition, IParameters? parameters, CancellationToken cancellationToken, int? weight = null)
             => SendToAddressAsync<T>(BaseAddress, definition, parameters, cancellationToken, weight);
 
-        internal async Task<WebCallResult<T>> SendToAddressAsync<T>(string baseAddress, RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<WebCallResult<T>> SendToAddressAsync<T>(string baseAddress, RequestDefinition definition, IParameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
             return await base.SendAsync<T>(baseAddress, definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
         }
 
-        internal async Task<WebCallResult<T>> SendAuthAsync<T>(RequestDefinition definition, ParameterCollection? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<WebCallResult<T>> SendAuthAsync<T>(RequestDefinition definition, IParameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
             var result = await SendToAddressAsync<HyperLiquidResponse<T>>(BaseAddress, definition, parameters, cancellationToken, weight).ConfigureAwait(false);
             if (!result)
@@ -79,12 +79,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
             return result.As(result.Data.Data!.Data);
         }
 
-        internal void AddExpiresAfter(ParameterCollection parameters, DateTime? requestExpiresAfter)
+        internal void AddExpiresAfter(IParameters parameters, DateTime? requestExpiresAfter)
         {
             if (requestExpiresAfter != null)
-                parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(requestExpiresAfter));
+                parameters.Dictionary.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(requestExpiresAfter));
             else if (ClientOptions.ExpiresAfter != null)
-                parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
+                parameters.Dictionary.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(DateTime.UtcNow + ClientOptions.ExpiresAfter));
         }
 
         /// <inheritdoc />

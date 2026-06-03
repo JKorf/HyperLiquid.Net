@@ -202,6 +202,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            IDictionary<string, object>? rawParameter = null,
             CancellationToken ct = default
             );
 
@@ -224,6 +225,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            IDictionary<string, object>? rawParameters = null,
             CancellationToken ct = default);
 
         /// <summary>

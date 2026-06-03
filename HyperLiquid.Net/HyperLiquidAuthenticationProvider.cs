@@ -51,17 +51,17 @@ namespace HyperLiquid.Net
             if (!request.Authenticated)
                 return;
 
-            var action = (Dictionary<string, object>)request.BodyParameters!["action"];
+            var action = (IDictionary<string, object>)request.BodyParameters!.Dictionary["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
-            request.BodyParameters!.Add("nonce", nonce);
+            request.BodyParameters!.Dictionary.Add("nonce", nonce);
 
             var signature = GenerateSignature(
                 ((HyperLiquidRestOptions)apiClient.ClientOptions).Environment,
                 action,
                 nonce,
-                request.BodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
-                request.BodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
-            request.BodyParameters["signature"] = signature;
+                request.BodyParameters.Dictionary.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
+                request.BodyParameters.Dictionary.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
+            request.BodyParameters.Dictionary["signature"] = signature;
         }
 
         public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
@@ -79,7 +79,7 @@ namespace HyperLiquid.Net
             request["signature"] = signature;
         }
 
-        private long GetNonce(Dictionary<string, object> actionParameters, Func<long> getTimestamp)
+        private long GetNonce(IDictionary<string, object> actionParameters, Func<long> getTimestamp)
         {
             if (actionParameters.TryGetValue("time", out var time))
                 return (long)time;
@@ -101,7 +101,7 @@ namespace HyperLiquid.Net
 
         internal Dictionary<string, object> GenerateSignature(
             HyperLiquidEnvironment environment,
-            Dictionary<string, object> action,
+            IDictionary<string, object> action,
             long nonce,
             string? vaultAddress,
             long? expiresAfter)
