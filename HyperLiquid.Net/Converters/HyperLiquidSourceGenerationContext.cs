@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+    [JsonSerializable(typeof(Parameters))]
+    [JsonSerializable(typeof(List<Parameters>))]
     [JsonSerializable(typeof(UserAbstractionState))]
     [JsonSerializable(typeof(HyperLiquidSettledOutcome))]
     [JsonSerializable(typeof(HyperLiquidQuestionsAndOutcomesInfo))]
@@ -68,7 +70,6 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidUserAgent[]))]
     [JsonSerializable(typeof(object[]))]
     [JsonSerializable(typeof(Dictionary<string, decimal>))]
-    [JsonSerializable(typeof(List<ParameterCollection>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidOrderResultIntWrapper>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidCancelResult>))]
     [JsonSerializable(typeof(HyperLiquidResponse<HyperLiquidTwapOrderResultIntWrapper>))]

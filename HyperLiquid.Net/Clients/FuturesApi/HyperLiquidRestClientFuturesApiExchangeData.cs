@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public async Task<WebCallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexs" }
             };
@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public async Task<WebCallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "allPerpMetas" }
             };
@@ -89,11 +89,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "meta" }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo>(request, parameters, ct).ConfigureAwait(false);
@@ -132,7 +132,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "metaAndAssetCtxs" }
             };
@@ -157,14 +157,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
         {
-            var innerParameters = new ParameterCollection();
-            var parameters = new ParameterCollection()
+            var innerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "fundingHistory" },
             };
             parameters.Add("coin", symbol);
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFundingRate[]>(request, parameters, ct).ConfigureAwait(false);
@@ -181,11 +181,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpsAtOpenInterestCap" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<string[]>(request, parameters, ct).ConfigureAwait(false);
         }
@@ -197,11 +197,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexLimits" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<HyperLiquidPerpDexLimit>(request, parameters, ct).ConfigureAwait(false);
         }
@@ -213,11 +213,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<WebCallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexStatus" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             return await _baseClient.SendAsync<HyperLiquidPerpDexStatus>(request, parameters, ct).ConfigureAwait(false);
         }

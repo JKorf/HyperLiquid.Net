@@ -42,19 +42,18 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 request,
                 async () =>
                 {
+                    string? dex = request.GetParamValue<string>(Exchange, "dex");
+                    var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
+                    if (!result)
+                        return SharedExecutionResult<SharedBalance[]>.Error(result);
 
-            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
-            var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
-            if (!result)
-                return SharedExecutionResult<SharedBalance[]>.Error(result);
-
-            return SharedExecutionResult<SharedBalance[]>.Ok(result, [
-                new SharedBalance(
-                    "USDC",
-                    result.Data.MarginSummary.AccountValue - result.Data.MarginSummary.TotalMarginUsed,
-                    result.Data.MarginSummary.AccountValue)
-                ]);
-                                });
+                    return SharedExecutionResult<SharedBalance[]>.Ok(result, [
+                        new SharedBalance(
+                            "USDC",
+                            result.Data.MarginSummary.AccountValue - result.Data.MarginSummary.TotalMarginUsed,
+                            result.Data.MarginSummary.AccountValue)
+                        ]);
+                });
         }
 
         #endregion
@@ -254,7 +253,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 async () =>
                 {
 
-            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            string? dex = ExchangeParameters.GetProcessValue<string>(request.ExchangeParameters, Exchange, "dex");
             var result = await ExchangeData.GetExchangeInfoAllDexesAsync(ct: ct).ConfigureAwait(false);
             if (!result)
                 return SharedExecutionResult<SharedFuturesSymbol[]>.Error(result);
@@ -410,7 +409,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 async () =>
                 {
 
-            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            string? dex = ExchangeParameters.GetProcessValue<string>(request.ExchangeParameters, Exchange, "dex");
             var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!result)
                 return SharedExecutionResult<SharedLeverage>.Error(result);
@@ -584,7 +583,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var symbol = request.Symbol?.GetSymbol(FormatSymbol);
 
             // Get dex from parameters or symbol (if symbol is in format DEX:SYMBOL)
-            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            string? dex = ExchangeParameters.GetProcessValue<string>(request.ExchangeParameters, Exchange, "dex");
             if (dex == null && symbol != null)
             {
                 var dexSeparatorIndex = symbol.IndexOf(':');
@@ -793,7 +792,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 async () =>
                 {
 
-            string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
+            string? dex = ExchangeParameters.GetProcessValue<string>(request.ExchangeParameters, Exchange, "dex");
             var result = await Account.GetAccountInfoAsync(dex: dex, ct: ct).ConfigureAwait(false);
             if (!result)
                 return SharedExecutionResult<SharedPosition[]>.Error(result);
@@ -842,7 +841,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 request.PositionSide == SharedPositionSide.Long ? Enums.OrderSide.Sell : Enums.OrderSide.Buy,
                 Enums.OrderType.Market,
                 quantity: request.Quantity!.Value,
-                price: ExchangeParameters.GetValue<decimal>(request.ExchangeParameters, ExchangeName, "Price"),
+                price: ExchangeParameters.GetProcessValue<decimal>(request.ExchangeParameters, ExchangeName, "Price"),
                 reduceOnly: true,
                 timeInForce: Enums.TimeInForce.ImmediateOrCancel,
                 ct: ct).ConfigureAwait(false);

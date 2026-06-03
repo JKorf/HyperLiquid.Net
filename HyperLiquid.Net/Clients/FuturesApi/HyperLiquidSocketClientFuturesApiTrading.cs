@@ -22,6 +22,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// </summary>
     internal partial class HyperLiquidSocketClientFuturesApiTrading : HyperLiquidSocketClientApiTrading, IHyperLiquidSocketClientFuturesApiTrading
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         #region constructor/destructor
 
         /// <summary>
@@ -51,8 +57,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateLeverage" },
                 { "asset", symbolId.Data }
@@ -88,8 +94,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateIsolatedMargin" },
                 { "asset", symbolId.Data },

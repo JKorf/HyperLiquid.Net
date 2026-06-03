@@ -2,6 +2,7 @@
 using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Sockets.Default;
@@ -51,22 +52,22 @@ namespace HyperLiquid.Net
             if (!request.Authenticated)
                 return;
 
-            var action = (IDictionary<string, object>)request.BodyParameters!.Dictionary["action"];
+            var action = (Parameters)request.BodyParameters!["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
-            request.BodyParameters!.Dictionary.Add("nonce", nonce);
+            request.BodyParameters!.Add("nonce", nonce);
 
             var signature = GenerateSignature(
                 ((HyperLiquidRestOptions)apiClient.ClientOptions).Environment,
                 action,
                 nonce,
-                request.BodyParameters.Dictionary.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
-                request.BodyParameters.Dictionary.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
-            request.BodyParameters.Dictionary["signature"] = signature;
+                request.BodyParameters.TryGetValue("vaultAddress", out var vaultAddressObj) ? (string)vaultAddressObj : null,
+                request.BodyParameters.TryGetValue("expiresAfter", out var expiresAfterObj) ? (long)expiresAfterObj : null);
+            request.BodyParameters["signature"] = signature;
         }
 
-        public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
+        public void ProcessRequest(SocketApiClient apiClient, Parameters request)
         {
-            var action = (Dictionary<string, object>)request["action"];
+            var action = (Parameters)request["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.Add("nonce", nonce);
 
@@ -79,7 +80,7 @@ namespace HyperLiquid.Net
             request["signature"] = signature;
         }
 
-        private long GetNonce(IDictionary<string, object> actionParameters, Func<long> getTimestamp)
+        private long GetNonce(Parameters actionParameters, Func<long> getTimestamp)
         {
             if (actionParameters.TryGetValue("time", out var time))
                 return (long)time;
@@ -101,7 +102,7 @@ namespace HyperLiquid.Net
 
         internal Dictionary<string, object> GenerateSignature(
             HyperLiquidEnvironment environment,
-            IDictionary<string, object> action,
+            Parameters action,
             long nonce,
             string? vaultAddress,
             long? expiresAfter)

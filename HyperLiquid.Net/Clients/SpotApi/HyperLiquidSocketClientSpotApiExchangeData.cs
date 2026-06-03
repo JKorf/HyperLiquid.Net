@@ -21,6 +21,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// </summary>
     internal partial class HyperLiquidSocketClientSpotApiExchangeData : HyperLiquidSocketClientApiExchangeData, IHyperLiquidSocketClientSpotApiExchangeData
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         #region constructor/destructor
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotMeta" }
             };
@@ -54,7 +60,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotMetaAndAssetCtxs" }
             };
@@ -81,7 +87,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "tokenDetails" },
                 { "tokenId", assetId }
@@ -98,7 +104,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "outcomeMeta" }
             };
@@ -113,7 +119,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "settledOutcome" },
                 { "outcome", outcomeId }

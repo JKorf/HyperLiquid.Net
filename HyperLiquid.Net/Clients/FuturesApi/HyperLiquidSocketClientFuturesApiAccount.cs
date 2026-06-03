@@ -21,6 +21,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// </summary>
     internal partial class HyperLiquidSocketClientFuturesApiAccount : HyperLiquidSocketClientApiAccount, IHyperLiquidSocketClientFuturesApiAccount
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         #region constructor/destructor
 
         /// <summary>
@@ -42,12 +48,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "clearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidFuturesAccount>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
@@ -64,13 +70,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFunding" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
             return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
@@ -87,7 +93,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "activeAssetData" },
                 { "coin", symbol },
@@ -109,7 +115,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "user", user ?? _baseClient.AuthenticationProvider!.Key }
@@ -130,8 +136,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -140,7 +146,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
 
             actionParameters.Add("enabled", enabled);
-            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
             var result = await _baseClient.QueryInternalAsync(

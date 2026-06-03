@@ -20,6 +20,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// </summary>
     internal partial class HyperLiquidSocketClientFuturesApiExchangeData : HyperLiquidSocketClientApiExchangeData, IHyperLiquidSocketClientFuturesApiExchangeData
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         #region constructor/destructor
 
         /// <summary>
@@ -34,7 +40,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexs" }
             };
@@ -46,7 +52,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public async Task<CallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "allPerpMetas" }
             };
@@ -98,11 +104,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "meta" }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidFuturesExchangeInfo>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -141,7 +147,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "metaAndAssetCtxs" }
             };
@@ -167,14 +173,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default)
         {
-            var innerParameters = new ParameterCollection();
-            var parameters = new ParameterCollection()
+            var innerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "fundingHistory" },
             };
             parameters.Add("coin", symbol);
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidFundingRate[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -191,11 +197,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpsAtOpenInterestCap" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<string[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }
@@ -207,11 +213,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexLimits" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
 
             return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidPerpDexLimit>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -224,11 +230,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <inheritdoc />
         public async Task<CallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "perpDexStatus" },
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidPerpDexStatus>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
         }

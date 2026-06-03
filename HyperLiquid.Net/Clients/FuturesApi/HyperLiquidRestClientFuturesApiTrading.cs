@@ -15,6 +15,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientFuturesApiTrading : HyperLiquidRestClientApiTrading, IHyperLiquidRestClientFuturesApiTrading
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientFuturesApi _baseClient;
         private readonly ILogger _logger;
@@ -42,8 +47,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateLeverage" },
                 { "asset", symbolId.Data }
@@ -79,8 +84,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateIsolatedMargin" },
                 { "asset", symbolId.Data },

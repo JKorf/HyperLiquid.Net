@@ -13,6 +13,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientSpotApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientSpotApiAccount
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly new HyperLiquidRestClientSpotApi _baseClient;
 
@@ -31,7 +36,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotClearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -58,8 +63,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -67,8 +72,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "destination", destinationAddress },
                 { "token", assetId.Data }
             };
-            actionParameters.AddString("amount", quantity);
-            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            actionParameters.Add("amount", quantity);
+            actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);

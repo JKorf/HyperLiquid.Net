@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Objects.Internal
         [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
         [JsonPropertyName("payload")]
-        public ParameterCollection Payload { get; set; } = default!;
+        public Parameters Payload { get; set; } = default!;
     }
 
     internal class HyperLiquidSubscribeRequest: HyperLiquidSocketRequest

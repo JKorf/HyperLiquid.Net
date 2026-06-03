@@ -13,6 +13,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientFuturesApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientFuturesApiAccount
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly new HyperLiquidRestClientFuturesApi _baseClient;
 
@@ -31,12 +36,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "clearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidFuturesAccount>(request, parameters, ct).ConfigureAwait(false);
         }
@@ -53,13 +58,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFunding" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
             var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>(request, parameters, ct).ConfigureAwait(false);
         }
@@ -76,7 +81,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "activeAssetData" },
                 { "coin", symbol },
@@ -98,7 +103,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "user", user ?? _baseClient.AuthenticationProvider!.Key }
@@ -119,8 +124,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -129,7 +134,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
 
             actionParameters.Add("enabled", enabled);
-            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
             var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, true);

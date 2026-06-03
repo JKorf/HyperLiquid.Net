@@ -82,7 +82,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         internal Task<CallResult<T>> QueryInternalAsync<T>(Query<T> query, CancellationToken ct)
             => base.QueryAsync<T>(BaseAddress.AppendPath("ws"), query, ct);
 
-        internal void AddExpiresAfter(ParameterCollection parameters, DateTime? requestExpiresAfter)
+        internal void AddExpiresAfter(Parameters parameters, DateTime? requestExpiresAfter)
         {
             if (requestExpiresAfter != null)
                 parameters.Add("expiresAfter", DateTimeConverter.ConvertToMilliseconds(requestExpiresAfter));

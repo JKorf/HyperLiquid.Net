@@ -336,7 +336,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         price: request.Price!.Value,
                         timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
                         clientOrderId: request.ClientOrderId,
-                        rawParameter: request.ExchangeParameters?.GetCollection(Exchange),
+                        rawParameter: request.ExchangeParameters?.GetRawParameters(Exchange),
                         ct: ct).ConfigureAwait(false);
 
                     if (!result)

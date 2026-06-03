@@ -66,9 +66,9 @@ namespace HyperLiquid.Net.UnitTests
                     return "Good";
                 },
                 "Good",
-                new Dictionary<string, object>
+                new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                 {
-                    { "action", new ParameterCollection
+                    { "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                         {
                             { "type", "order" },
                             { "orders", new [] {
@@ -82,7 +82,6 @@ namespace HyperLiquid.Net.UnitTests
                     },
                 },
                 DateTimeConverter.ParseFromDouble(1499827320559),
-                true,
                 false);
         }
 

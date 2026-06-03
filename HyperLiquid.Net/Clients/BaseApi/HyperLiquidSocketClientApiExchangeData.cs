@@ -20,6 +20,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 {
     internal partial class HyperLiquidSocketClientApiExchangeData : IHyperLiquidSocketClientApiExchangeData
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         protected readonly HyperLiquidSocketClientApi _baseClient;
         protected readonly ILogger _logger;
 
@@ -40,11 +46,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public async Task<CallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "allMids" }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(new HyperLiquidRequestQuery<Dictionary<string, decimal>>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
 
             var resultMapped = new Dictionary<string, decimal>();
@@ -75,14 +81,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "l2Book" },
                 { "coin", coin }
             };
 
-            parameters.AddOptional("nSigFigs", numberSignificantFigures);
-            parameters.AddOptional("mantissa", mantissa);
+            parameters.Add("nSigFigs", numberSignificantFigures);
+            parameters.Add("mantissa", mantissa);
 
             var result = await _baseClient.QueryInternalAsync(new HyperLiquidRequestQuery<HyperLiquidOrderBook>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             return result;
@@ -106,13 +112,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 coin = spotName.Data;
             }
 
-            var innerParameters = new ParameterCollection();
+            var innerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             innerParameters.Add("coin", coin);
-            innerParameters.AddEnum("interval", interval);
-            innerParameters.AddOptionalMilliseconds("startTime", startTime);
-            innerParameters.AddOptionalMilliseconds("endTime", endTime);
+            innerParameters.Add("interval", interval);
+            innerParameters.Add("startTime", startTime);
+            innerParameters.Add("endTime", endTime);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "candleSnapshot" },
                 { "req", innerParameters }

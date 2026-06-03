@@ -20,6 +20,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 {
     internal partial class HyperLiquidSocketClientApiTrading : IHyperLiquidSocketClientApiTrading
     {
+        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
+
         protected readonly HyperLiquidSocketClientApi _baseClient;
         protected readonly ILogger _logger;
 
@@ -46,12 +52,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "openOrders" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key  }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOpenOrder[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             if (!result)
@@ -90,12 +96,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "frontendOpenOrders" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrder[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
             if (!result)
@@ -134,7 +140,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFills" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -183,14 +189,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFillsByTime" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
-            parameters.AddOptional("aggregateByTime", aggregateByTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
+            parameters.Add("aggregateByTime", aggregateByTime);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidUserTrade[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -230,14 +236,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "orderStatus" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
 
-            parameters.AddOptional("oid", orderId);
-            parameters.AddOptional("oid", clientOrderId);
+            parameters.Add("oid", orderId);
+            parameters.Add("oid", clientOrderId);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrderStatusResult>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -277,7 +283,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "historicalOrders" },
                 { "user",  address ?? _baseClient.AuthenticationProvider!.Key }
@@ -357,25 +363,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in orders)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
                 if (!symbolId)
                     return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(symbolId.Error);
 
-                var orderParameters = new ParameterCollection();
+                var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 orderParameters.Add("a", symbolId.Data);
                 orderParameters.Add("b", order.Side == OrderSide.Buy);
 
-                var orderTypeParameters = new ParameterCollection();
+                var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 if (order.OrderType == OrderType.Limit)
                 {
-                    orderParameters.AddString("p", order.Price?.Normalize() ?? 0);
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", order.Price?.Normalize() ?? 0);
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.TimeInForce ?? TimeInForce.GoodTillCanceled);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else if (order.OrderType == OrderType.Market)
@@ -392,11 +398,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     price = ExchangeHelpers.RoundToSignificantDigits(price, 5, RoundingType.Closest);
                     price = ExchangeHelpers.RoundDown(price, decimalMax - quantityDecimals.Data);
 
-                    orderParameters.AddString("p", price.Normalize());
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", price.Normalize());
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.ImmediateOrCancel);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.TimeInForce ?? TimeInForce.ImmediateOrCancel);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else
@@ -407,30 +413,30 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (order.TpSlType == null)
                         throw new ArgumentNullException(nameof(order.TpSlType), "Stop order should have a TpSlType");
 
-                    orderParameters.AddString("p", order.Price?.Normalize() ?? 0);
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", order.Price?.Normalize() ?? 0);
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var triggerParameters = new ParameterCollection();
+                    var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                     triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
-                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
-                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
+                    triggerParameters.Add("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.Add("tpsl", order.TpSlType.Value);
                     orderTypeParameters.Add("trigger", triggerParameters);
                 }
 
                 orderParameters.Add("t", orderTypeParameters);
-                orderParameters.AddOptional("c", order.ClientOrderId);
+                orderParameters.Add("c", order.ClientOrderId);
 
                 orderRequests.Add(orderParameters);
             }
 
-            var actionParameters = new ParameterCollection
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "order" },
                 { "orders", orderRequests },
             };
 
             if (tpSlGrouping != null)
-                actionParameters.AddEnum("grouping", tpSlGrouping.Value);
+                actionParameters.Add("grouping", tpSlGrouping.Value);
             else
                 actionParameters.Add("grouping", "na");
 
@@ -439,7 +445,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Convert from percentage to 1/10 basis point
                 var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
                 actionParameters.Add("builder",
-                    new ParameterCollection
+                    new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "b", _baseClient.ClientOptions.BuilderAddress.ToLower() },
                         { "f", tenthPoints }
@@ -447,7 +453,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };
@@ -520,14 +526,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
                 if (!symbolId)
                     return new WebCallResult<CallResult[]>(symbolId.Error);
 
-                orderRequests.Add(new ParameterCollection
+                orderRequests.Add(new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "a", symbolId.Data },
                         { "o", order.OrderId }
@@ -535,10 +541,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
-                    "action", new ParameterCollection
+                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancel" },
                         { "cancels", orderRequests
@@ -605,14 +611,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
                 if (!symbolId)
                     return new WebCallResult<CallResult[]>(symbolId.Error);
 
-                orderRequests.Add(new ParameterCollection
+                orderRequests.Add(new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "asset", symbolId.Data },
                         { "cloid", order.OrderId }
@@ -620,10 +626,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
-                    "action", new ParameterCollection
+                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancelByCloid" },
                         { "cancels", orderRequests
@@ -668,12 +674,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "scheduleCancel" }
             };
-            actionParameters.AddOptionalMilliseconds("time", timeout == null ? null : DateTime.UtcNow + timeout);
+            actionParameters.Add("time", timeout == null ? null : DateTime.UtcNow + timeout);
             parameters.Add("action", actionParameters);
 
             if (vaultAddress != null)
@@ -721,18 +727,18 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
 
-            var orderParameters = new ParameterCollection();
+            var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", side == OrderSide.Buy);
-            orderParameters.AddString("p", price.Normalize());
-            orderParameters.AddString("s", quantity.Normalize());
+            orderParameters.Add("p", price.Normalize());
+            orderParameters.Add("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly ?? false);
 
-            var orderTypeParameters = new ParameterCollection();
+            var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             if (orderType == OrderType.Limit)
             {
-                var limitParameters = new ParameterCollection();
-                limitParameters.AddEnum("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
+                var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                limitParameters.Add("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
                 orderTypeParameters.Add("limit", limitParameters);
             }
             else
@@ -743,23 +749,23 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (tpSlType == null)
                     throw new ArgumentNullException(nameof(tpSlType), "Stop order should have a TpSlType");
 
-                var triggerParameters = new ParameterCollection();
+                var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 triggerParameters.Add("isMarket", orderType == OrderType.StopMarket);
-                triggerParameters.AddString("triggerPx", triggerPrice.Value.Normalize());
-                triggerParameters.AddEnum("tpsl", tpSlType.Value);
+                triggerParameters.Add("triggerPx", triggerPrice.Value.Normalize());
+                triggerParameters.Add("tpsl", tpSlType.Value);
                 orderTypeParameters.Add("trigger", triggerParameters);
             }
 
             orderParameters.Add("t", orderTypeParameters);
-            orderParameters.AddOptional("c", newClientOrderId);
+            orderParameters.Add("c", newClientOrderId);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "modify" }
             };
-            actionParameters.AddOptional("oid", orderId);
-            actionParameters.AddOptional("oid", clientOrderId);
+            actionParameters.Add("oid", orderId);
+            actionParameters.Add("oid", clientOrderId);
             actionParameters.Add("order", orderParameters);
             parameters.Add("action", actionParameters);
 
@@ -786,7 +792,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 if ((order.OrderId == null) == (order.ClientOrderId == null))
@@ -799,21 +805,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (!symbolId)
                     return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(symbolId.Error!);
 
-                var modifyParameters = new ParameterCollection();
-                modifyParameters.AddOptional("oid", order.OrderId);
-                modifyParameters.AddOptional("oid", order.ClientOrderId);
-                var orderParameters = new ParameterCollection();
+                var modifyParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                modifyParameters.Add("oid", order.OrderId);
+                modifyParameters.Add("oid", order.ClientOrderId);
+                var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 orderParameters.Add("a", symbolId.Data);
                 orderParameters.Add("b", order.Side == OrderSide.Buy);
-                orderParameters.AddString("p", order.Price.Normalize());
-                orderParameters.AddString("s", order.Quantity.Normalize());
+                orderParameters.Add("p", order.Price.Normalize());
+                orderParameters.Add("s", order.Quantity.Normalize());
                 orderParameters.Add("r", order.ReduceOnly ?? false);
 
-                var orderTypeParameters = new ParameterCollection();
+                var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 if (order.OrderType is OrderType.Limit or OrderType.Market)
                 {
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else
@@ -824,25 +830,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (order.TpSlType == null)
                         throw new ArgumentNullException(nameof(order.TpSlType), "Stop order should have a TpSlType");
 
-                    var triggerParameters = new ParameterCollection();
+                    var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                     triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
-                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
-                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
+                    triggerParameters.Add("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.Add("tpsl", order.TpSlType.Value);
                     orderTypeParameters.Add("trigger", triggerParameters);
                 }
 
                 orderParameters.Add("t", orderTypeParameters);
 
-                orderParameters.AddOptional("c", order.ClientOrderId);
+                orderParameters.Add("c", order.ClientOrderId);
 
                 modifyParameters.Add("order", orderParameters);
                 orderRequests.Add(modifyParameters);
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
-                    "action", new ParameterCollection
+                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "batchModify" },
                         { "modifies", orderRequests }
@@ -897,20 +903,20 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (!symbolId)
                 return new WebCallResult<HyperLiquidTwapOrderResult>(symbolId.Error);
 
-            var orderParameters = new ParameterCollection();
+            var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", orderSide == OrderSide.Buy);
-            orderParameters.AddString("s", quantity.Normalize());
+            orderParameters.Add("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly);
             orderParameters.Add("m", minutes);
             orderParameters.Add("t", randomize);
 
-            var actionParameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "twapOrder" },
                 { "twap", orderParameters }
             };
-            var parameters = new ParameterCollection
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };
@@ -949,14 +955,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
             if (!symbolId)
                 return new WebCallResult(symbolId.Error!);
 
-            var actionParameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "twapCancel" },
                 { "a", symbolId.Data },
                 { "t", twapId }
             };
 
-            var parameters = new ParameterCollection
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };

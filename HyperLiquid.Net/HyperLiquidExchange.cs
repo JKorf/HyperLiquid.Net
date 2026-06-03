@@ -100,6 +100,11 @@ namespace HyperLiquid.Net
         }
 
         internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>());
+        internal static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
 
         /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 

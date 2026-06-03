@@ -16,7 +16,7 @@ namespace HyperLiquid.Net.Objects.Sockets
             HyperLiquidSocketClientApi client,
             string method,
             string type,
-            ParameterCollection request,
+            Parameters request,
             bool authenticated, 
             int weight = 1) 
             : base(

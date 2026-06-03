@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -36,6 +37,8 @@ namespace HyperLiquid.Net.Utils
                 Pack(s, objList);
             else if (o is IDictionary objDict)
                 Pack(s, objDict);
+            else if (o is IDictionary<string, object> objDict2)
+                Pack(s, objDict2);
             else if (o is bool objBool)
                 Pack(s, objBool);
             else if (o is sbyte objSbyte)
@@ -108,6 +111,30 @@ namespace HyperLiquid.Net.Utils
                 Write(s, (uint)count);
             }
             foreach (object key in dict.Keys)
+            {
+                Pack(s, key);
+                Pack(s, dict[key]!);
+            }
+        }
+
+        private void Pack(Stream s, IDictionary<string, object> dict)
+        {
+            int count = dict.Count;
+            if (count < 16)
+            {
+                s.WriteByte((byte)(0x80 + count));
+            }
+            else if (count < 0x10000)
+            {
+                s.WriteByte(0xde);
+                Write(s, (ushort)count);
+            }
+            else
+            {
+                s.WriteByte(0xdf);
+                Write(s, (uint)count);
+            }
+            foreach (var key in dict.Keys)
             {
                 Pack(s, key);
                 Pack(s, dict[key]!);
