@@ -4,6 +4,19 @@ namespace HyperLiquid.Net.Utils
 {
     internal static  class StringExtensions
     {
+        internal static bool IsValidClientOrderId(this string? value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            var characterIndex = value!.StartsWith("0x", StringComparison.Ordinal) ? 2 : 0;
+            var numberOfCharacters = value.Length - characterIndex;
+            if (numberOfCharacters != 32)
+                return false;
+
+            return true;
+        }
+
         public static byte[] HexToByteArray(this string value)
         {
             byte[] bytes;
