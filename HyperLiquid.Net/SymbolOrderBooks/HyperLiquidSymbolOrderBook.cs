@@ -69,20 +69,20 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         {
             // Uses SpotApi but can also be used for futures
             var sub = await _socketClient.SpotApi.ExchangeData.SubscribeToOrderBookUpdatesAsync(Symbol, HandleUpdate, nSigFigs: _nSigFigs, mantissa: _mantissa,  ct: ct).ConfigureAwait(false);
-            if (!sub)
-                return sub;
+            if (!sub.Success)
+                return CallResult.Fail<UpdateSubscription>(sub.Error);
 
             Status = OrderBookStatus.Syncing;
 
             var set = await WaitForSetOrderBookAsync(_initialDataTimeout, ct).ConfigureAwait(false);
-            if (!set)
+            if (!set.Success)
             {
                 await sub.Data.CloseAsync().ConfigureAwait(false);
-                return new CallResult<UpdateSubscription>(set.Error!);
+                return CallResult.Fail<UpdateSubscription>(set.Error!);
             }
 
             Status = OrderBookStatus.Synced;
-            return sub;
+            return CallResult.Ok(sub.Data);
         }
 
         private void HandleUpdate(DataEvent<HyperLiquidOrderBook> @event)
@@ -96,7 +96,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         }
 
         /// <inheritdoc />
-        protected override async Task<CallResult<bool>> DoResyncAsync(CancellationToken ct)
+        protected override async Task<CallResult> DoResyncAsync(CancellationToken ct)
         {
             return await WaitForSetOrderBookAsync(_initialDataTimeout, ct).ConfigureAwait(false);
         }

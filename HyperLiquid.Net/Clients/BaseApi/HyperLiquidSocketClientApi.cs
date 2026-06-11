@@ -45,7 +45,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             HyperLiquidSocketClient baseClient,
             HyperLiquidSocketOptions options,
             SocketApiOptions apiOptions) :
-            base(logger, options.Environment.SocketClientAddress!, options, apiOptions)
+            base(logger, HyperLiquidExchange.Metadata.Id, options.Environment.SocketClientAddress!, options, apiOptions)
         {
             BaseClient = baseClient;
 
@@ -76,10 +76,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override HyperLiquidAuthenticationProvider CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
-        internal Task<CallResult<UpdateSubscription>> SubscribeInternalAsync(Subscription subscription, CancellationToken ct)
+        internal Task<WebSocketResult<UpdateSubscription>> SubscribeInternalAsync(Subscription subscription, CancellationToken ct)
             => base.SubscribeAsync(BaseAddress.AppendPath("ws"), subscription, ct);
 
-        internal Task<CallResult<T>> QueryInternalAsync<T>(Query<T> query, CancellationToken ct)
+        internal Task<QueryResult<T>> QueryInternalAsync<T>(Query<T> query, CancellationToken ct)
             => base.QueryAsync<T>(BaseAddress.AppendPath("ws"), query, ct);
 
         internal void AddExpiresAfter(Parameters parameters, DateTime? requestExpiresAfter)

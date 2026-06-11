@@ -24,7 +24,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="dex">["<c>dex</c>"] The DEX to request data for, leave null for default perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user funding history
@@ -37,7 +37,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
         /// <param name="address">["<c>user</c>"] Address to request funding history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user active symbols
@@ -49,7 +49,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="symbol">["<c>coin</c>"] The symbol, for example `ETH`</param>
         /// <param name="address">["<c>user</c>"] Address to request funding history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get whether HIP-3 DEX abstraction enabled
@@ -61,7 +61,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="user">["<c>user</c>"] User address. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<CallResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default);
+        Task<QueryResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default);
 
         /// <summary>
         /// Toggle HIP-3 DEX abstraction. If set, actions on HIP-3 perps will automatically transfer collateral from validator-operated USDC perps balance for HIP-3 DEXs where USDC is the collateral token, and spot otherwise. 
@@ -75,7 +75,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="address">["<c>user</c>"] User address. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<CallResult> ToggleHip3DexAbstractionAsync(bool enabled, string? address = null, CancellationToken ct = default);
+        Task<QueryResult> ToggleHip3DexAbstractionAsync(bool enabled, string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to user symbol updates
@@ -91,7 +91,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserSymbolUpdatesAsync(string? address, string symbol, Action<DataEvent<HyperLiquidFuturesUserSymbolUpdate>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserSymbolUpdatesAsync(string? address, string symbol, Action<DataEvent<HyperLiquidFuturesUserSymbolUpdate>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to user funding updates
@@ -106,6 +106,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default);
     }
 }

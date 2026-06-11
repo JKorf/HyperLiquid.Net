@@ -42,11 +42,11 @@ namespace HyperLiquid.Net.Utils
         {
             if (!client.SpotApi.Authenticated)
                 // No credentials provided, no need to check builder fee
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
@@ -64,11 +64,11 @@ namespace HyperLiquid.Net.Utils
         {
             if (!client.SpotApi.Authenticated)
                 // No credentials provided, no need to check builder fee
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
@@ -88,13 +88,13 @@ namespace HyperLiquid.Net.Utils
             Func<Task<CallResult>> approveFee)
         {
             if (_checkedBuilderFee)
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             if (builderFeePercentage == null
                 || builderFeePercentage == 0)
             {
                 // No builder fee, no need to check
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
             }
 
             await _semaphoreBuilderFee.WaitAsync().ConfigureAwait(false);
@@ -112,7 +112,7 @@ namespace HyperLiquid.Net.Utils
                 {
                     // Builder fee is approved, we're good
                     _builderFeeSuccess = true;
-                    return CallResult.SuccessResult;
+                    return CallResult.Ok();
                 }
 
                 var approveResult = await approveFee().ConfigureAwait(false);
@@ -134,7 +134,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             return await UpdateFuturesSymbolInfoAsync(envName, async () => await client.FuturesApi.ExchangeData.GetExchangeInfoAllDexesAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -146,7 +146,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             return await UpdateFuturesSymbolInfoAsync(envName, async () => await client.FuturesApi.ExchangeData.GetExchangeInfoAllDexesAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -162,7 +162,7 @@ namespace HyperLiquid.Net.Utils
             {
                 _lastFuturesUpdateTime.TryGetValue(envName, out var lastUpdateTime);
                 if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
-                    return CallResult.SuccessResult;
+                    return CallResult.Ok();
 
                 var symbolInfo = await exchangeInfoCall().ConfigureAwait(false);
                 if (!symbolInfo)
@@ -171,7 +171,7 @@ namespace HyperLiquid.Net.Utils
                 _futuresSymbolInfo[envName] = symbolInfo.Data;
                 _lastFuturesUpdateTime[envName] = DateTime.UtcNow;
 
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
             }
             finally
             {
@@ -186,7 +186,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -198,7 +198,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -210,7 +210,7 @@ namespace HyperLiquid.Net.Utils
             {
                 _lastSpotUpdateTime.TryGetValue(envName, out var lastUpdateTime);
                 if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
-                    return CallResult.SuccessResult;
+                    return CallResult.Ok();
 
                 var symbolInfo = await exchangeInfoCall().ConfigureAwait(false);
                 if (!symbolInfo)
@@ -219,7 +219,7 @@ namespace HyperLiquid.Net.Utils
                 _spotSymbolInfo[envName] = symbolInfo.Data.Symbols;
                 _spotAssetInfo[envName] = symbolInfo.Data.Assets;
                 _lastSpotUpdateTime[envName] = DateTime.UtcNow;
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
             }
             finally
             {
@@ -234,7 +234,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
 
             return await UpdateOutcomeInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -246,7 +246,7 @@ namespace HyperLiquid.Net.Utils
         //{
         //    var envName = client.ClientOptions.Environment.Name;
         //    if (envName.Equals("UnitTest", StringComparison.Ordinal))
-        //        return CallResult.SuccessResult;
+        //        return CallResult.Ok();
 
         //    return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         //}
@@ -258,7 +258,7 @@ namespace HyperLiquid.Net.Utils
             {
                 _lastOutcomesUpdateTime.TryGetValue(envName, out var lastUpdateTime);
                 if (DateTime.UtcNow - lastUpdateTime < TimeSpan.FromHours(1))
-                    return CallResult.SuccessResult;
+                    return CallResult.Ok();
 
                 var infoResult = await infoCall().ConfigureAwait(false);
                 if (!infoResult)
@@ -266,7 +266,7 @@ namespace HyperLiquid.Net.Utils
 
                 _outcomesInfo[envName] = infoResult.Data;
                 _lastOutcomesUpdateTime[envName] = DateTime.UtcNow;
-                return CallResult.SuccessResult;
+                return CallResult.Ok();
             }
             finally
             {

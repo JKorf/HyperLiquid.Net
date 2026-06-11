@@ -21,9 +21,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
 {
     internal abstract partial class HyperLiquidRestClientApi : RestApiClient<HyperLiquidEnvironment, HyperLiquidAuthenticationProvider, HyperLiquidCredentials>
     {
-        /// <inheritdoc />
-        public string ExchangeName => "HyperLiquid";
-
         public new HyperLiquidRestOptions ClientOptions => (HyperLiquidRestOptions)base.ClientOptions;
         internal HyperLiquidRestClient BaseClient { get; }
 
@@ -37,7 +34,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             HttpClient? httpClient,
             HyperLiquidRestOptions options,
             RestApiOptions apiOptions)
-            : base(logger, httpClient, options.Environment.RestClientAddress, options, apiOptions)
+            : base(logger, HyperLiquidExchange.Metadata.Id, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
             BaseClient = baseClient;
         }
@@ -51,32 +48,26 @@ namespace HyperLiquid.Net.Clients.BaseApi
         protected override HyperLiquidAuthenticationProvider CreateAuthenticationProvider(HyperLiquidCredentials credentials)
             => new HyperLiquidAuthenticationProvider(credentials);
 
-        internal Task<WebCallResult> SendAsync(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
-            => SendToAddressAsync(BaseAddress, definition, parameters, cancellationToken, weight);
-
-        internal async Task<WebCallResult> SendToAddressAsync(string baseAddress, RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<HttpResult> SendAsync(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
-            return await base.SendAsync(baseAddress, definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
+            return await base.SendAsync<Unit>(definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
         }
 
-        internal Task<WebCallResult<T>> SendAsync<T>(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
-            => SendToAddressAsync<T>(BaseAddress, definition, parameters, cancellationToken, weight);
-
-        internal async Task<WebCallResult<T>> SendToAddressAsync<T>(string baseAddress, RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<HttpResult<T>> SendAsync<T>(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
-            return await base.SendAsync<T>(baseAddress, definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
+            return await base.SendAsync<T>(definition, parameters, cancellationToken, null, weight).ConfigureAwait(false);
         }
 
-        internal async Task<WebCallResult<T>> SendAuthAsync<T>(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
+        internal async Task<HttpResult<T>> SendAuthAsync<T>(RequestDefinition definition, Parameters? parameters, CancellationToken cancellationToken, int? weight = null)
         {
-            var result = await SendToAddressAsync<HyperLiquidResponse<T>>(BaseAddress, definition, parameters, cancellationToken, weight).ConfigureAwait(false);
-            if (!result)
-                return result.As<T>(default);
+            var result = await SendAsync<HyperLiquidResponse<T>>(definition, parameters, cancellationToken, weight).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<T>(result);
 
             if (!result.Data.Status.Equals("ok"))
-                return result.AsError<T>(new ServerError(ErrorInfo.Unknown with { Message = result.Data.Status }));
+                return HttpResult.Fail<T>(result, new ServerError(ErrorInfo.Unknown with { Message = result.Data.Status }));
 
-            return result.As(result.Data.Data!.Data);
+            return HttpResult.Ok(result, result.Data.Data!.Data);
         }
 
         internal void AddExpiresAfter(Parameters parameters, DateTime? requestExpiresAfter)
@@ -88,7 +79,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        protected override Task<WebCallResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
+        protected override Task<HttpResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
 
         /// <inheritdoc />
         public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverDate = null)

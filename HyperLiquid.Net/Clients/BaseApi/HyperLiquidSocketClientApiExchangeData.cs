@@ -44,7 +44,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Prices
 
         /// <inheritdoc />
-        public async Task<CallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<QueryResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
         {
             var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
@@ -68,7 +68,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Order Book
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -76,7 +76,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<HyperLiquidOrderBook>(spotName.Error);
+                    return new HttpResult<HyperLiquidOrderBook>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -99,7 +99,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Klines
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -107,7 +107,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<HyperLiquidKline[]>(spotName.Error);
+                    return new HttpResult<HyperLiquidKline[]>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -134,11 +134,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         /// <inheritdoc />
-        public Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
+        public Task<WebSocketResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
             => SubscribeToPriceUpdatesAsync(null, onMessage, ct);
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(string? dex, Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(string? dex, Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
         {
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
             if (!result)
@@ -171,7 +171,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(string symbol, KlineInterval interval, Action<DataEvent<HyperLiquidKline>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(string symbol, KlineInterval interval, Action<DataEvent<HyperLiquidKline>> onMessage, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -179,7 +179,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                    return new HttpResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -206,7 +206,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -214,7 +214,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                    return new HttpResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -246,7 +246,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTrade[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTrade[]>> onMessage, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -254,7 +254,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                    return new HttpResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -286,7 +286,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToBookTickerUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidBookTicker>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToBookTickerUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidBookTicker>> onMessage, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -294,7 +294,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                    return new HttpResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }

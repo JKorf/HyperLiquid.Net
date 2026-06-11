@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange and ticker info. For tickers:
@@ -37,7 +37,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get information on an asset
@@ -50,7 +50,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="assetId">["<c>tokenId</c>"] The asset id</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
 
         /// <summary>
         /// Get HIP-4 questions and outcomes info
@@ -62,7 +62,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get HIP-4 settled outcome info
@@ -75,6 +75,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="outcomeId">The outcome id</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
     }
 }

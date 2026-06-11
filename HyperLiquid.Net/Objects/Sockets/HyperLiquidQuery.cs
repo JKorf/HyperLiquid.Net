@@ -24,8 +24,8 @@ namespace HyperLiquid.Net.Objects.Sockets
         {
             _client = client;
             MessageRouter = MessageRouter.Create([
-                MessageRoute<HyperLiquidSocketUpdate<T>>.CreateWithTopicFilter("subscriptionResponse", listenId, HandleMessage),
-                MessageRoute<HyperLiquidSocketUpdate<string>>.CreateWithTopicFilter("error", listenId, HandleError)
+                MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<T>>("subscriptionResponse", listenId, HandleMessage),
+                MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<string>>("error", listenId, HandleError)
                 ]);
         }
 
@@ -37,10 +37,10 @@ namespace HyperLiquid.Net.Objects.Sockets
              || error.StartsWith("Already unsubscribed"))
             {
                 // Allow duplicate subscriptions
-                return new CallResult<HyperLiquidSocketUpdate<string>>(message, originalData, null);
+                return CallResult<HyperLiquidSocketUpdate<string>>.Ok(message, originalData);
             }
 
-            return new CallResult<HyperLiquidSocketUpdate<string>>(new ServerError(_client.GetErrorInfo("Subscription", error)));
+            return CallResult<HyperLiquidSocketUpdate<string>>.Fail(new ServerError(_client.GetErrorInfo("Subscription", error)), originalData);
         }
 
         public CallResult<HyperLiquidSocketUpdate<T>> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
@@ -51,10 +51,10 @@ namespace HyperLiquid.Net.Objects.Sockets
             {
                 var err = _errorString;
                 _errorString = null;
-                return new CallResult<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo("Subscription", err)));
+                return CallResult.Fail<HyperLiquidSocketUpdate<T>>(new ServerError(_client.GetErrorInfo("Subscription", err)), originalData);
             }
 
-            return new CallResult<HyperLiquidSocketUpdate<T>>(message, originalData, null);
+            return CallResult.Ok(message, originalData);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         {
             var assetId = await HyperLiquidUtils.GetAssetNameAndIdAsync(_baseClient.BaseClient, asset).ConfigureAwait(false);
             if (!assetId)
-                return new WebCallResult(assetId.Error!);
+                return new HttpResult(assetId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 

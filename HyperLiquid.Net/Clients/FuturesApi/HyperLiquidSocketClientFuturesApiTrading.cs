@@ -53,7 +53,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+                return new HttpResult(symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
@@ -90,7 +90,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
             if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+                return new HttpResult(symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 

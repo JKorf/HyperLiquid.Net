@@ -28,7 +28,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] Filter by DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
+        Task<HttpResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get order book
@@ -43,7 +43,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="numberSignificantFigures">["<c>nSigFigs</c>"] Asset name</param>
         /// <param name="mantissa">["<c>mantissa</c>"] Mantissa</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get klines/candlestick data
@@ -59,7 +59,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="startTime">["<c>startTime</c>"] Data start time</param>
         /// <param name="endTime">["<c>endTime</c>"] Data end time</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
 
     }
 }

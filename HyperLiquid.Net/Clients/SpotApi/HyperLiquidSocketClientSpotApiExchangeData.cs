@@ -139,7 +139,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                    return new HttpResult<UpdateSubscription>(spotName.Error);
 
                 coin = spotName.Data;
             }

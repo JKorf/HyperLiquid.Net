@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
             _parameters = parameters ?? new();
 
             var listenId = (alternativeTopic ?? topic) + listenSuffix;
-            MessageRouter = MessageRouter.CreateWithOptionalTopicFilter<HyperLiquidSocketUpdate<T>>(alternativeTopic ?? topic, listenSuffix, DoHandleMessage);
+            MessageRouter = MessageRouter.CreateForEvent<HyperLiquidSocketUpdate<T>>(alternativeTopic ?? topic, listenSuffix, DoHandleMessage);
         }
 
         /// <inheritdoc />
@@ -73,7 +73,7 @@ namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
         public CallResult DoHandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
         {
             _handler.Invoke(receiveTime, originalData, ConnectionInvocations, message);
-            return CallResult.SuccessResult;
+            return CallResult.Ok();
         }
     }
 }
