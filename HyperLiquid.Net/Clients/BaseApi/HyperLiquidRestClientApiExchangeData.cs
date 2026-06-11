@@ -16,11 +16,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientApiExchangeData
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
         private readonly HyperLiquidRestClientApi _baseClient;
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
 
@@ -70,7 +65,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName.Success)
-                    return HttpResult.Fail<HyperLiquidOrderBook>(_baseClient.ExchangeName, spotName.Error);
+                    return HttpResult.Fail<HyperLiquidOrderBook>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -104,7 +99,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
                 if (!spotName.Success)
-                    return HttpResult.Fail<HyperLiquidKline[]>(_baseClient.ExchangeName, spotName.Error);
+                    return HttpResult.Fail<HyperLiquidKline[]>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }

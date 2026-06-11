@@ -49,7 +49,7 @@ namespace HyperLiquid.Net
 
         public override void ProcessRequest(RestApiClient apiClient, RestRequestConfiguration request)
         {
-            if (!request.Authenticated)
+            if (!request.RequestDefinition.Authenticated)
                 return;
 
             var action = (Parameters)request.BodyParameters!["action"];

@@ -13,11 +13,6 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientFuturesApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientFuturesApiAccount
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly new HyperLiquidRestClientFuturesApi _baseClient;
 

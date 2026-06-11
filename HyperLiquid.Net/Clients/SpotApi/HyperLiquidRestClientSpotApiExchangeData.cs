@@ -13,11 +13,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientSpotApiExchangeData : HyperLiquidRestClientApiExchangeData, IHyperLiquidRestClientSpotApiExchangeData
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
         private readonly HyperLiquidRestClientSpotApi _baseClient;
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
 

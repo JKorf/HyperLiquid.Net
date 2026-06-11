@@ -44,6 +44,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidFuturesExchangeInfo[]>(request, parameters, ct).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<HyperLiquidFuturesDexInfo[]>(result);
 
             for (var j = 0; j < result.Data.Length; j++)
             {

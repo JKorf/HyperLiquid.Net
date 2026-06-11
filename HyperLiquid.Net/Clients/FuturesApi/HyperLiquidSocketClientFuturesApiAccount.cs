@@ -21,12 +21,6 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// </summary>
     internal partial class HyperLiquidSocketClientFuturesApiAccount : HyperLiquidSocketClientApiAccount, IHyperLiquidSocketClientFuturesApiAccount
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
-
         #region constructor/destructor
 
         /// <summary>
@@ -41,7 +35,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Account
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -63,7 +57,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Funding History
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -86,7 +80,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get User Symbol
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -108,7 +102,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get HIP-3 DEX Abstraction
 
         /// <inheritdoc />
-        public async Task<CallResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default)
+        public async Task<QueryResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default)
         {
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
@@ -129,7 +123,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Toggle HIP-3 DEX Abstraction
 
         /// <inheritdoc />
-        public async Task<CallResult> ToggleHip3DexAbstractionAsync(bool enabled, string? user = null, CancellationToken ct = default)
+        public async Task<QueryResult> ToggleHip3DexAbstractionAsync(bool enabled, string? user = null, CancellationToken ct = default)
         {
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
@@ -149,15 +143,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserSymbolUpdatesAsync(string? address, string symbol, Action<DataEvent<HyperLiquidFuturesUserSymbolUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserSymbolUpdatesAsync(string? address, string symbol, Action<DataEvent<HyperLiquidFuturesUserSymbolUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -183,14 +176,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserFundingUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserFunding[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserFundingUpdate>>((receiveTime, originalData, invocation, data) =>
             {

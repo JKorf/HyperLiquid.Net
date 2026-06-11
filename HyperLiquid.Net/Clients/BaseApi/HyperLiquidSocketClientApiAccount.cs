@@ -20,12 +20,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
 {
     internal partial class HyperLiquidSocketClientApiAccount : IHyperLiquidSocketClientApiAccount
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
-
         protected internal readonly HyperLiquidSocketClientApi _baseClient;
         protected readonly ILogger _logger;
 
@@ -99,9 +93,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -192,9 +185,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -219,9 +211,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -252,9 +243,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+           return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -275,9 +265,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -298,9 +287,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -321,9 +309,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -351,9 +338,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -385,9 +371,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
             };
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -406,11 +391,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidSubAccount[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             if (result.Data == null)
-                return result.As(new HyperLiquidSubAccount[0]);
+                return QueryResult.Ok(result, new HyperLiquidSubAccount[0]);
 
             return result;
         }

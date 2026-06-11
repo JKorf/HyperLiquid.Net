@@ -15,11 +15,6 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientFuturesApiTrading : HyperLiquidRestClientApiTrading, IHyperLiquidRestClientFuturesApiTrading
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly HyperLiquidRestClientFuturesApi _baseClient;
         private readonly ILogger _logger;

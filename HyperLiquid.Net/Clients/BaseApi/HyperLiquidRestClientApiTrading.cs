@@ -142,7 +142,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                 {
                     var symbolName = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, order.ExchangeSymbol).ConfigureAwait(false);
-                    if (symbolName == null)
+                    if (!symbolName.Success)
                         continue;
 
                     order.Symbol = symbolName.Data;
@@ -194,7 +194,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                 {
                     var symbolName = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, order.ExchangeSymbol).ConfigureAwait(false);
-                    if (symbolName == null)
+                    if (!symbolName.Success)
                         continue;
 
                     order.Symbol = symbolName.Data;

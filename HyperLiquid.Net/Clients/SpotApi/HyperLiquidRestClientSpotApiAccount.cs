@@ -13,11 +13,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// <inheritdoc />
     internal class HyperLiquidRestClientSpotApiAccount : HyperLiquidRestClientApiAccount, IHyperLiquidRestClientSpotApiAccount
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
         private static readonly RequestDefinitionCache _definitions = new RequestDefinitionCache();
         private readonly new HyperLiquidRestClientSpotApi _baseClient;
 
@@ -43,7 +38,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
             };
             var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidBalances>(request, parameters, ct).ConfigureAwait(false);
-            return result.As<HyperLiquidBalance[]>(result.Data?.Balances);
+            if (!result.Success)
+                return HttpResult.Fail<HyperLiquidBalance[]>(result);
+
+            return HttpResult.Ok(result, result.Data.Balances);
         }
 
         #endregion

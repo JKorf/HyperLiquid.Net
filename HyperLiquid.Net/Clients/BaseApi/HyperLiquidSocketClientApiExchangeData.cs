@@ -20,12 +20,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
 {
     internal partial class HyperLiquidSocketClientApiExchangeData : IHyperLiquidSocketClientApiExchangeData
     {
-        private static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
-        {
-            Decimal = DecimalSerialization.String,
-            Sort = false
-        };
-
         protected readonly HyperLiquidSocketClientApi _baseClient;
         protected readonly ILogger _logger;
 
@@ -52,6 +46,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             };
             parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(new HyperLiquidRequestQuery<Dictionary<string, decimal>>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
+            if (!result.Success)
+                return QueryResult.Fail<Dictionary<string, decimal>>(result);
 
             var resultMapped = new Dictionary<string, decimal>();
             foreach (var item in result.Data)
@@ -60,7 +56,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 resultMapped.Add(nameRes.Data ?? item.Key, item.Value);
             }
 
-            return result.As(resultMapped);
+            return QueryResult.Ok(result, resultMapped);
         }
 
         #endregion
@@ -75,8 +71,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<HyperLiquidOrderBook>(spotName.Error);
+                if (!spotName.Success)
+                    return QueryResult.Fail<HyperLiquidOrderBook>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -106,8 +102,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<HyperLiquidKline[]>(spotName.Error);
+                if (!spotName.Success)
+                    return QueryResult.Fail<HyperLiquidKline[]>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -141,8 +137,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         public async Task<WebSocketResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(string? dex, Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default)
         {
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidMidsUpdate>>((receiveTime, originalData, invocations, data) =>
             {
@@ -178,8 +174,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<UpdateSubscription>(spotName.Error);
+                if (!spotName.Success)
+                    return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -213,8 +209,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<UpdateSubscription>(spotName.Error);
+                if (!spotName.Success)
+                    return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -253,8 +249,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<UpdateSubscription>(spotName.Error);
+                if (!spotName.Success)
+                    return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -293,8 +289,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new HttpResult<UpdateSubscription>(spotName.Error);
+                if (!spotName.Success)
+                    return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }

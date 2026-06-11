@@ -38,29 +38,7 @@ namespace HyperLiquid.Net.Utils
         // We should only send builder credentials if the check has succeeded
         internal static bool _builderFeeSuccess = false;
 
-        internal static async Task<CallResult> CheckBuilderFeeAsync(HyperLiquidSocketClient client)
-        {
-            if (!client.SpotApi.Authenticated)
-                // No credentials provided, no need to check builder fee
-                return CallResult.Ok();
-
-            var envName = client.ClientOptions.Environment.Name;
-            if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return CallResult.Ok();
-
-            var options = client.ClientOptions;
-            var result = await CheckBuilderFeeAsync(
-                options.BuilderFeePercentage, 
-                () => client.SpotApi.Account.GetApprovedBuilderFeeAsync(),
-                () => client.SpotApi.Account.ApproveBuilderFeeAsync()).ConfigureAwait(false);
-
-            if (!result.Success)
-                LibraryHelpers.StaticLogger?.LogDebug("Builder fee approval failed: {Error}", result.Error);
-
-            return result;
-        }
-
-        internal static async Task<CallResult> CheckBuilderFeeAsync(HyperLiquidRestClient client)
+        internal static async Task<ICallResult> CheckBuilderFeeAsync(HyperLiquidSocketClient client)
         {
             if (!client.SpotApi.Authenticated)
                 // No credentials provided, no need to check builder fee
@@ -82,10 +60,32 @@ namespace HyperLiquid.Net.Utils
             return result;
         }
 
-        internal static async Task<CallResult> CheckBuilderFeeAsync(
+        internal static async Task<ICallResult> CheckBuilderFeeAsync(HyperLiquidRestClient client)
+        {
+            if (!client.SpotApi.Authenticated)
+                // No credentials provided, no need to check builder fee
+                return CallResult.Ok();
+
+            var envName = client.ClientOptions.Environment.Name;
+            if (envName.Equals("UnitTest", StringComparison.Ordinal))
+                return CallResult.Ok();
+
+            var options = client.ClientOptions;
+            var result = await CheckBuilderFeeAsync(
+                options.BuilderFeePercentage,
+                async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
+                async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+            if (!result.Success)
+                LibraryHelpers.StaticLogger?.LogDebug("Builder fee approval failed: {Error}", result.Error);
+
+            return result;
+        }
+
+        internal static async Task<ICallResult> CheckBuilderFeeAsync(
             decimal? builderFeePercentage,
-            Func<Task<CallResult<int>>> getApprovedFee,
-            Func<Task<CallResult>> approveFee)
+            Func<Task<ICallResult<int>>> getApprovedFee,
+            Func<Task<ICallResult>> approveFee)
         {
             if (_checkedBuilderFee)
                 return CallResult.Ok();
@@ -104,7 +104,7 @@ namespace HyperLiquid.Net.Utils
                 _checkedBuilderFee = true;
 
                 var approvedResult = await getApprovedFee().ConfigureAwait(false);
-                if (!approvedResult)
+                if (!approvedResult.Success)
                     return approvedResult;
 
                 var targetBps = (int)(builderFeePercentage.Value * 1000);
@@ -116,7 +116,7 @@ namespace HyperLiquid.Net.Utils
                 }
 
                 var approveResult = await approveFee().ConfigureAwait(false);
-                if (approveResult)
+                if (approveResult.Success)
                     _builderFeeSuccess = true;
 
                 return approveResult;
@@ -130,7 +130,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync(HyperLiquidRestClient client)
+        public static async Task<ICallResult> UpdateFuturesSymbolInfoAsync(HyperLiquidRestClient client)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
@@ -142,7 +142,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateFuturesSymbolInfoAsync(HyperLiquidSocketClient client)
+        public static async Task<ICallResult> UpdateFuturesSymbolInfoAsync(HyperLiquidSocketClient client)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
@@ -154,7 +154,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal futures symbol info
         /// </summary>
-        private static async Task<CallResult> UpdateFuturesSymbolInfoAsync(string envName, Func<Task<CallResult<HyperLiquidFuturesDexInfo[]>>> exchangeInfoCall)
+        private static async Task<ICallResult> UpdateFuturesSymbolInfoAsync(string envName, Func<Task<ICallResult<HyperLiquidFuturesDexInfo[]>>> exchangeInfoCall)
         {
             await _semaphoreFutures.WaitAsync().ConfigureAwait(false);
 
@@ -165,8 +165,8 @@ namespace HyperLiquid.Net.Utils
                     return CallResult.Ok();
 
                 var symbolInfo = await exchangeInfoCall().ConfigureAwait(false);
-                if (!symbolInfo)
-                    return symbolInfo.AsDataless();
+                if (!symbolInfo.Success)
+                    return symbolInfo;
 
                 _futuresSymbolInfo[envName] = symbolInfo.Data;
                 _lastFuturesUpdateTime[envName] = DateTime.UtcNow;
@@ -182,7 +182,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateSpotSymbolInfoAsync(HyperLiquidRestClient client)
+        public static async Task<ICallResult> UpdateSpotSymbolInfoAsync(HyperLiquidRestClient client)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
@@ -194,7 +194,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateSpotSymbolInfoAsync(HyperLiquidSocketClient client)
+        public static async Task<ICallResult> UpdateSpotSymbolInfoAsync(HyperLiquidSocketClient client)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
@@ -203,7 +203,7 @@ namespace HyperLiquid.Net.Utils
             return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetExchangeInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult> UpdateSpotSymbolInfoAsync(string envName, Func<Task<CallResult<HyperLiquidSpotExchangeInfo>>> exchangeInfoCall)
+        private static async Task<ICallResult> UpdateSpotSymbolInfoAsync(string envName, Func<Task<ICallResult<HyperLiquidSpotExchangeInfo>>> exchangeInfoCall)
         {
             await _semaphoreSpot.WaitAsync().ConfigureAwait(false);
             try
@@ -213,8 +213,8 @@ namespace HyperLiquid.Net.Utils
                     return CallResult.Ok();
 
                 var symbolInfo = await exchangeInfoCall().ConfigureAwait(false);
-                if (!symbolInfo)
-                    return symbolInfo.AsDataless();
+                if (!symbolInfo.Success)
+                    return symbolInfo;
 
                 _spotSymbolInfo[envName] = symbolInfo.Data.Symbols;
                 _spotAssetInfo[envName] = symbolInfo.Data.Assets;
@@ -230,7 +230,7 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Update the internal spot symbol info
         /// </summary>
-        public static async Task<CallResult> UpdateOutcomeInfoAsync(HyperLiquidRestClient client)
+        public static async Task<ICallResult> UpdateOutcomeInfoAsync(HyperLiquidRestClient client)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
@@ -251,7 +251,7 @@ namespace HyperLiquid.Net.Utils
         //    return await UpdateSpotSymbolInfoAsync(envName, async () => await client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync().ConfigureAwait(false)).ConfigureAwait(false);
         //}
 
-        private static async Task<CallResult> UpdateOutcomeInfoAsync(string envName, Func<Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>>> infoCall)
+        private static async Task<ICallResult> UpdateOutcomeInfoAsync(string envName, Func<Task<ICallResult<HyperLiquidQuestionsAndOutcomesInfo>>> infoCall)
         {
             await _semaphoreOutcomes.WaitAsync().ConfigureAwait(false);
             try
@@ -261,8 +261,8 @@ namespace HyperLiquid.Net.Utils
                     return CallResult.Ok();
 
                 var infoResult = await infoCall().ConfigureAwait(false);
-                if (!infoResult)
-                    return infoResult.AsDataless();
+                if (!infoResult.Success)
+                    return infoResult;
 
                 _outcomesInfo[envName] = infoResult.Data;
                 _lastOutcomesUpdateTime[envName] = DateTime.UtcNow;
@@ -277,11 +277,11 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get symbol id from a symbol name
         /// </summary>
-        public static async Task<CallResult<int>> GetSymbolIdFromNameAsync(HyperLiquidRestClient client, string symbolName)
+        public static async Task<ICallResult<int>> GetSymbolIdFromNameAsync(HyperLiquidRestClient client, string symbolName)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<int>(1);
+                return CallResult.Ok(1);
 
             return await GetSymbolIdFromNameAsync(envName, symbolName, () => UpdateSpotSymbolInfoAsync(client), () => UpdateFuturesSymbolInfoAsync(client)).ConfigureAwait(false);
         }
@@ -289,34 +289,34 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get symbol id from a symbol name
         /// </summary>
-        public static async Task<CallResult<int>> GetSymbolIdFromNameAsync(HyperLiquidSocketClient client, string symbolName)
+        public static async Task<ICallResult<int>> GetSymbolIdFromNameAsync(HyperLiquidSocketClient client, string symbolName)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<int>(1);
+                return CallResult.Ok(1);
 
             return await GetSymbolIdFromNameAsync(envName, symbolName, () => UpdateSpotSymbolInfoAsync(client), () => UpdateFuturesSymbolInfoAsync(client)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult<int>> GetSymbolIdFromNameAsync(string envName, string symbolName, Func<Task<CallResult>> spotUpdate, Func<Task<CallResult>> futuresUpdate)
+        private static async Task<ICallResult<int>> GetSymbolIdFromNameAsync(string envName, string symbolName, Func<Task<ICallResult>> spotUpdate, Func<Task<ICallResult>> futuresUpdate)
         {
             if (SymbolIsExchangeSpotSymbol(symbolName))
             {
                 var update = await spotUpdate().ConfigureAwait(false);
-                if (!update)
-                    return new CallResult<int>(update.Error!);
+                if (!update.Success)
+                    return CallResult.Fail<int>(update.Error!);
 
                 var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
-                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                    return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.Index + 10000);
+                return CallResult.Ok(symbol.Index + 10000);
             }
             else
             {
                 var update = await futuresUpdate().ConfigureAwait(false);
-                if (!update)
-                    return new CallResult<int>(update.Error!);
+                if (!update.Success)
+                    return CallResult.Fail<int>(update.Error!);
 
                 var symbolSplit = symbolName.Split(':');
                 if (symbolSplit.Length == 2)
@@ -325,21 +325,21 @@ namespace HyperLiquid.Net.Utils
                     var dexName = symbolSplit[0];
                     var dex = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(dexName, StringComparison.InvariantCultureIgnoreCase));
                     if (dex == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
 
                     var symbol = dex.Symbols.SingleOrDefault(x => x.Name == symbolName);
                     if (symbol == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return new CallResult<int>(100000 + dex.Index * 10000 + symbol.Index);
+                    return CallResult.Ok(100000 + dex.Index * 10000 + symbol.Index);
                 }
                 else
                 {
                     var symbol = _futuresSymbolInfo[envName][0].Symbols.SingleOrDefault(x => x.Name == symbolName);
                     if (symbol == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return new CallResult<int>(symbol.Index);
+                    return CallResult.Ok(symbol.Index);
                 }
             }
         }
@@ -347,11 +347,11 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get the quantity decimal places for a symbol
         /// </summary>
-        public static async Task<CallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(HyperLiquidRestClient client, string symbolName)
+        public static async Task<ICallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(HyperLiquidRestClient client, string symbolName)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<int>(1);
+                return CallResult<int>.Ok(1);
 
             return await GetQuantityDecimalPlacesForSymbolAsync(envName, symbolName, () => UpdateSpotSymbolInfoAsync(client), () => UpdateFuturesSymbolInfoAsync(client)).ConfigureAwait(false);
         }
@@ -359,34 +359,34 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get the quantity decimal places for a symbol
         /// </summary>
-        public static async Task<CallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(HyperLiquidSocketClient client, string symbolName)
+        public static async Task<ICallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(HyperLiquidSocketClient client, string symbolName)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<int>(1);
+                return CallResult<int>.Ok(1);
 
             return await GetQuantityDecimalPlacesForSymbolAsync(envName, symbolName, () => UpdateSpotSymbolInfoAsync(client), () => UpdateFuturesSymbolInfoAsync(client)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(string envName, string symbolName, Func<Task<CallResult>> spotUpdate, Func<Task<CallResult>> futuresUpdate)
+        private static async Task<CallResult<int>> GetQuantityDecimalPlacesForSymbolAsync(string envName, string symbolName, Func<Task<ICallResult>> spotUpdate, Func<Task<ICallResult>> futuresUpdate)
         {
             if (SymbolIsExchangeSpotSymbol(symbolName))
             {
                 var update = await spotUpdate().ConfigureAwait(false);
-                if (!update)
-                    return new CallResult<int>(update.Error!);
+                if (!update.Success)
+                    return CallResult.Fail<int>(update.Error!);
 
                 var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == symbolName);
                 if (symbol == null)
-                    return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                    return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                return new CallResult<int>(symbol.BaseAsset.QuantityDecimals);
+                return CallResult<int>.Ok(symbol.BaseAsset.QuantityDecimals);
             }
             else
             {
                 var update = await futuresUpdate().ConfigureAwait(false);
-                if (!update)
-                    return new CallResult<int>(update.Error!);
+                if (!update.Success)
+                    return CallResult.Fail<int>(update.Error!);
 
                 var symbolSplit = symbolName.Split(':');
                 if (symbolSplit.Length == 2)
@@ -395,22 +395,22 @@ namespace HyperLiquid.Net.Utils
                     var dexName = symbolSplit[0];
                     var dex = _futuresSymbolInfo[envName].SingleOrDefault(x => x.Name.Equals(dexName, StringComparison.InvariantCultureIgnoreCase));
                     if (dex == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "DEX not found")));
 
                     var symbol = dex.Symbols.SingleOrDefault(x => x.Name == symbolName);
                     if (symbol == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return new CallResult<int>(symbol.QuantityDecimals);
+                    return CallResult<int>.Ok(symbol.QuantityDecimals);
                 }
                 else
                 {
 
                     var symbol = _futuresSymbolInfo[envName][0].Symbols.SingleOrDefault(x => x.Name == symbolName);
                     if (symbol == null)
-                        return new CallResult<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                        return CallResult.Fail<int>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return new CallResult<int>(symbol.QuantityDecimals);
+                    return CallResult<int>.Ok(symbol.QuantityDecimals);
                 }
             }
         }
@@ -421,23 +421,23 @@ namespace HyperLiquid.Net.Utils
         public static CallResult<string> GetSymbolNameFromExchangeName(string envName, string id)
         {
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult<string>.Ok("HYPE");
 
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
-                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                return CallResult<string>.Fail(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-            return new CallResult<string>(symbol.Name);
+            return CallResult<string>.Ok(symbol.Name);
         }
 
         /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
-        public static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(HyperLiquidRestClient client, string id)
+        public static async Task<ICallResult<string>> GetSymbolNameFromExchangeNameAsync(HyperLiquidRestClient client, string id)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult<string>.Ok("HYPE");
 
             return await GetSymbolNameFromExchangeNameAsync(envName, id, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
@@ -445,37 +445,37 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get a symbol name from an exchange symbol name
         /// </summary>
-        public static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(HyperLiquidSocketClient client, string id)
+        public static async Task<ICallResult<string>> GetSymbolNameFromExchangeNameAsync(HyperLiquidSocketClient client, string id)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult<string>.Ok("HYPE");
 
             return await GetSymbolNameFromExchangeNameAsync(envName, id, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult<string>> GetSymbolNameFromExchangeNameAsync(string envName, string id, Func<Task<CallResult>> spotUpdate)
+        private static async Task<ICallResult<string>> GetSymbolNameFromExchangeNameAsync(string envName, string id, Func<Task<ICallResult>> spotUpdate)
         {
             var update = await spotUpdate().ConfigureAwait(false);
-            if (!update)
-                return new CallResult<string>(update.Error!);
+            if (!update.Success)
+                return CallResult.Fail<string>(update.Error!);
 
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.ExchangeName == id);
             if (symbol == null)
-                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                return CallResult.Fail<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-            return new CallResult<string>(symbol.Name);
+            return CallResult<string>.Ok(symbol.Name);
         }
 
 
         /// <summary>
         /// Get an exchange symbol name from a symbol name
         /// </summary>
-        public static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(HyperLiquidRestClient client, string name)
+        public static async Task<ICallResult<string>> GetExchangeNameFromSymbolNameAsync(HyperLiquidRestClient client, string name)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult.Ok<string>("HYPE");
 
             return await GetExchangeNameFromSymbolNameAsync(envName, name, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
@@ -483,26 +483,26 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get an exchange symbol name from a symbol name
         /// </summary>
-        public static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(HyperLiquidSocketClient client, string name)
+        public static async Task<ICallResult<string>> GetExchangeNameFromSymbolNameAsync(HyperLiquidSocketClient client, string name)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult.Ok<string>("HYPE");
 
             return await GetExchangeNameFromSymbolNameAsync(envName, name, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(string envName, string name, Func<Task<CallResult>> spotUpdate)
+        private static async Task<CallResult<string>> GetExchangeNameFromSymbolNameAsync(string envName, string name, Func<Task<ICallResult>> spotUpdate)
         {
             var update = await spotUpdate().ConfigureAwait(false);
-            if (!update)
-                return new CallResult<string>(update.Error!);
+            if (!update.Success)
+                return CallResult.Fail<string>(update.Error!);
 
             var symbol = _spotSymbolInfo[envName].SingleOrDefault(x => x.Name == name);
             if (symbol == null)
-                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                return CallResult.Fail<string>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-            return new CallResult<string>(symbol.ExchangeName);
+            return CallResult.Ok<string>(symbol.ExchangeName);
         }
 
         /// <summary>
@@ -529,11 +529,11 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get asset name and id for an asset
         /// </summary>
-        public static async Task<CallResult<string>> GetAssetNameAndIdAsync(HyperLiquidRestClient client, string asset)
+        public static async Task<ICallResult<string>> GetAssetNameAndIdAsync(HyperLiquidRestClient client, string asset)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult.Ok<string>("HYPE");
 
             return await GetAssetNameAndIdAsync(envName, asset, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
@@ -541,26 +541,26 @@ namespace HyperLiquid.Net.Utils
         /// <summary>
         /// Get asset name and id for an asset
         /// </summary>
-        public static async Task<CallResult<string>> GetAssetNameAndIdAsync(HyperLiquidSocketClient client, string asset)
+        public static async Task<ICallResult<string>> GetAssetNameAndIdAsync(HyperLiquidSocketClient client, string asset)
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<string>("HYPE");
+                return CallResult.Ok<string>("HYPE");
 
             return await GetAssetNameAndIdAsync(envName, asset, () => UpdateSpotSymbolInfoAsync(client)).ConfigureAwait(false);
         }
 
-        private static async Task<CallResult<string>> GetAssetNameAndIdAsync(string envName, string asset, Func<Task<CallResult>> spotUpdate)
+        private static async Task<CallResult<string>> GetAssetNameAndIdAsync(string envName, string asset, Func<Task<ICallResult>> spotUpdate)
         {
             var update = await spotUpdate().ConfigureAwait(false);
-            if (!update)
-                return new CallResult<string>(update.Error!);
+            if (!update.Success)
+                return CallResult.Fail<string>(update.Error!);
 
             var assetInfo = _spotAssetInfo[envName].SingleOrDefault(x => x.Name == asset);
             if (assetInfo == null)
-                return new CallResult<string>(new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
+                return CallResult.Fail<string>(new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
 
-            return new CallResult<string>(assetInfo.Name + ":" + assetInfo.AssetId);
+            return CallResult.Ok<string>(assetInfo.Name + ":" + assetInfo.AssetId);
         }
 
         /// <summary>
@@ -576,7 +576,7 @@ namespace HyperLiquid.Net.Utils
         {
             var envName = client.ClientOptions.Environment.Name;
             if (envName.Equals("UnitTest", StringComparison.Ordinal))
-                return new CallResult<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel { OutcomeInfo = new HyperLiquidOutcomeInfo { }, Side = { } });
+                return CallResult.Ok<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel { OutcomeInfo = new HyperLiquidOutcomeInfo { }, Side = { } });
 
             return await GetOutcomeInfoAsync(envName, outcomeId, () => UpdateOutcomeInfoAsync(client)).ConfigureAwait(false);
         }
@@ -590,26 +590,26 @@ namespace HyperLiquid.Net.Utils
         //    return await GetOutcomeInfoAsync(envName, outcomeId, () => UpdateOutcomeInfoAsync(client)).ConfigureAwait(false);
         //}
 
-        private static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(string envName, string outcomeId, Func<Task<CallResult>> outcomeInfoUpdate)
+        private static async Task<CallResult<HyperLiquidOutcomeSideModel>> GetOutcomeInfoAsync(string envName, string outcomeId, Func<Task<ICallResult>> outcomeInfoUpdate)
         {
             var update = await outcomeInfoUpdate().ConfigureAwait(false);
-            if (!update)
-                return new CallResult<HyperLiquidOutcomeSideModel>(update.Error!);
+            if (!update.Success)
+                return CallResult.Fail<HyperLiquidOutcomeSideModel>(update.Error!);
 
             if (!outcomeId.StartsWith("#") && !outcomeId.StartsWith("#"))
-                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Invalid outcome id, should start with '#' (coin) or '+' (token name)" }));
+                return CallResult.Fail<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Invalid outcome id, should start with '#' (coin) or '+' (token name)" }));
 
             var sideId = int.Parse(outcomeId[outcomeId.Length - 1].ToString());
             var parsedOutcomeId = (long.Parse(outcomeId.Substring(1)) - sideId) / 10;
             var outcomeInfo = _outcomesInfo[envName].Outcomes.SingleOrDefault(x => x.Id == parsedOutcomeId);
             if (outcomeInfo == null)
-                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Outcome not found" }));
+                return CallResult.Fail<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Outcome not found" }));
 
             var sideInfo = outcomeInfo.Specs[sideId];
             if (sideId >= outcomeInfo.Specs.Length || sideInfo == null)
-                return new CallResult<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Side not found" }));
+                return CallResult.Fail<HyperLiquidOutcomeSideModel>(new ServerError(ErrorInfo.Unknown with { Message = "Side not found" }));
 
-            return new CallResult<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel
+            return CallResult.Ok<HyperLiquidOutcomeSideModel>(new HyperLiquidOutcomeSideModel
             {
                 OutcomeInfo = outcomeInfo!,
                 Side = sideInfo!
