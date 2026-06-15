@@ -44,7 +44,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [ArrayProperty(1)]
         [JsonConversion]
-        public HyperLiquidPositionUpdateData Data { get; set; } = default!;
+        public HyperLiquidFuturesAccount Data { get; set; } = default!;
     }
 
     /// <summary>
