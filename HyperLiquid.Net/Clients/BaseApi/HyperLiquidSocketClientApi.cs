@@ -41,11 +41,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// ctor
         /// </summary>
         internal HyperLiquidSocketClientApi(
-            ILogger logger,
+            ILoggerFactory? loggerFactory,
             HyperLiquidSocketClient baseClient,
             HyperLiquidSocketOptions options,
             SocketApiOptions apiOptions) :
-            base(logger, HyperLiquidExchange.Metadata.Id, options.Environment.SocketClientAddress!, options, apiOptions)
+            base(loggerFactory, HyperLiquidExchange.Metadata.Id, options.Environment.SocketClientAddress!, options, apiOptions)
         {
             BaseClient = baseClient;
 

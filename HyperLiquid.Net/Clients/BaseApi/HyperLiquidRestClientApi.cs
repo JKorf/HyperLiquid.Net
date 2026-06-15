@@ -29,12 +29,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region constructor/destructor
         internal HyperLiquidRestClientApi(
-            ILogger logger, 
+            ILoggerFactory? loggerFactory,
             HyperLiquidRestClient baseClient,
             HttpClient? httpClient,
             HyperLiquidRestOptions options,
             RestApiOptions apiOptions)
-            : base(logger, HyperLiquidExchange.Metadata.Id, httpClient, options.Environment.RestClientAddress, options, apiOptions)
+            : base(loggerFactory, HyperLiquidExchange.Metadata.Id, httpClient, options.Environment.RestClientAddress, options, apiOptions)
         {
             BaseClient = baseClient;
         }

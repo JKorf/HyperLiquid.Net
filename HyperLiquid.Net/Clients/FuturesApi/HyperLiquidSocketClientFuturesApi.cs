@@ -24,13 +24,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         /// <summary>
         /// ctor
         /// </summary>
-        internal HyperLiquidSocketClientFuturesApi(ILogger logger, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
-            base(logger, baseClient, options, options.FuturesOptions)
+        internal HyperLiquidSocketClientFuturesApi(ILoggerFactory? loggerFactory, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
+            base(loggerFactory, baseClient, options, options.FuturesOptions)
         {
 
-            Account = new HyperLiquidSocketClientFuturesApiAccount(logger, this);
-            ExchangeData = new HyperLiquidSocketClientFuturesApiExchangeData(logger, this);
-            Trading = new HyperLiquidSocketClientFuturesApiTrading(logger, this);
+            Account = new HyperLiquidSocketClientFuturesApiAccount(_logger, this);
+            ExchangeData = new HyperLiquidSocketClientFuturesApiExchangeData(_logger, this);
+            Trading = new HyperLiquidSocketClientFuturesApiTrading(_logger, this);
         }
         #endregion
 

@@ -27,12 +27,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         #region constructor/destructor
-        internal HyperLiquidRestClientSpotApi(ILogger logger, HyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
-            : base(logger, baseClient, httpClient, options, options.SpotOptions)
+        internal HyperLiquidRestClientSpotApi(ILoggerFactory? loggerFactory, HyperLiquidRestClient baseClient, HttpClient? httpClient, HyperLiquidRestOptions options)
+            : base(loggerFactory, baseClient, httpClient, options, options.SpotOptions)
         {
             Account = new HyperLiquidRestClientSpotApiAccount(this);
-            ExchangeData = new HyperLiquidRestClientSpotApiExchangeData(logger, this);
-            Trading = new HyperLiquidRestClientSpotApiTrading(logger, this);
+            ExchangeData = new HyperLiquidRestClientSpotApiExchangeData(_logger, this);
+            Trading = new HyperLiquidRestClientSpotApiTrading(_logger, this);
         }
         #endregion
 
