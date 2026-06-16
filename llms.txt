@@ -2,7 +2,7 @@
 
 > Strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. Supports spot, perpetual futures, staking, vaults, HIP-3 DEX metadata, HIP-4 outcome metadata and streams, REST requests, WebSocket subscriptions, local order books, and CryptoExchange.Net SharedApis.
 
-HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, `HttpResult<T>` / `WebSocketResult<T>` result handling, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. Current version in this repository: 4.7.1. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
+HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. REST methods return `HttpResult<T>` / `HttpResult`, WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`, WebSocket request APIs return `QueryResult<T>` / `QueryResult`, and selected shared helper methods return `ExchangeCallResult<T>`. Current version in this repository: 4.7.1. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 
 ## Documentation
 
@@ -17,8 +17,8 @@ HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosy
 - [Spot Quickstart](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/01-spot-quickstart.cs): Client setup, prices, spot ticker metadata, authenticated balances, spot order pattern
 - [Futures Trading](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/02-futures.cs): Perp metadata, leverage, futures account positions, market/reduce-only order pattern
 - [WebSocket Streams](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/03-websocket.cs): Spot ticker, futures ticker, order book, authenticated order stream, proper teardown
-- [Multi-Exchange Pattern](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/04-multi-exchange.cs): CryptoExchange.Net SharedApis for exchange-agnostic spot/futures ticker and socket code
-- [Error Handling](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/05-error-handling.cs): HttpResult pattern, retry logic, symbol formatting, builder fee checks
+- [Multi-Exchange Pattern](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/04-multi-exchange.cs): CryptoExchange.Net SharedApis for exchange-agnostic spot/futures ticker, socket code, and capability discovery
+- [Error Handling](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/05-error-handling.cs): HttpResult, QueryResult, WebSocketResult, and ExchangeCallResult patterns, retry logic, symbol formatting, builder fee checks
 - [Full Examples Repository](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples): Console, API, order book, custom order book, and tracker examples
 
 ## Critical Usage Rules
@@ -27,10 +27,12 @@ HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosy
 - Use `HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY")`, not generic `ApiCredentials`.
 - Spot symbols use slash notation such as `HYPE/USDC`; futures symbols use base asset notation such as `ETH`.
 - Check `.Success` before reading `.Data` on every REST or socket result.
+- Use `HttpResult<T>` / `HttpResult` for REST calls, `QueryResult<T>` / `QueryResult` for socket request APIs, and `WebSocketResult<UpdateSubscription>` for socket subscriptions.
 - Market orders still require a `price` argument in `PlaceOrderAsync`.
 - Use `reduceOnly: true` when closing futures exposure.
 - Store `UpdateSubscription` values and unsubscribe on shutdown.
 - Inspect `HyperLiquid.Net/Interfaces/Clients/**` before generating uncertain endpoint names.
+- For multi-exchange code, use `.SharedClient.Discover()` to inspect supported shared features.
 
 ## Reference
 

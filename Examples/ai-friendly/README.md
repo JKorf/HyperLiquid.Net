@@ -9,8 +9,8 @@ These examples are compact single-file console programs for AI assistants, docum
 |`01-spot-quickstart.cs`|Public prices, spot ticker metadata, authenticated balances, spot limit order pattern, order status, cancellation|
 |`02-futures.cs`|Perpetual futures ticker data, leverage, account positions, market order pattern, reduce-only close pattern|
 |`03-websocket.cs`|Spot/futures ticker subscriptions, order book subscription, authenticated order updates, unsubscribe cleanup|
-|`04-multi-exchange.cs`|CryptoExchange.Net SharedApis for exchange-agnostic REST and WebSocket code|
-|`05-error-handling.cs`|`HttpResult<T>` handling, retry decisions, symbol formatting, builder fee checks, validation categories|
+|`04-multi-exchange.cs`|CryptoExchange.Net SharedApis for exchange-agnostic REST/WebSocket code and capability discovery|
+|`05-error-handling.cs`|`HttpResult<T>`, `QueryResult<T>`, `WebSocketResult<UpdateSubscription>`, and `ExchangeCallResult<T>` handling, retry decisions, symbol formatting, builder fee checks, validation categories|
 
 ## Setup
 

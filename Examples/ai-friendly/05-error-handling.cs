@@ -1,7 +1,7 @@
 // 05-error-handling.cs
 //
-// Demonstrates: HttpResult patterns, retry logic, symbol formatting,
-// builder fee checks, and common error categories.
+// Demonstrates: HttpResult, QueryResult, WebSocketResult, and ExchangeCallResult
+// patterns, retry logic, symbol formatting, builder fee checks, and common error categories.
 //
 // Setup: dotnet add package HyperLiquid.Net
 
@@ -18,7 +18,9 @@ var client = new HyperLiquidRestClient(options =>
 
 // ---- 1. THE BASIC PATTERN ----
 // REST methods return HttpResult<T> or HttpResult.
-// WebSocket methods return WebSocketResult<T> or WebSocketResult.
+// WebSocket request API methods return QueryResult<T> or QueryResult.
+// WebSocket subscription methods return WebSocketResult<UpdateSubscription>.
+// Some SharedApis symbol helper methods return ExchangeCallResult<T>.
 // .Data is only safe to read when .Success is true.
 
 var result = await client.FuturesApi.ExchangeData.GetPricesAsync();

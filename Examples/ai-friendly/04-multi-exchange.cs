@@ -13,8 +13,12 @@ using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Clients;
 
 // ---- REST SHARED CLIENTS ----
-ISpotTickerRestClient hyperLiquidSpot = new HyperLiquidRestClient().SpotApi.SharedClient;
-IFuturesTickerRestClient hyperLiquidFutures = new HyperLiquidRestClient().FuturesApi.SharedClient;
+var restClient = new HyperLiquidRestClient();
+ISpotTickerRestClient hyperLiquidSpot = restClient.SpotApi.SharedClient;
+IFuturesTickerRestClient hyperLiquidFutures = restClient.FuturesApi.SharedClient;
+
+var spotCapabilities = restClient.SpotApi.SharedClient.Discover();
+Console.WriteLine($"Shared spot REST features: {spotCapabilities.Features.Count(x => x.Supported)}");
 
 var hypeUsdc = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
 var ethPerp = new SharedSymbol(TradingMode.PerpetualLinear, "ETH", "USDC");
