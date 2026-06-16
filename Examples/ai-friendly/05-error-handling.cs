@@ -1,6 +1,6 @@
 // 05-error-handling.cs
 //
-// Demonstrates: WebCallResult patterns, retry logic, symbol formatting,
+// Demonstrates: HttpResult patterns, retry logic, symbol formatting,
 // builder fee checks, and common error categories.
 //
 // Setup: dotnet add package HyperLiquid.Net
@@ -17,8 +17,8 @@ var client = new HyperLiquidRestClient(options =>
 });
 
 // ---- 1. THE BASIC PATTERN ----
-// REST methods return WebCallResult<T> or WebCallResult.
-// WebSocket methods return CallResult<T> or CallResult.
+// REST methods return HttpResult<T> or HttpResult.
+// WebSocket methods return WebSocketResult<T> or WebSocketResult.
 // .Data is only safe to read when .Success is true.
 
 var result = await client.FuturesApi.ExchangeData.GetPricesAsync();
@@ -38,11 +38,11 @@ else
 // ---- 2. SIMPLE RETRY WITH BACKOFF ----
 // Retry only on transient errors. Do not retry validation or credential failures blindly.
 
-async Task<WebCallResult<T>> WithRetry<T>(
-    Func<Task<WebCallResult<T>>> call,
+async Task<HttpResult<T>> WithRetry<T>(
+    Func<Task<HttpResult<T>>> call,
     int maxAttempts = 3)
 {
-    WebCallResult<T> last = default!;
+    HttpResult<T> last = default!;
     for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {
         last = await call();

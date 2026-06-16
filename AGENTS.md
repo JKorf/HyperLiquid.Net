@@ -39,7 +39,7 @@ var publicClient = new HyperLiquidRestClient();
 
 ## Core Pattern: Result Handling
 
-REST methods return `WebCallResult<T>` or `WebCallResult`; WebSocket subscriptions and WebSocket request API calls return `CallResult<T>` or `CallResult`. Always check `.Success` before reading `.Data`.
+REST methods return `HttpResult<T>` or `HttpResult`; WebSocket subscriptions and WebSocket request API calls return `WebSocketResult<T>` or `WebSocketResult`. Always check `.Success` before reading `.Data`.
 
 ```csharp
 var prices = await restClient.SpotApi.ExchangeData.GetPricesAsync();

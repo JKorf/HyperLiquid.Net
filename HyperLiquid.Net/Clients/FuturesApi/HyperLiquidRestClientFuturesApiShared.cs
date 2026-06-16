@@ -457,6 +457,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             RequiredOptionalParameters = new List<ParameterDescription>
             {
                 new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
+            },
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
             }
         };
         async Task<HttpResult<SharedId>> IFuturesOrderRestClient.PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
@@ -474,6 +478,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 reduceOnly: request.ReduceOnly,
                 timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
                 clientOrderId: request.ClientOrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
                 ct: ct).ConfigureAwait(false);
 
             if (!result.Success)
@@ -698,7 +703,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                                 
         }
 
-        CancelFuturesOrderOptions IFuturesOrderRestClient.CancelFuturesOrderOptions { get; } = new CancelFuturesOrderOptions(_exchangeName, true);
+        CancelFuturesOrderOptions IFuturesOrderRestClient.CancelFuturesOrderOptions { get; } = new CancelFuturesOrderOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
+            }
+        };
         async Task<HttpResult<SharedId>> IFuturesOrderRestClient.CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
         {
             var validationError = SharedClient.CancelFuturesOrderOptions.ValidateRequest(request, this);
@@ -708,7 +719,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!long.TryParse(request.OrderId, out var orderId))
                 return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
 
-            var order = await Trading.CancelOrderAsync(request.Symbol!.GetSymbol(FormatSymbol), orderId, ct: ct).ConfigureAwait(false);
+            var order = await Trading.CancelOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                orderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
             if (!order.Success)
                 return HttpResult.Fail<SharedId>(order);
 
@@ -761,6 +776,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             RequiredExchangeParameters = new List<ParameterDescription>
             {
                 new ParameterDescription("Price", typeof(decimal), "The current price of the symbol. Required to calculate max slippage.", 21.5m)
+            },
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
             }
         };
         async Task<HttpResult<SharedId>> IFuturesOrderRestClient.ClosePositionAsync(ClosePositionRequest request, CancellationToken ct)
@@ -778,6 +797,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 price: ExchangeParameters.GetValue<decimal>(request.ExchangeParameters, Exchange, "Price"),
                 reduceOnly: true,
                 timeInForce: Enums.TimeInForce.ImmediateOrCancel,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
                 ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
@@ -883,14 +903,24 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                                 
         }
 
-        CancelFuturesOrderByClientOrderIdOptions IFuturesOrderClientIdRestClient.CancelFuturesOrderByClientOrderIdOptions { get; } = new CancelFuturesOrderByClientOrderIdOptions(_exchangeName, true);
+        CancelFuturesOrderByClientOrderIdOptions IFuturesOrderClientIdRestClient.CancelFuturesOrderByClientOrderIdOptions { get; } = new CancelFuturesOrderByClientOrderIdOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
+            }
+        };
         async Task<HttpResult<SharedId>> IFuturesOrderClientIdRestClient.CancelFuturesOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
         {
             var validationError = SharedClient.CancelFuturesOrderByClientOrderIdOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-            var order = await Trading.CancelOrderByClientOrderIdAsync(request.Symbol!.GetSymbol(FormatSymbol), clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
+            var order = await Trading.CancelOrderByClientOrderIdAsync(
+                request.Symbol!.GetSymbol(FormatSymbol), 
+                clientOrderId: request.OrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
             if (!order.Success)
                 return HttpResult.Fail<SharedId>(order);
 

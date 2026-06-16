@@ -2,7 +2,7 @@
 
 > Strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. Supports spot, perpetual futures, staking, vaults, HIP-3 DEX metadata, HIP-4 outcome metadata and streams, REST requests, WebSocket subscriptions, local order books, and CryptoExchange.Net SharedApis.
 
-HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, `WebCallResult<T>` / `CallResult<T>` result handling, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. Current version in this repository: 4.7.1. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
+HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, `HttpResult<T>` / `WebSocketResult<T>` result handling, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. Current version in this repository: 4.7.1. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 
 ## Documentation
 
@@ -18,7 +18,7 @@ HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosy
 - [Futures Trading](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/02-futures.cs): Perp metadata, leverage, futures account positions, market/reduce-only order pattern
 - [WebSocket Streams](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/03-websocket.cs): Spot ticker, futures ticker, order book, authenticated order stream, proper teardown
 - [Multi-Exchange Pattern](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/04-multi-exchange.cs): CryptoExchange.Net SharedApis for exchange-agnostic spot/futures ticker and socket code
-- [Error Handling](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/05-error-handling.cs): WebCallResult pattern, retry logic, symbol formatting, builder fee checks
+- [Error Handling](https://github.com/JKorf/HyperLiquid.Net/blob/main/Examples/ai-friendly/05-error-handling.cs): HttpResult pattern, retry logic, symbol formatting, builder fee checks
 - [Full Examples Repository](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples): Console, API, order book, custom order book, and tracker examples
 
 ## Critical Usage Rules

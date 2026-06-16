@@ -10,7 +10,7 @@ These examples are compact single-file console programs for AI assistants, docum
 |`02-futures.cs`|Perpetual futures ticker data, leverage, account positions, market order pattern, reduce-only close pattern|
 |`03-websocket.cs`|Spot/futures ticker subscriptions, order book subscription, authenticated order updates, unsubscribe cleanup|
 |`04-multi-exchange.cs`|CryptoExchange.Net SharedApis for exchange-agnostic REST and WebSocket code|
-|`05-error-handling.cs`|`WebCallResult<T>` handling, retry decisions, symbol formatting, builder fee checks, validation categories|
+|`05-error-handling.cs`|`HttpResult<T>` handling, retry decisions, symbol formatting, builder fee checks, validation categories|
 
 ## Setup
 

@@ -32,12 +32,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return HttpResult.Fail<SharedBalance[]>(Exchange, validationError);
 
-                    var result = await Account.GetBalancesAsync(ct: ct).ConfigureAwait(false);
-                    if (!result.Success)
-                        return HttpResult.Fail<SharedBalance[]>(result);
+            var result = await Account.GetBalancesAsync(ct: ct).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<SharedBalance[]>(result);
 
-                    return HttpResult.Ok(result, result.Data.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray());
-                
+            return HttpResult.Ok(result, result.Data.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray());
         }
 
         #endregion
@@ -292,6 +291,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
             RequiredOptionalParameters = new List<ParameterDescription>
             {
                 new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
+            },
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
             }
         };
 
@@ -301,20 +304,21 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-                    var result = await Trading.PlaceOrderAsync(
-                        request.Symbol!.GetSymbol(FormatSymbol),
-                        request.Side == SharedOrderSide.Buy ? Enums.OrderSide.Buy : Enums.OrderSide.Sell,
-                        request.OrderType == SharedOrderType.Limit || request.OrderType == SharedOrderType.LimitMaker ? Enums.OrderType.Limit : Enums.OrderType.Market,
-                        quantity: request.Quantity?.QuantityInBaseAsset ?? 0,
-                        price: request.Price!.Value,
-                        timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
-                        clientOrderId: request.ClientOrderId,
-                        ct: ct).ConfigureAwait(false);
+            var result = await Trading.PlaceOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                request.Side == SharedOrderSide.Buy ? Enums.OrderSide.Buy : Enums.OrderSide.Sell,
+                request.OrderType == SharedOrderType.Limit || request.OrderType == SharedOrderType.LimitMaker ? Enums.OrderType.Limit : Enums.OrderType.Market,
+                quantity: request.Quantity?.QuantityInBaseAsset ?? 0,
+                price: request.Price!.Value,
+                timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
+                clientOrderId: request.ClientOrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
 
-                    if (!result.Success)
-                        return HttpResult.Fail<SharedId>(result);
+            if (!result.Success)
+                return HttpResult.Fail<SharedId>(result);
 
-                    return HttpResult.Ok(result, new SharedId(result.Data.OrderId.ToString()));
+            return HttpResult.Ok(result, new SharedId(result.Data.OrderId.ToString()));
                 
         }
 
@@ -525,21 +529,31 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 
         }
 
-        CancelSpotOrderOptions ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new CancelSpotOrderOptions(_exchangeName, true);
+        CancelSpotOrderOptions ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new CancelSpotOrderOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
+            }
+        };
         async Task<HttpResult<SharedId>> ISpotOrderRestClient.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
         {
             var validationError = SharedClient.CancelSpotOrderOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-                    if (!long.TryParse(request.OrderId, out var orderId))
-                        return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
+            if (!long.TryParse(request.OrderId, out var orderId))
+                return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
 
-                    var order = await Trading.CancelOrderAsync(request.Symbol!.GetSymbol(FormatSymbol), orderId, ct: ct).ConfigureAwait(false);
-                    if (!order.Success)
-                        return HttpResult.Fail<SharedId>(order);
+            var order = await Trading.CancelOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                orderId, 
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
+            if (!order.Success)
+                return HttpResult.Fail<SharedId>(order);
 
-                    return HttpResult.Ok(order, new SharedId(request.OrderId));
+            return HttpResult.Ok(order, new SharedId(request.OrderId));
                 
         }
 
@@ -640,18 +654,28 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 
         }
 
-        CancelSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdOptions { get; } = new CancelSpotOrderByClientOrderIdOptions(_exchangeName, true);
+        CancelSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdOptions { get; } = new CancelSpotOrderByClientOrderIdOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
+            }
+        };
         async Task<HttpResult<SharedId>> ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
         {
             var validationError = SharedClient.CancelSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-                    var order = await Trading.CancelOrderByClientOrderIdAsync(request.Symbol!.GetSymbol(FormatSymbol), clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
-                    if (!order.Success)
-                        return HttpResult.Fail<SharedId>(order);
+            var order = await Trading.CancelOrderByClientOrderIdAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                clientOrderId: request.OrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"), 
+                ct: ct).ConfigureAwait(false);
+            if (!order.Success)
+                return HttpResult.Fail<SharedId>(order);
 
-                    return HttpResult.Ok(order, new SharedId(request.OrderId));
+            return HttpResult.Ok(order, new SharedId(request.OrderId));
                 
         }
         #endregion
