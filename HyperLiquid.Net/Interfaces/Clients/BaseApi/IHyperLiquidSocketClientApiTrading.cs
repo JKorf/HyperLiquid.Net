@@ -316,7 +316,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         Task<QueryResult> CancelTwapOrderAsync(string symbol, long twapId, string? vaultAddress = null, DateTime? expireAfter = null, CancellationToken ct = default);
 
         /// <summary>
-        /// Subscribe to order updates, will provided updates for both Spot and Futures orders
+        /// Subscribe to order updates, will provided updates for both Spot and Futures orders. Note that the update does not contain a user field, <br />
+        /// so updates for all addresses will be received on all handlers
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />

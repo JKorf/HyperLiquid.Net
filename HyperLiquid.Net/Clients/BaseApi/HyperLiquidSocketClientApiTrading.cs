@@ -1024,6 +1024,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
+            // The update doesn't contain the address, so we can't specify the address as filter..
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, _baseClient, "orderUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -1081,7 +1082,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidOpenOrderUpdate>(_logger, _baseClient, "openOrders", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidOpenOrderUpdate>(_logger, _baseClient, "openOrders", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
                 { "dex", dex ?? "" },
@@ -1135,7 +1136,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, _baseClient, "userFills", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, _baseClient, "userFills", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -1188,7 +1189,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, _baseClient, "userTwapSliceFills", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, _baseClient, "userTwapSliceFills", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -1241,7 +1242,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, _baseClient, "userTwapHistory", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, _baseClient, "userTwapHistory", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },

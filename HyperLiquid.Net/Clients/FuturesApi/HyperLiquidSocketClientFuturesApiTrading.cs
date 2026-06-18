@@ -127,7 +127,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidPositionUpdate>(_logger, _baseClient, "clearinghouseState", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidPositionUpdate>(_logger, _baseClient, "clearinghouseState", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
                 { "dex", dex ?? "" },
@@ -154,7 +154,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidAllDexPositionUpdate>(_logger, _baseClient, "allDexsClearinghouseState", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidAllDexPositionUpdate>(_logger, _baseClient, "allDexsClearinghouseState", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() }
             },
