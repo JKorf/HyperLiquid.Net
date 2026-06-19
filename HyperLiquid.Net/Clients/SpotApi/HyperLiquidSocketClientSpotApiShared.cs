@@ -19,7 +19,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public void SetDefaultExchangeParameter(string key, object value) => ExchangeParameters.SetStaticParameter(Exchange, key, value);
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
-        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(this);
+        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(HyperLiquidExchange.Metadata, this);
 
         #region Ticker client
         SubscribeTickerOptions ITickerSocketClient.SubscribeTickerOptions { get; } = new SubscribeTickerOptions(_exchangeName);
@@ -31,7 +31,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
             var result = await ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, update => 
-            handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+            handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
             {
                 QuoteVolume = update.Data.QuoteVolume
             })), ct).ConfigureAwait(false);
@@ -140,7 +140,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
                     handler(update.ToType<SharedSpotOrder[]>(spotOrders.Select(x =>
                         new SharedSpotOrder(
-                            ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol!),
+                            ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Order.Symbol!),
                             x.Order.Symbol!,
                             x.Order.OrderId.ToString(),
                             x.Order.OrderType == Enums.OrderType.Limit || x.Order.OrderType == Enums.OrderType.Limit ? SharedOrderType.Limit : x.Order.OrderType == Enums.OrderType.Market ? SharedOrderType.Market : SharedOrderType.Other,
@@ -221,7 +221,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
                     handler(update.ToType<SharedUserTrade[]>(spotOrders.Select(x =>
                         new SharedUserTrade(
-                            ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
+                            ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                             x.Symbol!,
                             x.OrderId.ToString(),
                             x.TradeId.ToString(),
@@ -273,7 +273,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
             var result = await ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, update => 
             handler(update.ToType(
                 new SharedBookTicker(
-                    ExchangeSymbolCache.ParseSymbol(_topicId, update.Data.Symbol),
+                    ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, update.Data.Symbol),
                     update.Data.Symbol,
                     update.Data.BestAsk.Price,
                     update.Data.BestAsk.Quantity,

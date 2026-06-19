@@ -29,7 +29,8 @@ namespace HyperLiquid.Net
                 "https://app.hyperliquid.xyz/",
                 ["https://hyperliquid.gitbook.io/hyperliquid-docs"],
                 PlatformType.CryptoCurrencyExchange,
-                CentralizationType.Decentralized
+                CentralizationType.Decentralized,
+                HyperLiquidEnvironment.All
                 );
 
         /// <summary>

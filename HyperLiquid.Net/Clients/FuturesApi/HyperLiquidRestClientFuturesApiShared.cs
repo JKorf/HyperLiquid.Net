@@ -21,7 +21,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public void SetDefaultExchangeParameter(string key, object value) => ExchangeParameters.SetStaticParameter(Exchange, key, value);
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
-        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(this);
+        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(HyperLiquidExchange.Metadata, this);
 
 
         #region Balance Client
@@ -159,7 +159,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (symbol == null)
                 return HttpResult.Fail<SharedFuturesTicker>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-            return HttpResult.Ok(result, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
+            return HttpResult.Ok(result, new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol.Symbol), symbol.Symbol, symbol.MidPrice, null, null, symbol.NotionalVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100), 3))
             {
                 FundingRate = symbol.FundingRate,
                 MarkPrice = symbol.MarkPrice
@@ -178,7 +178,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result.Success)
                 return HttpResult.Fail<SharedFuturesTicker[]>(result);
 
-            return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), x.Symbol, x.MidPrice, null, null, x.NotionalVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100), 3))
+            return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedFuturesTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol), x.Symbol, x.MidPrice, null, null, x.NotionalVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100), 3))
             {
                 FundingRate = x.FundingRate,
                 MarkPrice = x.MarkPrice
@@ -203,7 +203,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return HttpResult.Fail<SharedBookTicker>(resultTicker);
 
             return HttpResult.Ok(resultTicker, new SharedBookTicker(
-                ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol),
                 symbol,
                 resultTicker.Data.Levels.Asks[0].Price,
                 resultTicker.Data.Levels.Asks[0].Quantity,
@@ -244,7 +244,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             var symbolRegistrations = result.Data.SelectMany(x => x.Symbols.Where(x => !x.IsDelisted).Select(ParseSymbol))
                 .Concat(result.Data.SelectMany(x => x.Symbols.Select(x => new SharedSpotSymbol(x.Name, "USDC", x.Name, true, TradingMode.PerpetualLinear)))).ToArray();
 
-            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, symbolRegistrations);
+            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, symbolRegistrations);
             return HttpResult.Ok(result, response);
                                 
         }
@@ -270,14 +270,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         async Task<ExchangeCallResult<SharedSymbol[]>> IFuturesSymbolRestClient.GetFuturesSymbolsForBaseAssetAsync(string baseAsset)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((IFuturesSymbolRestClient)this).GetFuturesSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<SharedSymbol[]>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, baseAsset));
+            return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, EnvironmentName, null, baseAsset));
         }
 
         async Task<ExchangeCallResult<bool>> IFuturesSymbolRestClient.SupportsFuturesSymbolAsync(SharedSymbol symbol)
@@ -285,26 +285,26 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (symbol.TradingMode == TradingMode.Spot)
                 throw new ArgumentException(nameof(symbol), "Spot symbols not allowed");
 
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((IFuturesSymbolRestClient)this).GetFuturesSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbol));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbol));
         }
 
         async Task<ExchangeCallResult<bool>> IFuturesSymbolRestClient.SupportsFuturesSymbolAsync(string symbolName)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((IFuturesSymbolRestClient)this).GetFuturesSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbolName));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbolName));
         }
         #endregion
 
@@ -503,7 +503,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return HttpResult.Fail<SharedFuturesOrder>(order);
 
             return HttpResult.Ok(order, new SharedFuturesOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol),
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol),
                 order.Data.Order.Symbol!,
                 order.Data.Order.OrderId.ToString(),
                 ParseOrderType(order.Data.Order.OrderType),
@@ -557,7 +557,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 data = data.Where(x => x.Symbol == symbol);
 
             return HttpResult.Ok(orders, orders.Data.Select(x => new SharedFuturesOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                 x.Symbol!,
                 x.OrderId.ToString(),
                 ParseOrderType(x.OrderType),
@@ -602,7 +602,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return HttpResult.Ok(orders, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, request.Direction ?? DataDirection.Descending)
                 .Select(x =>
                     new SharedFuturesOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol!), 
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Order.Symbol!), 
                         x.Order.Symbol!,
                         x.Order.OrderId.ToString(),
                         ParseOrderType(x.Order.OrderType),
@@ -639,7 +639,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var data = orders.Data.Where(x => x.OrderId == orderId);
             return HttpResult.Ok(orders, data.Select(x => new SharedUserTrade(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol), 
                 x.Symbol,
                 x.OrderId.ToString(),
                 x.TradeId.ToString(),
@@ -686,7 +686,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return HttpResult.Ok(result, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
                     .Select(x =>
                         new SharedUserTrade(
-                            ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
+                            ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol), 
                             x.Symbol,
                             x.OrderId.ToString(),
                             x.TradeId.ToString(),
@@ -754,7 +754,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 data = data.Where(x => x.Position.Symbol == request.Symbol.GetSymbol(FormatSymbol));
 
             var resultTypes = request.Symbol == null && request.TradingMode == null ? SupportedTradingModes : request.Symbol != null ? new[] { request.Symbol.TradingMode } : new[] { request.TradingMode!.Value };
-            return HttpResult.Ok(result, data.Select(x => new SharedPosition(ExchangeSymbolCache.ParseSymbol(_topicId, x.Position.Symbol), x.Position.Symbol, Math.Abs(x.Position.PositionQuantity ?? 0), null)
+            return HttpResult.Ok(result, data.Select(x => new SharedPosition(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Position.Symbol), x.Position.Symbol, Math.Abs(x.Position.PositionQuantity ?? 0), null)
             {
                 UnrealizedPnl = x.Position.UnrealizedPnl,
                 LiquidationPrice = x.Position.LiquidationPrice == 0 ? null : x.Position.LiquidationPrice,
@@ -883,7 +883,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return HttpResult.Fail<SharedFuturesOrder>(order);
 
             return HttpResult.Ok(order, new SharedFuturesOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol!),
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol!),
                 order.Data.Order.Symbol!,
                 order.Data.Order.OrderId.ToString(),
                 ParseOrderType(order.Data.Order.OrderType),

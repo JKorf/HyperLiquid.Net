@@ -20,7 +20,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public void SetDefaultExchangeParameter(string key, object value) => ExchangeParameters.SetStaticParameter(Exchange, key, value);
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
-        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(this);
+        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(HyperLiquidExchange.Metadata, this);
 
 
         #region Balance Client
@@ -149,7 +149,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (symbol == null)
                         return HttpResult.Fail<SharedSpotTicker>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return HttpResult.Ok(result, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                    return HttpResult.Ok(result, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
                     {
                         QuoteVolume = symbol.QuoteVolume
                     });
@@ -167,7 +167,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (!result.Success)
                         return HttpResult.Fail<SharedSpotTicker[]>(result);
 
-                    return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol!), x.Symbol!, x.MidPrice, null, null, x.BaseVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                    return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol!), x.Symbol!, x.MidPrice, null, null, x.BaseVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
                     {
                         QuoteVolume = x.QuoteVolume
                     }).ToArray());
@@ -194,7 +194,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         return HttpResult.Fail<SharedBookTicker>(resultTicker, new ServerError(new ErrorInfo(ErrorType.Unknown, "No response")));
 
                     return HttpResult.Ok(resultTicker, new SharedBookTicker(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol),
                         symbol,
                         resultTicker.Data.Levels.Asks[0].Price,
                         resultTicker.Data.Levels.Asks[0].Quantity,
@@ -227,21 +227,21 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         PriceDecimals = 8 - s.BaseAsset.QuantityDecimals
                     }).ToArray();
 
-                    ExchangeSymbolCache.UpdateSymbolInfo(_topicId, resultData);
+                    ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, resultData);
                     return HttpResult.Ok(result, resultData);
                 
         }
 
         async Task<ExchangeCallResult<SharedSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsForBaseAssetAsync(string baseAsset)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<SharedSymbol[]>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, baseAsset));
+            return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, EnvironmentName, null, baseAsset));
         }
 
         async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(SharedSymbol symbol)
@@ -249,26 +249,26 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (symbol.TradingMode != TradingMode.Spot)
                 throw new ArgumentException(nameof(symbol), "Only Spot symbols allowed");
 
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbol));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbol));
         }
 
         async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(string symbolName)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
                 if (!symbols.Success)
                     return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbolName));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbolName));
         }
         #endregion
 
@@ -337,7 +337,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         return HttpResult.Fail<SharedSpotOrder>(order);
 
                     return HttpResult.Ok(order, new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol!),
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol!),
                         order.Data.Order.Symbol!,
                         order.Data.Order.OrderId.ToString(),
                         ParseOrderType(order.Data.Order.OrderType),
@@ -374,7 +374,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         data = data.Where(x => x.Symbol == symbol);
 
                     return HttpResult.Ok(orders, data.Select(x => new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                         x.Symbol!,
                         x.OrderId.ToString(),
                         ParseOrderType(x.OrderType),
@@ -426,7 +426,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     return HttpResult.Ok(orders, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
                                 .Select(x =>
                                     new SharedSpotOrder(
-                                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol),
+                                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Order.Symbol),
                                         x.Order.Symbol!,
                                         x.Order.OrderId.ToString(),
                                         ParseOrderType(x.Order.OrderType),
@@ -463,7 +463,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
                     var data = orders.Data.Where(x => x.OrderId == orderId);
                     return HttpResult.Ok(orders, data.Select(x => new SharedUserTrade(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                         x.Symbol,
                         x.OrderId.ToString(),
                         x.TradeId.ToString(),
@@ -513,7 +513,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     return HttpResult.Ok(result, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
                             .Select(x =>
                                 new SharedUserTrade(
-                                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
+                                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                                 x.Symbol,
                                 x.OrderId.ToString(),
                                 x.TradeId.ToString(),
@@ -634,7 +634,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         return HttpResult.Fail<SharedSpotOrder>(order);
 
                     return HttpResult.Ok(order, new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol!),
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol!),
                         order.Data.Order.Symbol!,
                         order.Data.Order.OrderId.ToString(),
                         ParseOrderType(order.Data.Order.OrderType),
