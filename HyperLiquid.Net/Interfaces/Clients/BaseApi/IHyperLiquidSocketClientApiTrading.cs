@@ -238,6 +238,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="tpSlType">["<c>action.order.t.trigger.tpsl</c>"] Trigger order type</param>
         /// <param name="tpSlGrouping">Trigger order grouping</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="alwaysPlace">["<c>a</c>"] When set to true the new order will be placed regardless of cancellation success</param>
         /// <param name="ct">Cancellation token</param>
         Task<QueryResult> EditOrderAsync(
             string symbol,
@@ -255,6 +256,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default);
 
         /// <summary>
@@ -267,11 +269,13 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="requests">Edit requests</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="alwaysPlace">["<c>a</c>"] When set to true the new order will be placed regardless of cancellation success</param>
         /// <param name="ct">Cancellation token</param>
         Task<QueryResult<CallResult<HyperLiquidOrderResult>[]>> EditOrdersAsync(
             IEnumerable<HyperLiquidEditOrderRequest> requests,
             string? vaultAddress = null,
             DateTime? expireAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default);
 
         /// <summary>

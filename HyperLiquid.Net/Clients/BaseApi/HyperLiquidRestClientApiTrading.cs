@@ -697,6 +697,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default)
         {
             if ((orderId == null) == (clientOrderId == null))
@@ -751,6 +752,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("oid", orderId);
             actionParameters.Add("oid", clientOrderId);
             actionParameters.Add("order", orderParameters);
+            if (alwaysPlace == true)
+                actionParameters.Add("a", alwaysPlace.Value);
             parameters.Add("action", actionParameters);
             
             if (vaultAddress != null)
@@ -771,6 +774,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             IEnumerable<HyperLiquidEditOrderRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
@@ -827,17 +831,18 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 orderRequests.Add(modifyParameters);
             }
 
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
+            {
+                { "type", "batchModify" },
+                { "modifies", orderRequests }
+            };
+            if (alwaysPlace == true)
+                actionParameters.Add("a", alwaysPlace.Value);
             var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
-                {
-                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
-                    {
-                        { "type", "batchModify" },
-                        { "modifies", orderRequests }
-                    }
-                }
+                { "action", actionParameters }
             };
-            
+
             if (vaultAddress != null)
                 parameters.Add("vaultAddress", vaultAddress);
 
