@@ -208,6 +208,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 4.8.0 - 08 Jun 2026
+    * Updated CryptoExchange.Net to version 11.2.2
+    * Added additional validation clientOrderId parameter in PlaceOrder endpoint
+
 * Version 4.7.1 - 02 Jun 2026
     * Fixed Shared GetKlinesAsync implementations throwing exception if no startTime provided
     * Fixed user client provider not caching new client when previous client was disposed

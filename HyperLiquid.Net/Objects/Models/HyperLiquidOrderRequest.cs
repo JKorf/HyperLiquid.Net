@@ -38,7 +38,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         public bool? ReduceOnly { get; set; }
         /// <summary>
-        /// Client order id
+        /// Client order id, should be a 128 bit hes string, for example `0x1234567890abcdef1234567890abcdef`
         /// </summary>
         public string? ClientOrderId { get; set; }
         /// <summary>

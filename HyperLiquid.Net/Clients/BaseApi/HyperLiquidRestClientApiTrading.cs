@@ -411,7 +411,16 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 }
 
                 orderParameters.AddRaw("t", orderTypeParameters);
-                orderParameters.Add("c", order.ClientOrderId);
+                if (order.ClientOrderId != null)
+                {
+                    if (!order.ClientOrderId.IsValidClientOrderId())
+                        throw new ArgumentException(nameof(order.ClientOrderId), "Client order id should be a valid 128 bit hex string, for example `0x1234567890abcdef1234567890abcdef`");
+
+                    if (!order.ClientOrderId.StartsWith("0x"))
+                        order.ClientOrderId = "0x" + order.ClientOrderId;
+
+                    orderParameters.Add("c", order.ClientOrderId);
+                }
 
                 orderRequests.Add(orderParameters);
             }
