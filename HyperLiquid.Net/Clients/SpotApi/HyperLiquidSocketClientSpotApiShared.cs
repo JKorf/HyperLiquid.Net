@@ -252,7 +252,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var result = await Account.SubscribeToUserUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedBalance[]>(update.Data.SpotBalances.Balances.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray())),
+                update => handler(update.ToType<SharedBalance[]>(update.Data.SpotBalances.Balances.Select(x => 
+                    new SharedBalance(
+                        SupportedTradingModes, 
+                        HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), 
+                        x.Total - x.Hold,
+                        x.Total)).ToArray())),
                 ct: ct).ConfigureAwait(false);
 
             return result;

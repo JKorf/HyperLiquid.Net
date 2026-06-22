@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 namespace HyperLiquid.Net.Converters
 {
     [JsonSerializable(typeof(Parameters))]
+    [JsonSerializable(typeof(Parameters[]))]
     [JsonSerializable(typeof(List<Parameters>))]
     [JsonSerializable(typeof(UserAbstractionState))]
     [JsonSerializable(typeof(HyperLiquidSettledOutcome))]

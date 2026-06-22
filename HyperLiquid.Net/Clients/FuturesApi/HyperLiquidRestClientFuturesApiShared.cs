@@ -45,6 +45,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
                     return HttpResult.Ok<SharedBalance[]>(result, [
                         new SharedBalance(
+                            SupportedTradingModes,
                             "USDC",
                             result.Data.MarginSummary.AccountValue - result.Data.MarginSummary.TotalMarginUsed,
                             result.Data.MarginSummary.AccountValue)

@@ -255,6 +255,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 null,
                 update => handler(update.ToType<SharedBalance[]>([
                     new SharedBalance(
+                        SupportedTradingModes,
                         "USDC",
                         update.Data.FuturesInfo.MarginSummary.AccountValue - update.Data.FuturesInfo.MarginSummary.TotalMarginUsed,
                         update.Data.FuturesInfo.MarginSummary.AccountValue

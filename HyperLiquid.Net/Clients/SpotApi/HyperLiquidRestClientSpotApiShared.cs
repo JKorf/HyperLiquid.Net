@@ -36,7 +36,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (!result.Success)
                 return HttpResult.Fail<SharedBalance[]>(result);
 
-            return HttpResult.Ok(result, result.Data.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray());
+            return HttpResult.Ok(result, result.Data.Select(x => 
+                new SharedBalance(
+                    SupportedTradingModes,
+                    HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), 
+                    x.Total - x.Hold, 
+                    x.Total)).ToArray());
         }
 
         #endregion
