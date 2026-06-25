@@ -25,11 +25,11 @@ namespace HyperLiquid.Net.Objects.Sockets
             _client = client;
             MessageRouter = MessageRouter.Create([
                 MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<T>>("subscriptionResponse", listenId, HandleMessage),
-                MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<string>>("error", listenId, HandleError)
+                MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<string>, HyperLiquidSocketUpdate<T>>("error", listenId, HandleError)
                 ]);
         }
 
-        public CallResult<HyperLiquidSocketUpdate<string>> HandleError(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<string> message)
+        public CallResult<HyperLiquidSocketUpdate<T>> HandleError(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<string> message)
         {
             var error = message.Data;
 
@@ -37,10 +37,10 @@ namespace HyperLiquid.Net.Objects.Sockets
              || error.StartsWith("Already unsubscribed"))
             {
                 // Allow duplicate subscriptions
-                return CallResult<HyperLiquidSocketUpdate<string>>.Ok(message, originalData);
+                return CallResult.Ok(new HyperLiquidSocketUpdate<T> { Channel = message.Channel }, originalData);
             }
 
-            return CallResult<HyperLiquidSocketUpdate<string>>.Fail(new ServerError(_client.GetErrorInfo("Subscription", error)), originalData);
+            return CallResult<HyperLiquidSocketUpdate<T>>.Fail(new ServerError(_client.GetErrorInfo("Subscription", error)), originalData);
         }
 
         public CallResult<HyperLiquidSocketUpdate<T>> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<T> message)
