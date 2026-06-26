@@ -35,7 +35,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
         #endregion
 
-
         #region Get Open Orders
 
         /// <inheritdoc />
