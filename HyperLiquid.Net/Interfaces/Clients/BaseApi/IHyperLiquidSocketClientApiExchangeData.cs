@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] Filter by DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
+        Task<QueryResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get order book
@@ -36,7 +36,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="numberSignificantFigures">["<c>nSigFigs</c>"] Asset name</param>
         /// <param name="mantissa">["<c>mantissa</c>"] Mantissa</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get klines/candlestick data
@@ -50,7 +50,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="startTime">["<c>startTime</c>"] Data start time</param>
         /// <param name="endTime">["<c>endTime</c>"] Data end time</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to mid price updates, will send updates for both Spot and Futures symbols
@@ -64,7 +64,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The event handler for the received data</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToPriceUpdatesAsync(Action<DataEvent<Dictionary<string, decimal>>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to kline/candlestick data
@@ -80,7 +80,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(string symbol, KlineInterval interval, Action<DataEvent<HyperLiquidKline>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(string symbol, KlineInterval interval, Action<DataEvent<HyperLiquidKline>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to order book updates
@@ -97,7 +97,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="mantissa">Mantissa to use for price, if not provided will use the default from the options</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to trade updates
@@ -112,7 +112,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTrade[]>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTrade[]>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to book ticker updates
@@ -127,7 +127,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToBookTickerUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidBookTicker>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToBookTickerUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidBookTicker>> onMessage, CancellationToken ct = default);
 
     }
 }

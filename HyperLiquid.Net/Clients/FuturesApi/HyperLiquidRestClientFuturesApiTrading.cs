@@ -28,7 +28,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Set Leverage
 
         /// <inheritdoc />
-        public async Task<WebCallResult> SetLeverageAsync(
+        public async Task<HttpResult> SetLeverageAsync(
             string symbol,
             int leverage,
             MarginType marginType,
@@ -37,13 +37,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return HttpResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateLeverage" },
                 { "asset", symbolId.Data }
@@ -56,9 +56,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
-            return result.AsDataless();
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            return await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -66,7 +65,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Update Isolated Margin
 
         /// <inheritdoc />
-        public async Task<WebCallResult> UpdateIsolatedMarginAsync(
+        public async Task<HttpResult> UpdateIsolatedMarginAsync(
             string symbol,
             decimal updateValue,
             string? vaultAddress = null,
@@ -74,13 +73,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return HttpResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateIsolatedMargin" },
                 { "asset", symbolId.Data },
@@ -93,9 +92,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
-            return result.AsDataless();
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            return await _baseClient.SendAsync<HyperLiquidResponse>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

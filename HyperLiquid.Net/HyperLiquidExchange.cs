@@ -29,7 +29,8 @@ namespace HyperLiquid.Net
                 "https://app.hyperliquid.xyz/",
                 ["https://hyperliquid.gitbook.io/hyperliquid-docs"],
                 PlatformType.CryptoCurrencyExchange,
-                CentralizationType.Decentralized
+                CentralizationType.Decentralized,
+                HyperLiquidEnvironment.All
                 );
 
         /// <summary>
@@ -100,6 +101,11 @@ namespace HyperLiquid.Net
         }
 
         internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<HyperLiquidSourceGenerationContext>());
+        internal static readonly ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings()
+        {
+            Decimal = DecimalSerialization.String,
+            Sort = false
+        };
 
         /// <summary>
         /// Format a base and quote asset to an HyperLiquid recognized symbol 
@@ -126,7 +132,7 @@ namespace HyperLiquid.Net
         /// <summary>
         /// Rate limiter configuration for the HyperLiquid API
         /// </summary>
-        public static HyperLiquidRateLimiters RateLimiter { get; } = new HyperLiquidRateLimiters();
+        public static HyperLiquidRateLimiters RateLimiter { get; set; } = new HyperLiquidRateLimiters();
     }
 
     /// <summary>
@@ -145,13 +151,19 @@ namespace HyperLiquid.Net
         public event Action<RateLimitUpdateEvent> RateLimitUpdated;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        internal HyperLiquidRateLimiters()
+        /// <summary>
+        /// ctor
+        /// </summary>
+        public HyperLiquidRateLimiters()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             Initialize();
         }
 
-        private void Initialize()
+        /// <summary>
+        /// Initialize the rate limits
+        /// </summary>
+        protected virtual void Initialize()
         {
             HyperLiquidRest = new RateLimitGate("HyperLiquid REST")
                 .AddGuard(new RateLimitGuard(RateLimitGuard.PerHost, [], 1200, TimeSpan.FromSeconds(60), RateLimitWindowType.Sliding)); // Limit of 1200 weight per minute

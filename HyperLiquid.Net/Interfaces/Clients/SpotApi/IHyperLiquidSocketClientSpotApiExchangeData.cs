@@ -24,7 +24,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange and ticker info
@@ -36,7 +36,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get information on an asset
@@ -49,7 +49,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="assetId">["<c>tokenId</c>"] The asset id</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default);
 
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get HIP-4 settled outcome info
@@ -75,7 +75,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="outcomeId">The outcome id</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to spot symbol updates
@@ -90,7 +90,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to HIP-4 outcome updates 
@@ -101,7 +101,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="onQuestionSettleUpdate">Question settled data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToOutcomeInfoUpdatesAsync(
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToOutcomeInfoUpdatesAsync(
             Action<DataEvent<long>>? onOutcomeCreateUpdate = null,
             Action<DataEvent<HyperLiquidOutcomeInfo>>? onOutcomeSettleUpdate = null,
             Action<DataEvent<HyperLiquidQuestion>>? onQuestionUpdate = null,

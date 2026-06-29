@@ -28,20 +28,20 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         #region constructor/destructor
         internal HyperLiquidRestClientFuturesApi(
-            ILogger logger,
+            ILoggerFactory? loggerFactory,
             HyperLiquidRestClient baseClient,
             HttpClient? httpClient,
             HyperLiquidRestOptions options)
-            : base(logger, baseClient, httpClient, options, options.FuturesOptions)
+            : base(loggerFactory, baseClient, httpClient, options, options.FuturesOptions)
         {
             Account = new HyperLiquidRestClientFuturesApiAccount(this);
-            ExchangeData = new HyperLiquidRestClientFuturesApiExchangeData(logger, this);
-            Trading = new HyperLiquidRestClientFuturesApiTrading(logger, this);
+            ExchangeData = new HyperLiquidRestClientFuturesApiExchangeData(_logger, this);
+            Trading = new HyperLiquidRestClientFuturesApiTrading(_logger, this);
         }
         #endregion
 
         /// <inheritdoc />
-        protected override Task<WebCallResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
+        protected override Task<HttpResult<DateTime>> GetServerTimestampAsync() => throw new NotImplementedException();
 
         /// <inheritdoc />
         public IHyperLiquidRestClientFuturesApiShared SharedClient => this;

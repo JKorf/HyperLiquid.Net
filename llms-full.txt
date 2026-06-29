@@ -22,8 +22,10 @@ Primary documentation:
 - Use `HyperLiquidCredentials`, not generic `ApiCredentials`.
 - Include `using HyperLiquid.Net;` when using `HyperLiquidCredentials`, `HyperLiquidEnvironment`, or `HyperLiquidExchange`.
 - Always check `.Success` before reading `.Data`.
-- REST methods return `WebCallResult<T>` or `WebCallResult`.
-- WebSocket subscriptions and socket API requests return `CallResult<T>` or `CallResult`.
+- REST methods return `HttpResult<T>` or `HttpResult`.
+- WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`.
+- WebSocket request API methods return `QueryResult<T>` or `QueryResult`.
+- Shared non-I/O symbol/cache helper methods can return `ExchangeCallResult<T>`.
 - Reuse clients. Do not instantiate REST or socket clients per request in production.
 - Prefer dependency injection for long-running services.
 - Store WebSocket subscriptions and unsubscribe during shutdown.
@@ -31,7 +33,7 @@ Primary documentation:
 - Do not invent endpoint names. If unsure, inspect `HyperLiquid.Net/Interfaces/Clients/**`.
 - Spot symbols are slash separated, for example `HYPE/USDC`; futures symbols are base asset only, for example `ETH`.
 - Market order examples still need a price argument because `PlaceOrderAsync` requires price for slippage calculation.
-- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient`.
+- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features.
 
 ## Installation
 
@@ -160,9 +162,9 @@ Console.WriteLine(eth.MidPrice);
 For retry logic, only retry transient errors:
 
 ```csharp
-async Task<WebCallResult<T>> WithRetry<T>(Func<Task<WebCallResult<T>>> call, int maxAttempts = 3)
+async Task<HttpResult<T>> WithRetry<T>(Func<Task<HttpResult<T>>> call, int maxAttempts = 3)
 {
-    WebCallResult<T> last = default!;
+    HttpResult<T> last = default!;
 
     for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {
@@ -353,8 +355,11 @@ await socketClient.UnsubscribeAsync(sub.Data);
 using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Clients;
 
-ISpotTickerRestClient tickerClient = new HyperLiquidRestClient().SpotApi.SharedClient;
+var restClient = new HyperLiquidRestClient();
+ISpotTickerRestClient tickerClient = restClient.SpotApi.SharedClient;
 var symbol = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
+var info = restClient.SpotApi.SharedClient.Discover();
+var supportedFeatures = info.Features.Where(x => x.Supported).Select(x => x.EndpointName);
 
 var ticker = await tickerClient.GetSpotTickerAsync(new GetTickerRequest(symbol));
 if (!ticker.Success)
@@ -366,7 +371,9 @@ if (!ticker.Success)
 Console.WriteLine(ticker.Data.LastPrice);
 ```
 
-Shared socket subscriptions return an `UpdateSubscription` in `.Data`. Keep the concrete socket client and unsubscribe through it:
+Shared REST methods return `HttpResult<T>` / `HttpResult`. Shared socket subscriptions return `WebSocketResult<UpdateSubscription>` with an `UpdateSubscription` in `.Data`. Shared symbol helpers can return `ExchangeCallResult<T>`.
+
+Keep the concrete socket client and unsubscribe through it:
 
 ```csharp
 var socketClient = new HyperLiquidSocketClient();
@@ -459,10 +466,10 @@ Examples/ai-friendly/03-websocket.cs
   Public ticker/orderbook streams, authenticated order stream, success checks, teardown.
 
 Examples/ai-friendly/04-multi-exchange.cs
-  CryptoExchange.Net SharedApis REST and socket patterns for spot and futures.
+  CryptoExchange.Net SharedApis REST/socket patterns for spot and futures, plus capability discovery.
 
 Examples/ai-friendly/05-error-handling.cs
-  WebCallResult pattern, transient retry, symbol formatting, builder fee checks.
+  HttpResult, QueryResult, WebSocketResult, ExchangeCallResult patterns; transient retry; symbol formatting; builder fee checks.
 ```
 
 These files are intended to be copied into a console `Program.cs` after `dotnet add package HyperLiquid.Net`.

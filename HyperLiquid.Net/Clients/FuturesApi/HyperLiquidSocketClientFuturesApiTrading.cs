@@ -33,11 +33,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         }
         #endregion
 
-
         #region Set Leverage
 
         /// <inheritdoc />
-        public async Task<CallResult> SetLeverageAsync(
+        public async Task<QueryResult> SetLeverageAsync(
             string symbol,
             int leverage,
             MarginType marginType,
@@ -46,13 +45,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return QueryResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateLeverage" },
                 { "asset", symbolId.Data }
@@ -65,9 +64,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -75,7 +73,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Update Isolated Margin
 
         /// <inheritdoc />
-        public async Task<CallResult> UpdateIsolatedMarginAsync(
+        public async Task<QueryResult> UpdateIsolatedMarginAsync(
             string symbol,
             decimal updateValue,
             string? vaultAddress = null,
@@ -83,13 +81,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             CancellationToken ct = default)
         {
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return QueryResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "updateIsolatedMargin" },
                 { "asset", symbolId.Data },
@@ -102,15 +100,14 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidPositionUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidPositionUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -130,7 +127,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidPositionUpdate>(_logger, _baseClient, "clearinghouseState", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidPositionUpdate>(_logger, _baseClient, "clearinghouseState", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
                 { "dex", dex ?? "" },
@@ -140,7 +137,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAllDexesAsync(string? address, Action<DataEvent<HyperLiquidAllDexPositionUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAllDexesAsync(string? address, Action<DataEvent<HyperLiquidAllDexPositionUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -157,7 +154,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidAllDexPositionUpdate>(_logger, _baseClient, "allDexsClearinghouseState", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidAllDexPositionUpdate>(_logger, _baseClient, "allDexsClearinghouseState", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() }
             },

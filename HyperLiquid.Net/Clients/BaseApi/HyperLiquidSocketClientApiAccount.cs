@@ -41,14 +41,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Trading Fee
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidFeeInfo>> GetFeeInfoAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidFeeInfo>> GetFeeInfoAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFees" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -64,7 +64,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Send Asset
 
         /// <inheritdoc />
-        public async Task<CallResult> SendAssetAsync(
+        public async Task<QueryResult> SendAssetAsync(
             string destination,
             string sourceDex,
             string destinationDex,
@@ -76,8 +76,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "sendAsset" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -88,14 +88,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
             actionParameters.Add("sourceDex", sourceDex);
             actionParameters.Add("destinationDex", destinationDex);
             actionParameters.Add("token", $"{tokenName}:{tokenId}");
-            actionParameters.AddString("amount", quantity);
+            actionParameters.Add("amount", quantity);
             actionParameters.Add("fromSubAccount", fromSubAccount ?? string.Empty);
-            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -103,20 +102,20 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Account Ledger
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidAccountLedger>> GetAccountLedgerAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidAccountLedger>> GetAccountLedgerAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userNonFundingLedgerUpdates" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidAccountLedger>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
@@ -128,14 +127,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Rate Limits
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidRateLimit>> GetRateLimitsAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidRateLimit>> GetRateLimitsAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userRateLimit" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -151,9 +150,9 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Approved Builder Fee
 
         /// <inheritdoc />
-        public async Task<CallResult<int>> GetApprovedBuilderFeeAsync(string? builderAddress = null, string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<int>> GetApprovedBuilderFeeAsync(string? builderAddress = null, string? address = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "maxBuilderFee" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key },
@@ -170,25 +169,24 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Transfer USD
 
         /// <inheritdoc />
-        public async Task<CallResult> TransferUsdAsync(string destinationAddress, decimal quantity, CancellationToken ct = default)
+        public async Task<QueryResult> TransferUsdAsync(string destinationAddress, decimal quantity, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "usdSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "destination", destinationAddress }
             };
-            actionParameters.AddString("amount", quantity);
-            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            actionParameters.Add("amount", quantity);
+            actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -196,26 +194,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Withdraw
 
         /// <inheritdoc />
-        public async Task<CallResult> WithdrawAsync(
+        public async Task<QueryResult> WithdrawAsync(
             string destinationAddress,
             decimal quantity,
             CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "withdraw3" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "destination", destinationAddress },
             };
-            actionParameters.AddString("amount", quantity);
-            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            actionParameters.Add("amount", quantity);
+            actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -223,7 +220,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Transfer Internal
 
         /// <inheritdoc />
-        public async Task<CallResult> TransferInternalAsync(
+        public async Task<QueryResult> TransferInternalAsync(
             TransferDirection direction,
             decimal quantity,
             string? subAccount = null,
@@ -231,8 +228,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "usdClassTransfer" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -243,12 +240,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 quantityField += " subaccount:" + subAccount;
             actionParameters.Add("amount", quantityField);
             actionParameters.Add("toPerp", direction == TransferDirection.SpotToFutures);
-            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var result = await _baseClient.QueryInternalAsync(
+           return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -256,22 +252,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Deposit Into Staking
 
         /// <inheritdoc />
-        public async Task<CallResult> DepositIntoStakingAsync(long wei, CancellationToken ct = default)
+        public async Task<QueryResult> DepositIntoStakingAsync(long wei, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "cDeposit" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "wei", wei }
             };
-            parameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -279,22 +274,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Withdraw From Staking
 
         /// <inheritdoc />
-        public async Task<CallResult> WithdrawFromStakingAsync(long wei, CancellationToken ct = default)
+        public async Task<QueryResult> WithdrawFromStakingAsync(long wei, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "cWithdraw" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
                 { "wei", wei }
             };
-            parameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -302,22 +296,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Delegate Or Undelegate Stake
 
         /// <inheritdoc />
-        public async Task<CallResult> DelegateOrUndelegateStakeFromValidatorAsync(DelegateDirection direction, string validator, long wei, CancellationToken ct = default)
+        public async Task<QueryResult> DelegateOrUndelegateStakeFromValidatorAsync(DelegateDirection direction, string validator, long wei, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "tokenDelegate" },
                 { "validator", validator },
                 { "isUndelegate", direction == DelegateDirection.Undelegate },
                 { "wei", wei }
             };
-            parameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            parameters.Add("nonce", DateTime.UtcNow);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -325,7 +318,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Deposit Or Withdraw From Vault
 
         /// <inheritdoc />
-        public async Task<CallResult> DepositOrWithdrawFromVaultAsync(
+        public async Task<QueryResult> DepositOrWithdrawFromVaultAsync(
             DepositWithdrawDirection direction,
             string vaultAddress,
             long usd,
@@ -334,20 +327,19 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "vaultTransfer" },
                 { "vaultAddress", vaultAddress },
                 { "isDeposit", direction == DepositWithdrawDirection.Deposit },
                 { "usd", usd }
             };
-            parameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            parameters.Add("nonce", DateTime.UtcNow);
 
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -355,14 +347,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Approve Builder Fee
 
         /// <inheritdoc />
-        public Task<CallResult> ApproveBuilderFeeAsync(CancellationToken ct = default)
+        public Task<QueryResult> ApproveBuilderFeeAsync(CancellationToken ct = default)
             => ApproveBuilderFeeAsync(_baseClient.ClientOptions.BuilderAddress, _baseClient.ClientOptions.BuilderFeePercentage ?? 0.1m);
 
         /// <inheritdoc />
-        public async Task<CallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default)
+        public async Task<QueryResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default)
         {
             // NOTE; order of the parameters matters
-            var actionParameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
                 { "maxFeeRate", $"{maxFeePercentage.ToString(CultureInfo.InvariantCulture)}%" },
@@ -372,16 +364,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 { "type", "approveBuilderFee" },
             };
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
                     "action", actionParameters
                 }
             };
 
-            var result = await _baseClient.QueryInternalAsync(
+            return await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidDefault>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
         }
 
         #endregion
@@ -389,22 +380,22 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Sub account list
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "subAccounts" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidSubAccount[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             if (result.Data == null)
-                return result.As(new HyperLiquidSubAccount[0]);
+                return QueryResult.Ok(result, new HyperLiquidSubAccount[0]);
 
             return result;
         }
@@ -414,11 +405,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get User Role
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userRole" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -433,11 +424,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Extra Agents
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "extraAgents" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -451,14 +442,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Get Staking Delegations
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "delegations" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -472,14 +463,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Get Staking Summary
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "delegatorSummary" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -493,14 +484,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Get Staking History
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "delegatorHistory" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -514,14 +505,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Get Staking Rewards
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
             
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "delegatorRewards" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -534,7 +525,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserLedgerUpdatesAsync(string? address, Action<DataEvent<HyperLiquidAccountLedger>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserLedgerUpdatesAsync(string? address, Action<DataEvent<HyperLiquidAccountLedger>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -560,7 +551,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -589,7 +580,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -618,7 +609,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
             string? address,
             Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,
             Action<DataEvent<HyperLiquidUserFunding>>? onFundingUpdate = null,

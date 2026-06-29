@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.UnitTests
 
         }
 
-        private bool IsAuthenticated(WebCallResult result)
+        private bool IsAuthenticated(IHttpResult result)
         {
             return result.RequestBody?.Contains("signature") == true;
         }

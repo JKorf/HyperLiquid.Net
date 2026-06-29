@@ -27,20 +27,20 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Prices
 
         /// <inheritdoc />
-        public async Task<WebCallResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
+        public async Task<HttpResult<Dictionary<string, decimal>>> GetPricesAsync(string? dex = null, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "allMids" }
             };
-            parameters.AddOptional("dex", dex);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            parameters.Add("dex", dex);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<Dictionary<string, decimal>>(request, parameters, ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             if (result.Data == null)
-                return result.AsError<Dictionary<string, decimal>>(new ServerError(new ErrorInfo(ErrorType.InvalidParameter, "DEX not found")));
+                return HttpResult.Fail<Dictionary<string, decimal>>(result, new ServerError(new ErrorInfo(ErrorType.InvalidParameter, "DEX not found")));
 
             var resultMapped = new Dictionary<string, decimal>();
             foreach (var item in result.Data)
@@ -49,7 +49,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 resultMapped.Add(nameRes.Data ?? item.Key, item.Value);
             }
 
-            return result.As(resultMapped);
+            return HttpResult.Ok(result, resultMapped);
         }
 
         #endregion
@@ -57,31 +57,31 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Order Book
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidOrderBook>> GetOrderBookAsync(string symbol, int? numberSignificantFigures = null, int? mantissa = null, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new WebCallResult<HyperLiquidOrderBook>(spotName.Error);
+                if (!spotName.Success)
+                    return HttpResult.Fail<HyperLiquidOrderBook>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "l2Book" },
                 { "coin", coin }
             };
 
-            parameters.AddOptional("nSigFigs", numberSignificantFigures);
-            parameters.AddOptional("mantissa", mantissa);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            parameters.Add("nSigFigs", numberSignificantFigures);
+            parameters.Add("mantissa", mantissa);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidOrderBook>(request, parameters, ct).ConfigureAwait(false);
             if (result.Data == null)
-                return result.AsError<HyperLiquidOrderBook>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                return HttpResult.Fail<HyperLiquidOrderBook>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
             
             return result;
         }
@@ -91,35 +91,35 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Klines
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidKline[]>> GetKlinesAsync(string symbol, KlineInterval interval, DateTime startTime, DateTime endTime, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new WebCallResult<HyperLiquidKline[]>(spotName.Error);
+                if (!spotName.Success)
+                    return HttpResult.Fail<HyperLiquidKline[]>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
 
-            var innerParameters = new ParameterCollection();
+            var innerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             innerParameters.Add("coin", coin);
-            innerParameters.AddEnum("interval", interval);
-            innerParameters.AddOptionalMilliseconds("startTime", startTime);
-            innerParameters.AddOptionalMilliseconds("endTime", endTime);
+            innerParameters.Add("interval", interval);
+            innerParameters.Add("startTime", startTime);
+            innerParameters.Add("endTime", endTime);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "candleSnapshot" },
                 { "req", innerParameters }
             };
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
             var result = await _baseClient.SendAsync<HyperLiquidKline[]>(request, parameters, ct).ConfigureAwait(false);
             if (result.ResponseStatusCode == (HttpStatusCode)500 && result.Error?.ErrorType == ErrorType.Unknown)
-                return result.AsError<HyperLiquidKline[]>(new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                return HttpResult.Fail<HyperLiquidKline[]>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
             return result;
         }

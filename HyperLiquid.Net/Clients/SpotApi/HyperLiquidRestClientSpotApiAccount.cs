@@ -24,21 +24,24 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Spot Balances
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotClearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             var result = await _baseClient.SendAsync<HyperLiquidBalances>(request, parameters, ct).ConfigureAwait(false);
-            return result.As<HyperLiquidBalance[]>(result.Data?.Balances);
+            if (!result.Success)
+                return HttpResult.Fail<HyperLiquidBalance[]>(result);
+
+            return HttpResult.Ok(result, result.Data.Balances);
         }
 
         #endregion
@@ -46,20 +49,20 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Spot Transfer
 
         /// <inheritdoc />
-        public async Task<WebCallResult> TransferSpotAsync(
+        public async Task<HttpResult> TransferSpotAsync(
             string destinationAddress,
             string asset,
             decimal quantity,
             CancellationToken ct = default)
         {
             var assetId = await HyperLiquidUtils.GetAssetNameAndIdAsync(_baseClient.BaseClient, asset).ConfigureAwait(false);
-            if (!assetId)
-                return new WebCallResult(assetId.Error!);
+            if (!assetId.Success)
+                return HttpResult.Fail(_baseClient.Exchange, assetId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -67,13 +70,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "destination", destinationAddress },
                 { "token", assetId.Data }
             };
-            actionParameters.AddString("amount", quantity);
-            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            actionParameters.Add("amount", quantity);
+            actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
-            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
-            return result.AsDataless();
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            return await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

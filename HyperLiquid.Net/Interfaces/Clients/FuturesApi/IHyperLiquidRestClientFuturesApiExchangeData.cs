@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidPerpDex[]>> GetPerpDexesAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange info
@@ -36,7 +36,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidFuturesSymbol[]>> GetExchangeInfoAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange info for all perp dexes
@@ -48,7 +48,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidFuturesDexInfo[]>> GetExchangeInfoAllDexesAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get exchange and ticker info
@@ -60,7 +60,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidFuturesExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Get funding rate history
@@ -75,7 +75,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="startTime">["<c>startTime</c>"] Filter by start time</param>
         /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidFundingRate[]>> GetFundingRateHistoryAsync(string symbol, DateTime startTime, DateTime? endTime = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get futures symbols at max open interest
@@ -88,7 +88,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default);
+        Task<HttpResult<string[]>> GetSymbolsAtMaxOpenInterestAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get Perp DEX market limits
@@ -101,7 +101,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidPerpDexLimit>> GetPerpDexMarketLimitsAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get Perp DEX market status
@@ -114,6 +114,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// </summary>
         /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default);
     }
 }

@@ -24,20 +24,20 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Futures Account
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidFuturesAccount>> GetAccountInfoAsync(string? address = null, string? dex = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "clearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddOptional("dex", dex);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            parameters.Add("dex", dex);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidFuturesAccount>(request, parameters, ct).ConfigureAwait(false);
         }
 
@@ -46,21 +46,21 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get Funding History
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>> GetFundingHistoryAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFunding" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidUserLedger<HyperLiquidUserFunding>[]>(request, parameters, ct).ConfigureAwait(false);
         }
 
@@ -69,20 +69,20 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get User Symbol
 
         /// <inheritdoc />
-        public async Task<WebCallResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default)
+        public async Task<HttpResult<HyperLiquidFuturesUserSymbolUpdate>> GetUserSymbolAsync(string symbol, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "activeAssetData" },
                 { "coin", symbol },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<HyperLiquidFuturesUserSymbolUpdate>(request, parameters, ct).ConfigureAwait(false);
         }
 
@@ -91,19 +91,19 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Get HIP-3 DEX Abstraction
 
         /// <inheritdoc />
-        public async Task<WebCallResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default)
+        public async Task<HttpResult<bool>> GetHip3DexAbstractionAsync(string? user = null, CancellationToken ct = default)
         {
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "user", user ?? _baseClient.AuthenticationProvider!.Key }
             };
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
             return await _baseClient.SendAsync<bool>(request, parameters, ct).ConfigureAwait(false);
         }
 
@@ -112,15 +112,15 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Toggle HIP-3 DEX Abstraction
 
         /// <inheritdoc />
-        public async Task<WebCallResult> ToggleHip3DexAbstractionAsync(bool enabled, string? user = null, CancellationToken ct = default)
+        public async Task<HttpResult> ToggleHip3DexAbstractionAsync(bool enabled, string? user = null, CancellationToken ct = default)
         {
             if (user == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(user), "User needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userDexAbstraction" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -129,12 +129,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             };
 
             actionParameters.Add("enabled", enabled);
-            actionParameters.AddMilliseconds("nonce", DateTime.UtcNow);
+            actionParameters.Add("nonce", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
-            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, true);
-            var result = await _baseClient.SendAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
-            return result.AsDataless();
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, true);
+            return await _baseClient.SendAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
         }
 
         #endregion

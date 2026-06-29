@@ -18,7 +18,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request open orders for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidFeeInfo>> GetFeeInfoAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidFeeInfo>> GetFeeInfoAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// This generalized method is used to transfer tokens between different perp DEXs, spot balance, users, and/or sub-accounts. Use "" to specify the default USDC perp DEX and "spot" to specify spot. Only the collateral token can be transferred to or from a perp DEX.
@@ -31,7 +31,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="quantity">["<c>amount</c>"] Quantity to send</param>
         /// <param name="fromSubAccount">["<c>fromSubAccount</c>"] Source sub account</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> SendAssetAsync(
+        Task<QueryResult> SendAssetAsync(
             string destination,
             string sourceDex,
             string destinationDex,
@@ -54,7 +54,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="endTime">["<c>endTime</c>"] Filter by end time</param>
         /// <param name="address">["<c>user</c>"] Address to request ledger for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidAccountLedger>> GetAccountLedgerAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidAccountLedger>> GetAccountLedgerAsync(DateTime startTime, DateTime? endTime = null, string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user rate limits
@@ -67,7 +67,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request rate limits for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidRateLimit>> GetRateLimitsAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidRateLimit>> GetRateLimitsAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get the approved builder fee
@@ -81,7 +81,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="builderAddress">["<c>builder</c>"] The address of the builder. If not provided will use the builder address for this library</param>
         /// <param name="address">["<c>user</c>"] Address to request approved builder fee for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<int>> GetApprovedBuilderFeeAsync(string? builderAddress = null, string? address = null, CancellationToken ct = default);
+        Task<QueryResult<int>> GetApprovedBuilderFeeAsync(string? builderAddress = null, string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Send usd to another address. This transfer does not touch the EVM bridge.
@@ -95,7 +95,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="destinationAddress">["<c>destination</c>"] Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
         /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> TransferUsdAsync(string destinationAddress, decimal quantity, CancellationToken ct = default);
+        Task<QueryResult> TransferUsdAsync(string destinationAddress, decimal quantity, CancellationToken ct = default);
 
         /// <summary>
         /// Initiate the withdrawal flow. After making this request, the L1 validators will sign and send the withdrawal request to the bridge contract. There is a $1 fee for withdrawing at the time of this writing and withdrawals take approximately 5 minutes to finalize.
@@ -109,7 +109,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="destinationAddress">["<c>destination</c>"] Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
         /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> WithdrawAsync(
+        Task<QueryResult> WithdrawAsync(
             string destinationAddress,
             decimal quantity,
             CancellationToken ct = default);
@@ -127,7 +127,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="quantity">["<c>amount</c>"] Quantity of USD to send</param>
         /// <param name="subAccount">Subaccount address</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> TransferInternalAsync(
+        Task<QueryResult> TransferInternalAsync(
             TransferDirection direction,
             decimal quantity,
             string? subAccount = null,
@@ -144,7 +144,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> DepositIntoStakingAsync(long wei, CancellationToken ct = default);
+        Task<QueryResult> DepositIntoStakingAsync(long wei, CancellationToken ct = default);
 
         /// <summary>
         /// Withdraw from staking into the user's spot account. Note that transfers from staking to spot account go through a 7 day unstaking queue.
@@ -157,7 +157,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> WithdrawFromStakingAsync(long wei, CancellationToken ct = default);
+        Task<QueryResult> WithdrawFromStakingAsync(long wei, CancellationToken ct = default);
 
         /// <summary>
         /// Delegate or undelegate native tokens to or from a validator. Note that delegations to a particular validator have a lockup duration of 1 day.
@@ -172,7 +172,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="validator">["<c>validator</c>"] Validator address in hex format, for example 0x0000000000000000000000000000000000000000</param>
         /// <param name="wei">["<c>wei</c>"] Quantity</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> DelegateOrUndelegateStakeFromValidatorAsync(DelegateDirection direction, string validator, long wei, CancellationToken ct = default);
+        Task<QueryResult> DelegateOrUndelegateStakeFromValidatorAsync(DelegateDirection direction, string validator, long wei, CancellationToken ct = default);
 
         /// <summary>
         /// Deposit or withdraw from vault
@@ -188,7 +188,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="usd">["<c>usd</c>"] USD to withdraw or deposit</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<QueryResult> DepositOrWithdrawFromVaultAsync(DepositWithdrawDirection direction, string vaultAddress, long usd, DateTime? expireAfter = null, CancellationToken ct = default);
 
         /// <summary>
         /// Approve a builder address of the library to charge the fee percentage as defined in the BuilderFeePercentage client options field
@@ -200,7 +200,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> ApproveBuilderFeeAsync(CancellationToken ct = default);
+        Task<QueryResult> ApproveBuilderFeeAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Approve a builder address to charge a certain fee
@@ -214,28 +214,28 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="builderAddress">["<c>builder</c>"] The address of the builder in hex format, for example 0x0000000000000000000000000000000000000000</param>
         /// <param name="maxFeePercentage">["<c>maxFeeRate</c>"] Max fee percentage the builder can charge</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default);
+        Task<QueryResult> ApproveBuilderFeeAsync(string builderAddress, decimal maxFeePercentage, CancellationToken ct = default);
 
         /// <summary>
         /// Get sub account list
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get user role
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidUserRole>> GetUserRoleAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get extra agents associated with a user
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request agents for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidUserAgent[]>> GetExtraAgentsAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get staking delegations
@@ -248,7 +248,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request delegations for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidStakingDelegation[]>> GetStakingDelegationsAsync(string? address = null, CancellationToken ct = default);
         /// <summary>
         /// Get staking summary
         /// <para>
@@ -260,7 +260,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request summary for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidStakingSummary>> GetStakingSummaryAsync(string? address = null, CancellationToken ct = default);
         /// <summary>
         /// Get staking history
         /// <para>
@@ -272,7 +272,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request history for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidStakingHistory[]>> GetStakingHistoryAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Get staking rewards history
@@ -285,7 +285,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidStakingReward[]>> GetStakingRewardsAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to user non-order updates
@@ -303,7 +303,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onNonUserCancelation">Non-user order cancelation update</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserEventUpdatesAsync(
             string? address,
             Action<DataEvent<HyperLiquidUserTrade[]>>? onTradeUpdate = null,
             Action<DataEvent<HyperLiquidUserFunding>>? onFundingUpdate = null,
@@ -324,10 +324,10 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserLedgerUpdatesAsync(string? address, Action<DataEvent<HyperLiquidAccountLedger>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserLedgerUpdatesAsync(string? address, Action<DataEvent<HyperLiquidAccountLedger>> onMessage, CancellationToken ct = default);
 
         /// <summary>
-        /// Subscribe to user updates, including Spot and Futures balances
+        /// OBSOLETE: will soon be discontinued. Use <see cref="SubscribeToWebData3UpdatesAsync(string?, Action{DataEvent{HyperLiquidWebDataV3Update}}, CancellationToken)"/> instead.
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
@@ -335,11 +335,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// WS /ws (type: webData2)
         /// </para>
         /// </summary>
-        /// <param name="address">Address to subscribe for. If not provided will use the address provided in the API credentials</param>
-        /// <param name="onMessage">The data handler</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to webData3 updates
@@ -354,6 +350,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToWebData3UpdatesAsync(string? address, Action<DataEvent<HyperLiquidWebDataV3Update>> onMessage, CancellationToken ct = default);
     }
 }

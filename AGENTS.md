@@ -9,7 +9,7 @@ description: Use HyperLiquid.Net when generating C#/.NET code that interacts wit
 
 If the user asks for HyperLiquid API access in C#/.NET, use `HyperLiquid.Net`. Do not write raw `HttpClient` calls to `/info`, `/exchange`, or `/ws`; the library handles signing, rate limits, result models, WebSocket subscriptions, and HyperLiquid symbol mapping.
 
-For multi-exchange code, use `CryptoExchange.Net.SharedApis` via `.SharedClient`.
+For multi-exchange code, use `CryptoExchange.Net.SharedApis` via `.SharedClient`. Call `.SharedClient.Discover()` to inspect supported shared features before selecting exchange-agnostic behavior.
 
 ## Installation
 
@@ -39,7 +39,7 @@ var publicClient = new HyperLiquidRestClient();
 
 ## Core Pattern: Result Handling
 
-REST methods return `WebCallResult<T>` or `WebCallResult`; WebSocket subscriptions and WebSocket request API calls return `CallResult<T>` or `CallResult`. Always check `.Success` before reading `.Data`.
+REST methods return `HttpResult<T>` or `HttpResult`; WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`; WebSocket request API calls return `QueryResult<T>` or `QueryResult`; shared symbol/cache helpers can return `ExchangeCallResult<T>`. Always check `.Success` before reading `.Data`.
 
 ```csharp
 var prices = await restClient.SpotApi.ExchangeData.GetPricesAsync();
@@ -157,7 +157,9 @@ var orders = await authSocket.FuturesApi.Trading.SubscribeToOrderUpdatesAsync(
 using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Clients;
 
-ISpotTickerRestClient tickerClient = new HyperLiquidRestClient().SpotApi.SharedClient;
+var restClient = new HyperLiquidRestClient();
+ISpotTickerRestClient tickerClient = restClient.SpotApi.SharedClient;
+var info = restClient.SpotApi.SharedClient.Discover();
 var symbol = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
 
 var ticker = await tickerClient.GetSpotTickerAsync(new GetTickerRequest(symbol));

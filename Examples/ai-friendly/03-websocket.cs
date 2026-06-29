@@ -10,6 +10,7 @@ using HyperLiquid.Net.Clients;
 
 // ---- 1. PUBLIC SOCKET CLIENT ----
 // Reuse a single socket client instance across subscriptions.
+// Subscription methods return WebSocketResult<UpdateSubscription>.
 var publicSocket = new HyperLiquidSocketClient();
 
 var spotTickerSub = await publicSocket.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync(

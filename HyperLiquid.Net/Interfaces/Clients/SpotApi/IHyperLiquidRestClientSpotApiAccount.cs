@@ -25,7 +25,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
+        Task<HttpResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
                 
         /// <summary>
         /// Send spot assets to another address. This transfer does not touch the EVM bridge.
@@ -40,7 +40,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// <param name="asset">Asset name, for example "HYPE"</param>
         /// <param name="quantity">["<c>amount</c>"] Quantity to send</param>
         /// <param name="ct">Cancellation token</param>
-        Task<WebCallResult> TransferSpotAsync(
+        Task<HttpResult> TransferSpotAsync(
             string destinationAddress,
             string asset,
             decimal quantity,

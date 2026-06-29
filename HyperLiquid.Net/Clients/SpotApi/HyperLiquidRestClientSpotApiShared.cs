@@ -14,35 +14,41 @@ namespace HyperLiquid.Net.Clients.SpotApi
 {
     internal partial class HyperLiquidRestClientSpotApi : IHyperLiquidRestClientSpotApiShared
     {
+        private const string _exchangeName = "HyperLiquid";
         private const string _topicId = "HyperLiquidSpot";
-        public string Exchange => "HyperLiquid";
-
         public TradingMode[] SupportedTradingModes => new[] { TradingMode.Spot };
 
         public void SetDefaultExchangeParameter(string key, object value) => ExchangeParameters.SetStaticParameter(Exchange, key, value);
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
+        public SharedClientInfo Discover() => SharedUtils.GetClientInfo(HyperLiquidExchange.Metadata, this);
+
 
         #region Balance Client
-        GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new GetBalancesOptions(AccountTypeFilter.Spot);
+        GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new GetBalancesOptions(_exchangeName, AccountTypeFilter.Spot);
 
-        async Task<ExchangeWebResult<SharedBalance[]>> IBalanceRestClient.GetBalancesAsync(GetBalancesRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedBalance[]>> IBalanceRestClient.GetBalancesAsync(GetBalancesRequest request, CancellationToken ct)
         {
-            var validationError = ((IBalanceRestClient)this).GetBalancesOptions.ValidateRequest(Exchange, request, SupportedTradingModes);
+            var validationError = SharedClient.GetBalancesOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedBalance[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedBalance[]>(Exchange, validationError);
 
             var result = await Account.GetBalancesAsync(ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedBalance[]>(Exchange, null, default);
+            if (!result.Success)
+                return HttpResult.Fail<SharedBalance[]>(result);
 
-            return result.AsExchangeResult<SharedBalance[]>(Exchange, TradingMode.Spot, result.Data.Select(x => new SharedBalance(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), x.Total - x.Hold, x.Total)).ToArray());
+            return HttpResult.Ok(result, result.Data.Select(x => 
+                new SharedBalance(
+                    SupportedTradingModes,
+                    HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), 
+                    x.Total - x.Hold, 
+                    x.Total)).ToArray());
         }
 
         #endregion
 
         #region Klines Client
 
-        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(false, true, true, 1000, false,
+        GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new GetKlinesOptions(_exchangeName, false, true, true, 1000, false,
             SharedKlineInterval.OneMinute,
             SharedKlineInterval.FiveMinutes,
             SharedKlineInterval.FifteenMinutes,
@@ -59,215 +65,215 @@ namespace HyperLiquid.Net.Clients.SpotApi
             MaxTotalDataPoints = 5000
         };
 
-        async Task<ExchangeWebResult<SharedKline[]>> IKlineRestClient.GetKlinesAsync(GetKlinesRequest request, PageRequest? pageRequest, CancellationToken ct)
+        async Task<HttpResult<SharedKline[]>> IKlineRestClient.GetKlinesAsync(GetKlinesRequest request, PageRequest? pageRequest, CancellationToken ct)
         {
-            var interval = (Enums.KlineInterval)request.Interval;
-            if (!Enum.IsDefined(typeof(Enums.KlineInterval), interval))
-                return new ExchangeWebResult<SharedKline[]>(Exchange, ArgumentError.Invalid(nameof(GetKlinesRequest.Interval), "Interval not supported"));
-
-            var validationError = ((IKlineRestClient)this).GetKlinesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetKlinesOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedKline[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedKline[]>(Exchange, validationError);
+                    var interval = (Enums.KlineInterval)request.Interval;
 
-            var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            int limit = request.Limit ?? 1000;
-            var direction = DataDirection.Descending;
-            var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest);
+                    var symbol = request.Symbol!.GetSymbol(FormatSymbol);
+                    int limit = request.Limit ?? 1000;
+                    var direction = DataDirection.Descending;
+                    var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest);
 
-            // Get data
-            var result = await ExchangeData.GetKlinesAsync(
-                symbol,
-                interval,
-                startTime: pageParams.StartTime ?? DateTime.UtcNow.Add(TimeSpan.FromSeconds(-((int)interval * 99))),
-                endTime: pageParams.EndTime ?? DateTime.UtcNow,
-                ct: ct
-                ).ConfigureAwait(false);
-            if (!result)
-                return new ExchangeWebResult<SharedKline[]>(Exchange, TradingMode.Spot, result.As<SharedKline[]>(default));
+                    // Get data
+                    var result = await ExchangeData.GetKlinesAsync(
+                        symbol,
+                        interval,
+                        startTime: pageParams.StartTime ?? DateTime.UtcNow.Add(TimeSpan.FromSeconds(-((int)interval * 99))),
+                        endTime: pageParams.EndTime ?? DateTime.UtcNow,
+                        ct: ct
+                        ).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedKline[]>(result);
 
-            var nextPageRequest = Pagination.GetNextPageRequest(
-                     () => Pagination.NextPageFromTime(pageParams, result.Data.Min(x => x.OpenTime)),
-                     result.Data.Length,
-                     result.Data.Select(x => x.OpenTime),
-                     request.StartTime,
-                     request.EndTime ?? DateTime.UtcNow,
-                     pageParams);
+                    var nextPageRequest = Pagination.GetNextPageRequest(
+                             () => Pagination.NextPageFromTime(pageParams, result.Data.Min(x => x.OpenTime)),
+                             result.Data.Length,
+                             result.Data.Select(x => x.OpenTime),
+                             request.StartTime,
+                             request.EndTime ?? DateTime.UtcNow,
+                             pageParams);
 
-            return result.AsExchangeResult(
-                    Exchange,
-                    request.Symbol.TradingMode,
-                    ExchangeHelpers.ApplyFilter(result.Data, x => x.OpenTime, request.StartTime, request.EndTime, direction)
-                    .Select(x => 
-                        new SharedKline(
-                            request.Symbol,
-                            symbol,
-                            x.OpenTime,
-                            x.ClosePrice,
-                            x.HighPrice,
-                            x.LowPrice,
-                            x.OpenPrice,
-                            x.Volume))
-                    .ToArray(), nextPageRequest);
+                    return HttpResult.Ok(result, ExchangeHelpers.ApplyFilter(result.Data, x => x.OpenTime, request.StartTime, request.EndTime, direction)
+                            .Select(x =>
+                                new SharedKline(
+                                    request.Symbol,
+                                    symbol,
+                                    x.OpenTime,
+                                    x.ClosePrice,
+                                    x.HighPrice,
+                                    x.LowPrice,
+                                    x.OpenPrice,
+                                    x.Volume))
+                            .ToArray(), nextPageRequest);
+                
         }
 
         #endregion
 
         #region Order Book client
-        GetOrderBookOptions IOrderBookRestClient.GetOrderBookOptions { get; } = new GetOrderBookOptions([20], false);
-        async Task<ExchangeWebResult<SharedOrderBook>> IOrderBookRestClient.GetOrderBookAsync(GetOrderBookRequest request, CancellationToken ct)
+        GetOrderBookOptions IOrderBookRestClient.GetOrderBookOptions { get; } = new GetOrderBookOptions(_exchangeName, [20], false);
+        async Task<HttpResult<SharedOrderBook>> IOrderBookRestClient.GetOrderBookAsync(GetOrderBookRequest request, CancellationToken ct)
         {
-            var validationError = ((IOrderBookRestClient)this).GetOrderBookOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetOrderBookOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedOrderBook>(Exchange, validationError);
+                return HttpResult.Fail<SharedOrderBook>(Exchange, validationError);
 
-            var result = await ExchangeData.GetOrderBookAsync(
-                request.Symbol!.GetSymbol(FormatSymbol),
-                ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedOrderBook>(Exchange, null, default);
+                    var result = await ExchangeData.GetOrderBookAsync(
+                        request.Symbol!.GetSymbol(FormatSymbol),
+                        ct: ct).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedOrderBook>(result);
 
-            if (result.Data == null)
-                return result.AsExchangeError<SharedOrderBook>(Exchange, new ServerError(ErrorInfo.Unknown with { Message = "No response" }));
+                    if (result.Data == null)
+                        return HttpResult.Fail<SharedOrderBook>(result, new ServerError(ErrorInfo.Unknown with { Message = "No response" }));
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
+                    return HttpResult.Ok(result, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
+                
         }
 
         #endregion
 
         #region Ticker client
 
-        GetTickerOptions ISpotTickerRestClient.GetSpotTickerOptions { get; } = new GetTickerOptions();
-        async Task<ExchangeWebResult<SharedSpotTicker>> ISpotTickerRestClient.GetSpotTickerAsync(GetTickerRequest request, CancellationToken ct)
+        GetSpotTickerOptions ISpotTickerRestClient.GetSpotTickerOptions { get; } = new GetSpotTickerOptions(_exchangeName);
+        async Task<HttpResult<SharedSpotTicker>> ISpotTickerRestClient.GetSpotTickerAsync(GetTickerRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotTickerRestClient)this).GetSpotTickerOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotTickerOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotTicker>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotTicker>(Exchange, validationError);
 
-            var symbolName = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await ExchangeData.GetExchangeInfoAndTickersAsync(ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedSpotTicker>(Exchange, null, default);
-            
-            var symbol = result.Data.Tickers.SingleOrDefault(x => x.Symbol == symbolName);
-            if (symbol == null)
-                return result.AsExchangeError<SharedSpotTicker>(Exchange, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+                    var symbolName = request.Symbol!.GetSymbol(FormatSymbol);
+                    var result = await ExchangeData.GetExchangeInfoAndTickersAsync(ct: ct).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedSpotTicker>(result);
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
-            {
-                QuoteVolume = symbol.QuoteVolume
-            });
+                    var symbol = result.Data.Tickers.SingleOrDefault(x => x.Symbol == symbolName);
+                    if (symbol == null)
+                        return HttpResult.Fail<SharedSpotTicker>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
+
+                    return HttpResult.Ok(result, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                    {
+                        QuoteVolume = symbol.QuoteVolume
+                    });
+                
         }
 
-        GetTickersOptions ISpotTickerRestClient.GetSpotTickersOptions { get; } = new GetTickersOptions();
-        async Task<ExchangeWebResult<SharedSpotTicker[]>> ISpotTickerRestClient.GetSpotTickersAsync(GetTickersRequest request, CancellationToken ct)
+        GetSpotTickersOptions ISpotTickerRestClient.GetSpotTickersOptions { get; } = new GetSpotTickersOptions(_exchangeName);
+        async Task<HttpResult<SharedSpotTicker[]>> ISpotTickerRestClient.GetSpotTickersAsync(GetTickersRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotTickerRestClient)this).GetSpotTickersOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotTickersOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotTicker[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotTicker[]>(Exchange, validationError);
 
-            var result = await ExchangeData.GetExchangeInfoAndTickersAsync(ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedSpotTicker[]>(Exchange, null, default);
+                    var result = await ExchangeData.GetExchangeInfoAndTickersAsync(ct: ct).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedSpotTicker[]>(result);
 
-            return result.AsExchangeResult<SharedSpotTicker[]>(Exchange, TradingMode.Spot, result.Data.Tickers.Select(x => new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol!), x.Symbol!, x.MidPrice, null, null, x.BaseVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
-            {
-                QuoteVolume = x.QuoteVolume
-            }).ToArray());
+                    return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol!), x.Symbol!, x.MidPrice, null, null, x.BaseVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                    {
+                        QuoteVolume = x.QuoteVolume
+                    }).ToArray());
+                
         }
 
         #endregion
 
         #region Book Ticker client
 
-        EndpointOptions<GetBookTickerRequest> IBookTickerRestClient.GetBookTickerOptions { get; } = new EndpointOptions<GetBookTickerRequest>(false);
-        async Task<ExchangeWebResult<SharedBookTicker>> IBookTickerRestClient.GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct)
+        GetBookTickerOptions IBookTickerRestClient.GetBookTickerOptions { get; } = new GetBookTickerOptions(_exchangeName, false);
+        async Task<HttpResult<SharedBookTicker>> IBookTickerRestClient.GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct)
         {
-            var validationError = ((IBookTickerRestClient)this).GetBookTickerOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetBookTickerOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedBookTicker>(Exchange, validationError);
+                return HttpResult.Fail<SharedBookTicker>(Exchange, validationError);
 
-            var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var resultTicker = await ExchangeData.GetOrderBookAsync(symbol, ct: ct).ConfigureAwait(false);
-            if (!resultTicker)
-                return resultTicker.AsExchangeResult<SharedBookTicker>(Exchange, null, default);
+                    var symbol = request.Symbol!.GetSymbol(FormatSymbol);
+                    var resultTicker = await ExchangeData.GetOrderBookAsync(symbol, ct: ct).ConfigureAwait(false);
+                    if (!resultTicker.Success)
+                        return HttpResult.Fail<SharedBookTicker>(resultTicker);
 
-            if (resultTicker.Data == null)
-                return resultTicker.AsExchangeError<SharedBookTicker>(Exchange, new ServerError(new ErrorInfo(ErrorType.Unknown, "No response")));
+                    if (resultTicker.Data == null)
+                        return HttpResult.Fail<SharedBookTicker>(resultTicker, new ServerError(new ErrorInfo(ErrorType.Unknown, "No response")));
 
-            return resultTicker.AsExchangeResult(Exchange, request.Symbol.TradingMode, new SharedBookTicker(
-                ExchangeSymbolCache.ParseSymbol(_topicId, symbol),
-                symbol,
-                resultTicker.Data.Levels.Asks[0].Price,
-                resultTicker.Data.Levels.Asks[0].Quantity,
-                resultTicker.Data.Levels.Bids[0].Price,
-                resultTicker.Data.Levels.Bids[0].Quantity));
+                    return HttpResult.Ok(resultTicker, new SharedBookTicker(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol),
+                        symbol,
+                        resultTicker.Data.Levels.Asks[0].Price,
+                        resultTicker.Data.Levels.Asks[0].Quantity,
+                        resultTicker.Data.Levels.Bids[0].Price,
+                        resultTicker.Data.Levels.Bids[0].Quantity));
+                
         }
 
         #endregion
 
         #region Spot Symbol client
-        EndpointOptions<GetSymbolsRequest> ISpotSymbolRestClient.GetSpotSymbolsOptions { get; } = new EndpointOptions<GetSymbolsRequest>(false);
+        GetSpotSymbolsOptions ISpotSymbolRestClient.GetSpotSymbolsOptions { get; } = new GetSpotSymbolsOptions(_exchangeName, false);
 
-        async Task<ExchangeWebResult<SharedSpotSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedSpotSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotSymbolRestClient)this).GetSpotSymbolsOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotSymbolsOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotSymbol[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotSymbol[]>(Exchange, validationError);
 
-            var result = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, null, default);
+                    var result = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedSpotSymbol[]>(result);
 
-            var resultData = result.AsExchangeResult<SharedSpotSymbol[]>(Exchange, TradingMode.Spot, result.Data.Symbols.Select(s => new SharedSpotSymbol(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.BaseAsset.Name), HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.QuoteAsset.Name), s.Name, true)
-            {
-                MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
-                MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
-                QuantityDecimals = s.BaseAsset.QuantityDecimals,
-                PriceSignificantFigures = 5,
-                PriceDecimals = 8 - s.BaseAsset.QuantityDecimals
-            }).ToArray());
+                    var resultData = result.Data.Symbols.Select(s => new SharedSpotSymbol(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.BaseAsset.Name), HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.QuoteAsset.Name), s.Name, true)
+                    {
+                        MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
+                        MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
+                        QuantityDecimals = s.BaseAsset.QuantityDecimals,
+                        PriceSignificantFigures = 5,
+                        PriceDecimals = 8 - s.BaseAsset.QuantityDecimals
+                    }).ToArray();
 
-            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, resultData.Data);
-            return resultData;
+                    ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, resultData);
+                    return HttpResult.Ok(result, resultData);
+                
         }
 
-        async Task<ExchangeResult<SharedSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsForBaseAssetAsync(string baseAsset)
+        async Task<ExchangeCallResult<SharedSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsForBaseAssetAsync(string baseAsset)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
-                if (!symbols)
-                    return new ExchangeResult<SharedSymbol[]>(Exchange, symbols.Error!);
+                if (!symbols.Success)
+                    return ExchangeCallResult<SharedSymbol[]>.Fail(Exchange, symbols.Error!);
             }
 
-            return new ExchangeResult<SharedSymbol[]>(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, baseAsset));
+            return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, EnvironmentName, null, baseAsset));
         }
 
-        async Task<ExchangeResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(SharedSymbol symbol)
+        async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(SharedSymbol symbol)
         {
             if (symbol.TradingMode != TradingMode.Spot)
                 throw new ArgumentException(nameof(symbol), "Only Spot symbols allowed");
 
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
-                if (!symbols)
-                    return new ExchangeResult<bool>(Exchange, symbols.Error!);
+                if (!symbols.Success)
+                    return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return new ExchangeResult<bool>(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbol));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbol));
         }
 
-        async Task<ExchangeResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(string symbolName)
+        async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(string symbolName)
         {
-            if (!ExchangeSymbolCache.HasCached(_topicId))
+            if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
             {
                 var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
-                if (!symbols)
-                    return new ExchangeResult<bool>(Exchange, symbols.Error!);
+                if (!symbols.Success)
+                    return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
             }
 
-            return new ExchangeResult<bool>(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, symbolName));
+            return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbolName));
         }
         #endregion
 
@@ -285,26 +291,23 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         string ISpotOrderRestClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
 
-        PlaceSpotOrderOptions ISpotOrderRestClient.PlaceSpotOrderOptions { get; } = new PlaceSpotOrderOptions()
+        PlaceSpotOrderOptions ISpotOrderRestClient.PlaceSpotOrderOptions { get; } = new PlaceSpotOrderOptions(_exchangeName)
         {
             RequiredOptionalParameters = new List<ParameterDescription>
             {
                 new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
+            },
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
             }
         };
 
-        async Task<ExchangeWebResult<SharedId>> ISpotOrderRestClient.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedId>> ISpotOrderRestClient.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).PlaceSpotOrderOptions.ValidateRequest(
-                Exchange,
-                request,
-                request.TradingMode,
-                SupportedTradingModes,
-                ((ISpotOrderRestClient)this).SpotSupportedOrderTypes,
-                ((ISpotOrderRestClient)this).SpotSupportedTimeInForce,
-                ((ISpotOrderRestClient)this).SpotSupportedOrderQuantity);
+            var validationError = SharedClient.PlaceSpotOrderOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedId>(Exchange, validationError);
+                return HttpResult.Fail<SharedId>(Exchange, validationError);
 
             var result = await Trading.PlaceOrderAsync(
                 request.Symbol!.GetSymbol(FormatSymbol),
@@ -314,208 +317,158 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 price: request.Price!.Value,
                 timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
                 clientOrderId: request.ClientOrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
                 ct: ct).ConfigureAwait(false);
 
-            if (!result)
-                return result.AsExchangeResult<SharedId>(Exchange, null, default);
+            if (!result.Success)
+                return HttpResult.Fail<SharedId>(result);
 
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(result.Data.OrderId.ToString()));
+            return HttpResult.Ok(result, new SharedId(result.Data.OrderId.ToString()));
+                
         }
 
-        EndpointOptions<GetOrderRequest> ISpotOrderRestClient.GetSpotOrderOptions { get; } = new EndpointOptions<GetOrderRequest>(true);
-        async Task<ExchangeWebResult<SharedSpotOrder>> ISpotOrderRestClient.GetSpotOrderAsync(GetOrderRequest request, CancellationToken ct)
+        GetSpotOrderOptions ISpotOrderRestClient.GetSpotOrderOptions { get; } = new GetSpotOrderOptions(_exchangeName, true);
+        async Task<HttpResult<SharedSpotOrder>> ISpotOrderRestClient.GetSpotOrderAsync(GetOrderRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).GetSpotOrderOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotOrderOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotOrder>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotOrder>(Exchange, validationError);
 
-            if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedSpotOrder>(Exchange, ArgumentError.Invalid(nameof(GetOrderRequest.OrderId), "Invalid order id"));
+                    if (!long.TryParse(request.OrderId, out var orderId))
+                        return HttpResult.Fail<SharedSpotOrder>(Exchange, ArgumentError.Invalid(nameof(GetOrderRequest.OrderId), "Invalid order id"));
 
-            var order = await Trading.GetOrderAsync(orderId, ct: ct).ConfigureAwait(false);
-            if (!order)
-                return order.AsExchangeResult<SharedSpotOrder>(Exchange, null, default);
+                    var order = await Trading.GetOrderAsync(orderId, ct: ct).ConfigureAwait(false);
+                    if (!order.Success)
+                        return HttpResult.Fail<SharedSpotOrder>(order);
 
-            return order.AsExchangeResult(Exchange, TradingMode.Spot, new SharedSpotOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol!),
-                order.Data.Order.Symbol!,
-                order.Data.Order.OrderId.ToString(),
-                ParseOrderType(order.Data.Order.OrderType),
-                order.Data.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                ParseOrderStatus(order.Data.Status),
-                order.Data.Order.Timestamp)
-            {
-                TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
-                ClientOrderId = order.Data.Order.ClientOrderId,
-                OrderPrice = order.Data.Order.Price,
-                OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
-                QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
-                UpdateTime = order.Data.Timestamp,
-                TriggerPrice = order.Data.Order.TriggerPrice,
-                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
-            });
+                    return HttpResult.Ok(order, new SharedSpotOrder(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol!),
+                        order.Data.Order.Symbol!,
+                        order.Data.Order.OrderId.ToString(),
+                        ParseOrderType(order.Data.Order.OrderType),
+                        order.Data.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                        ParseOrderStatus(order.Data.Status),
+                        order.Data.Order.Timestamp)
+                    {
+                        TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
+                        ClientOrderId = order.Data.Order.ClientOrderId,
+                        OrderPrice = order.Data.Order.Price,
+                        OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
+                        QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
+                        UpdateTime = order.Data.Timestamp,
+                        TriggerPrice = order.Data.Order.TriggerPrice,
+                        IsTriggerOrder = order.Data.Order.TriggerPrice > 0
+                    });
+                
         }
 
-        EndpointOptions<GetOpenOrdersRequest> ISpotOrderRestClient.GetOpenSpotOrdersOptions { get; } = new EndpointOptions<GetOpenOrdersRequest>(true);
-        async Task<ExchangeWebResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
+        GetOpenSpotOrdersOptions ISpotOrderRestClient.GetOpenSpotOrdersOptions { get; } = new GetOpenSpotOrdersOptions(_exchangeName, true);
+        async Task<HttpResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).GetOpenSpotOrdersOptions.ValidateRequest(Exchange, request, request.Symbol?.TradingMode ?? request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetOpenSpotOrdersOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotOrder[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotOrder[]>(Exchange, validationError);
 
-            var symbol = request.Symbol?.GetSymbol(FormatSymbol);
-            var orders = await Trading.GetOpenOrdersExtendedAsync(ct: ct).ConfigureAwait(false);
-            if (!orders)
-                return orders.AsExchangeResult<SharedSpotOrder[]>(Exchange, null, default);
+                    var symbol = request.Symbol?.GetSymbol(FormatSymbol);
+                    var orders = await Trading.GetOpenOrdersExtendedAsync(ct: ct).ConfigureAwait(false);
+                    if (!orders.Success)
+                        return HttpResult.Fail<SharedSpotOrder[]>(orders);
 
-            var data = orders.Data.Where(x => x.SymbolType == Enums.SymbolType.Spot);
-            if (symbol != null)
-                data = data.Where(x => x.Symbol == symbol);
+                    var data = orders.Data.Where(x => x.SymbolType == Enums.SymbolType.Spot);
+                    if (symbol != null)
+                        data = data.Where(x => x.Symbol == symbol);
 
-            return orders.AsExchangeResult<SharedSpotOrder[]>(Exchange, TradingMode.Spot, data.Select(x => new SharedSpotOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol),
-                x.Symbol!,
-                x.OrderId.ToString(),
-                ParseOrderType(x.OrderType),
-                x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                SharedOrderStatus.Open,
-                x.Timestamp)
-            {
-                TimeInForce = ParseTimeInForce(x.TimeInForce),
-                ClientOrderId = x.ClientOrderId,
-                OrderPrice = x.Price,
-                OrderQuantity = new SharedOrderQuantity(x.Quantity),
-                QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
-                UpdateTime = x.Timestamp,
-                TriggerPrice = x.TriggerPrice,
-                IsTriggerOrder = x.TriggerPrice > 0
-            }).ToArray());
+                    return HttpResult.Ok(orders, data.Select(x => new SharedSpotOrder(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
+                        x.Symbol!,
+                        x.OrderId.ToString(),
+                        ParseOrderType(x.OrderType),
+                        x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                        SharedOrderStatus.Open,
+                        x.Timestamp)
+                    {
+                        TimeInForce = ParseTimeInForce(x.TimeInForce),
+                        ClientOrderId = x.ClientOrderId,
+                        OrderPrice = x.Price,
+                        OrderQuantity = new SharedOrderQuantity(x.Quantity),
+                        QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
+                        UpdateTime = x.Timestamp,
+                        TriggerPrice = x.TriggerPrice,
+                        IsTriggerOrder = x.TriggerPrice > 0
+                    }).ToArray());
+                
         }
 
-        GetClosedOrdersOptions ISpotOrderRestClient.GetClosedSpotOrdersOptions { get; } = new GetClosedOrdersOptions(true, true, false, 2000)
+        GetSpotClosedOrdersOptions ISpotOrderRestClient.GetClosedSpotOrdersOptions { get; } = new GetSpotClosedOrdersOptions(_exchangeName, true, true, false, 2000)
         {
             RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 results are returned from the API"
         };
-        async Task<ExchangeWebResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetClosedSpotOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
+        async Task<HttpResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetClosedSpotOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).GetClosedSpotOrdersOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetClosedSpotOrdersOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotOrder[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotOrder[]>(Exchange, validationError);
 
-            // Get data
-            var orders = await Trading.GetOrderHistoryAsync(ct: ct).ConfigureAwait(false);
-            if (!orders)
-                return orders.AsExchangeResult<SharedSpotOrder[]>(Exchange, null, default);
+                    // Get data
+                    var orders = await Trading.GetOrderHistoryAsync(ct: ct).ConfigureAwait(false);
+                    if (!orders.Success)
+                        return HttpResult.Fail<SharedSpotOrder[]>(orders);
 
-            var direction = request.Direction ?? DataDirection.Ascending;
-            var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var data = orders.Data.Where(x => 
-                x.Order.SymbolType == Enums.SymbolType.Spot 
-                && x.Order.Symbol == symbol
-                && x.Status != Enums.OrderStatus.Open);
+                    var direction = request.Direction ?? DataDirection.Ascending;
+                    var symbol = request.Symbol!.GetSymbol(FormatSymbol);
+                    var data = orders.Data.Where(x =>
+                        x.Order.SymbolType == Enums.SymbolType.Spot
+                        && x.Order.Symbol == symbol
+                        && x.Status != Enums.OrderStatus.Open);
 
-            if (direction == DataDirection.Ascending)
-                data.OrderBy(x => x.Timestamp);
-            if (direction == DataDirection.Descending)
-                data.OrderByDescending(x => x.Timestamp);
-            if (request.Limit != null)
-                data = data.Take(request.Limit.Value);
+                    if (direction == DataDirection.Ascending)
+                        data.OrderBy(x => x.Timestamp);
+                    if (direction == DataDirection.Descending)
+                        data.OrderByDescending(x => x.Timestamp);
+                    if (request.Limit != null)
+                        data = data.Take(request.Limit.Value);
 
-            return orders.AsExchangeResult(
-                        Exchange,
-                        request.Symbol.TradingMode,
-                        ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
-                        .Select(x =>
-                            new SharedSpotOrder(
-                                ExchangeSymbolCache.ParseSymbol(_topicId, x.Order.Symbol), 
-                                x.Order.Symbol!,
-                                x.Order.OrderId.ToString(),
-                                ParseOrderType(x.Order.OrderType),
-                                x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                                ParseOrderStatus(x.Status),
-                                x.Order.Timestamp)
-                            {
-                                TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
-                                ClientOrderId = x.Order.ClientOrderId,
-                                OrderPrice = x.Order.Price,
-                                OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
-                                QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
-                                UpdateTime = x.Timestamp,
-                                TriggerPrice = x.Order.TriggerPrice,
-                                IsTriggerOrder = x.Order.TriggerPrice > 0
-                            })
-                        .ToArray());
+                    return HttpResult.Ok(orders, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
+                                .Select(x =>
+                                    new SharedSpotOrder(
+                                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Order.Symbol),
+                                        x.Order.Symbol!,
+                                        x.Order.OrderId.ToString(),
+                                        ParseOrderType(x.Order.OrderType),
+                                        x.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                                        ParseOrderStatus(x.Status),
+                                        x.Order.Timestamp)
+                                    {
+                                        TimeInForce = ParseTimeInForce(x.Order.TimeInForce),
+                                        ClientOrderId = x.Order.ClientOrderId,
+                                        OrderPrice = x.Order.Price,
+                                        OrderQuantity = new SharedOrderQuantity(x.Order.Quantity),
+                                        QuantityFilled = new SharedOrderQuantity(x.Order.Quantity - x.Order.QuantityRemaining),
+                                        UpdateTime = x.Timestamp,
+                                        TriggerPrice = x.Order.TriggerPrice,
+                                        IsTriggerOrder = x.Order.TriggerPrice > 0
+                                    })
+                                .ToArray());
+                
         }
 
-        EndpointOptions<GetOrderTradesRequest> ISpotOrderRestClient.GetSpotOrderTradesOptions { get; } = new EndpointOptions<GetOrderTradesRequest>(true);
-        async Task<ExchangeWebResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotOrderTradesAsync(GetOrderTradesRequest request, CancellationToken ct)
+        GetSpotOrderTradesOptions ISpotOrderRestClient.GetSpotOrderTradesOptions { get; } = new GetSpotOrderTradesOptions(_exchangeName, true);
+        async Task<HttpResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotOrderTradesAsync(GetOrderTradesRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).GetSpotOrderTradesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotOrderTradesOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedUserTrade[]>(Exchange, validationError);
+                return HttpResult.Fail<SharedUserTrade[]>(Exchange, validationError);
 
-            if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedUserTrade[]>(Exchange, ArgumentError.Invalid(nameof(GetOrderTradesRequest.OrderId), "Invalid order id"));
+                    if (!long.TryParse(request.OrderId, out var orderId))
+                        return HttpResult.Fail<SharedUserTrade[]>(Exchange, ArgumentError.Invalid(nameof(GetOrderTradesRequest.OrderId), "Invalid order id"));
 
-            var orders = await Trading.GetUserTradesAsync(ct: ct).ConfigureAwait(false);
-            if (!orders)
-                return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, null, default);
+                    var orders = await Trading.GetUserTradesAsync(ct: ct).ConfigureAwait(false);
+                    if (!orders.Success)
+                        return HttpResult.Fail<SharedUserTrade[]>(orders);
 
-            var data = orders.Data.Where(x => x.OrderId == orderId);
-            return orders.AsExchangeResult<SharedUserTrade[]>(Exchange, TradingMode.Spot, data.Select(x => new SharedUserTrade(
-                ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
-                x.Symbol,
-                x.OrderId.ToString(),
-                x.TradeId.ToString(),
-                x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                x.Quantity,
-                x.Price,
-                x.Timestamp)
-            {
-                Fee = x.Fee,
-                FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
-                Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
-            }).ToArray());
-        }
-
-        GetUserTradesOptions ISpotOrderRestClient.GetSpotUserTradesOptions { get; } = new GetUserTradesOptions(true, false, true, 2000)
-        {
-            RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 per request / 10000 results in total are returned from the API"
-        };
-        async Task<ExchangeWebResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? pageRequest, CancellationToken ct)
-        {
-            var validationError = ((ISpotOrderRestClient)this).GetSpotUserTradesOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
-            if (validationError != null)
-                return new ExchangeWebResult<SharedUserTrade[]>(Exchange, validationError);
-            
-            int limit = request.Limit ?? 2000;
-            var direction = DataDirection.Ascending;
-            var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest, false);
-
-            // Get data
-            var result = await Trading.GetUserTradesByTimeAsync(
-                startTime: pageParams.StartTime ?? DateTime.UtcNow.AddDays(-7),
-                ct: ct
-                ).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedUserTrade[]>(Exchange, null, default);
-
-            var data = result.Data.Where(x => x.Symbol == request.Symbol!.GetSymbol(FormatSymbol));
-            var nextPageRequest = Pagination.GetNextPageRequest(
-                     () => Pagination.NextPageFromTime(pageParams, result.Data.Max(x => x.Timestamp)),
-                     result.Data.Length,
-                     result.Data.Select(x => x.Timestamp),
-                     request.StartTime,
-                     request.EndTime ?? DateTime.UtcNow,
-                     pageParams);
-
-            return result.AsExchangeResult(
-                    Exchange,
-                    request.Symbol!.TradingMode,
-                    ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
-                    .Select(x => 
-                        new SharedUserTrade(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, x.Symbol), 
+                    var data = orders.Data.Where(x => x.OrderId == orderId);
+                    return HttpResult.Ok(orders, data.Select(x => new SharedUserTrade(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
                         x.Symbol,
                         x.OrderId.ToString(),
                         x.TradeId.ToString(),
@@ -527,24 +480,86 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         Fee = x.Fee,
                         FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
                         Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
-                    }).ToArray(), nextPageRequest);
+                    }).ToArray());
+                
         }
 
-        EndpointOptions<CancelOrderRequest> ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new EndpointOptions<CancelOrderRequest>(true);
-        async Task<ExchangeWebResult<SharedId>> ISpotOrderRestClient.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
+        GetSpotUserTradesOptions ISpotOrderRestClient.GetSpotUserTradesOptions { get; } = new GetSpotUserTradesOptions(_exchangeName, true, false, true, 2000)
         {
-            var validationError = ((ISpotOrderRestClient)this).CancelSpotOrderOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 per request / 10000 results in total are returned from the API"
+        };
+        async Task<HttpResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? pageRequest, CancellationToken ct)
+        {
+            var validationError = SharedClient.GetSpotUserTradesOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedId>(Exchange, validationError);
+                return HttpResult.Fail<SharedUserTrade[]>(Exchange, validationError);
+
+                    int limit = request.Limit ?? 2000;
+                    var direction = DataDirection.Ascending;
+                    var pageParams = Pagination.GetPaginationParameters(direction, limit, request.StartTime, request.EndTime ?? DateTime.UtcNow, pageRequest, false);
+
+                    // Get data
+                    var result = await Trading.GetUserTradesByTimeAsync(
+                        startTime: pageParams.StartTime ?? DateTime.UtcNow.AddDays(-7),
+                        ct: ct
+                        ).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedUserTrade[]>(result);
+
+                    var data = result.Data.Where(x => x.Symbol == request.Symbol!.GetSymbol(FormatSymbol));
+                    var nextPageRequest = Pagination.GetNextPageRequest(
+                             () => Pagination.NextPageFromTime(pageParams, result.Data.Max(x => x.Timestamp)),
+                             result.Data.Length,
+                             result.Data.Select(x => x.Timestamp),
+                             request.StartTime,
+                             request.EndTime ?? DateTime.UtcNow,
+                             pageParams);
+
+                    return HttpResult.Ok(result, ExchangeHelpers.ApplyFilter(data, x => x.Timestamp, request.StartTime, request.EndTime, direction)
+                            .Select(x =>
+                                new SharedUserTrade(
+                                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol),
+                                x.Symbol,
+                                x.OrderId.ToString(),
+                                x.TradeId.ToString(),
+                                x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                                x.Quantity,
+                                x.Price,
+                                x.Timestamp)
+                                {
+                                    Fee = x.Fee,
+                                    FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
+                                    Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker
+                                }).ToArray(), nextPageRequest);
+                
+        }
+
+        CancelSpotOrderOptions ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new CancelSpotOrderOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
+            }
+        };
+        async Task<HttpResult<SharedId>> ISpotOrderRestClient.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
+        {
+            var validationError = SharedClient.CancelSpotOrderOptions.ValidateRequest(request, this);
+            if (validationError != null)
+                return HttpResult.Fail<SharedId>(Exchange, validationError);
 
             if (!long.TryParse(request.OrderId, out var orderId))
-                return new ExchangeWebResult<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
+                return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
 
-            var order = await Trading.CancelOrderAsync(request.Symbol!.GetSymbol(FormatSymbol), orderId, ct: ct).ConfigureAwait(false);
-            if (!order)
-                return order.AsExchangeResult<SharedId>(Exchange, null, default);
+            var order = await Trading.CancelOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                orderId, 
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
+            if (!order.Success)
+                return HttpResult.Fail<SharedId>(order);
 
-            return order.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(request.OrderId));
+            return HttpResult.Ok(order, new SharedId(request.OrderId));
+                
         }
 
         private SharedTimeInForce? ParseTimeInForce(TimeInForce? timeInForce)
@@ -612,176 +627,193 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #region Spot Client Id Order Client
 
-        EndpointOptions<GetOrderRequest> ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdOptions { get; } = new EndpointOptions<GetOrderRequest>(true);
-        async Task<ExchangeWebResult<SharedSpotOrder>> ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdAsync(GetOrderRequest request, CancellationToken ct)
+        GetSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdOptions { get; } = new GetSpotOrderByClientOrderIdOptions(_exchangeName, true);
+        async Task<HttpResult<SharedSpotOrder>> ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdAsync(GetOrderRequest request, CancellationToken ct)
         {
-            var validationError = ((ISpotOrderRestClient)this).GetSpotOrderOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedSpotOrder>(Exchange, validationError);
+                return HttpResult.Fail<SharedSpotOrder>(Exchange, validationError);
 
-            var order = await Trading.GetOrderAsync(clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
-            if (!order)
-                return order.AsExchangeResult<SharedSpotOrder>(Exchange, null, default);
+                    var order = await Trading.GetOrderAsync(clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
+                    if (!order.Success)
+                        return HttpResult.Fail<SharedSpotOrder>(order);
 
-            return order.AsExchangeResult(Exchange, TradingMode.Spot, new SharedSpotOrder(
-                ExchangeSymbolCache.ParseSymbol(_topicId, order.Data.Order.Symbol!),
-                order.Data.Order.Symbol!,
-                order.Data.Order.OrderId.ToString(),
-                ParseOrderType(order.Data.Order.OrderType),
-                order.Data.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                ParseOrderStatus(order.Data.Status),
-                order.Data.Order.Timestamp)
-            {
-                TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
-                ClientOrderId = order.Data.Order.ClientOrderId,
-                OrderPrice = order.Data.Order.Price,
-                OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
-                QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
-                UpdateTime = order.Data.Timestamp,
-                TriggerPrice = order.Data.Order.TriggerPrice,
-                IsTriggerOrder = order.Data.Order.TriggerPrice > 0
-            });
+                    return HttpResult.Ok(order, new SharedSpotOrder(
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Data.Order.Symbol!),
+                        order.Data.Order.Symbol!,
+                        order.Data.Order.OrderId.ToString(),
+                        ParseOrderType(order.Data.Order.OrderType),
+                        order.Data.Order.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                        ParseOrderStatus(order.Data.Status),
+                        order.Data.Order.Timestamp)
+                    {
+                        TimeInForce = ParseTimeInForce(order.Data.Order.TimeInForce),
+                        ClientOrderId = order.Data.Order.ClientOrderId,
+                        OrderPrice = order.Data.Order.Price,
+                        OrderQuantity = new SharedOrderQuantity(order.Data.Order.Quantity),
+                        QuantityFilled = new SharedOrderQuantity(order.Data.Order.Quantity - order.Data.Order.QuantityRemaining),
+                        UpdateTime = order.Data.Timestamp,
+                        TriggerPrice = order.Data.Order.TriggerPrice,
+                        IsTriggerOrder = order.Data.Order.TriggerPrice > 0
+                    });
+                
         }
 
-        EndpointOptions<CancelOrderRequest> ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdOptions { get; } = new EndpointOptions<CancelOrderRequest>(true);
-        async Task<ExchangeWebResult<SharedId>> ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
+        CancelSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdOptions { get; } = new CancelSpotOrderByClientOrderIdOptions(_exchangeName, true)
         {
-            var validationError = ((ISpotOrderRestClient)this).CancelSpotOrderOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
+            }
+        };
+        async Task<HttpResult<SharedId>> ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
+        {
+            var validationError = SharedClient.CancelSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedId>(Exchange, validationError);
+                return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-            var order = await Trading.CancelOrderByClientOrderIdAsync(request.Symbol!.GetSymbol(FormatSymbol), clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
-            if (!order)
-                return order.AsExchangeResult<SharedId>(Exchange, null, default);
+            var order = await Trading.CancelOrderByClientOrderIdAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                clientOrderId: request.OrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"), 
+                ct: ct).ConfigureAwait(false);
+            if (!order.Success)
+                return HttpResult.Fail<SharedId>(order);
 
-            return order.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(request.OrderId));
+            return HttpResult.Ok(order, new SharedId(request.OrderId));
+                
         }
         #endregion
 
         #region Asset client
-        EndpointOptions<GetAssetsRequest> IAssetsRestClient.GetAssetsOptions { get; } = new EndpointOptions<GetAssetsRequest>(true);
+        GetAssetsOptions IAssetsRestClient.GetAssetsOptions { get; } = new GetAssetsOptions(_exchangeName, true);
 
-        async Task<ExchangeWebResult<SharedAsset[]>> IAssetsRestClient.GetAssetsAsync(GetAssetsRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedAsset[]>> IAssetsRestClient.GetAssetsAsync(GetAssetsRequest request, CancellationToken ct)
         {
-            var validationError = ((IAssetsRestClient)this).GetAssetsOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.GetAssetsOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedAsset[]>(Exchange, validationError);
-            
-            var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
-            if (!assets)
-                return assets.AsExchangeResult<SharedAsset[]>(Exchange, null, default);
+                return HttpResult.Fail<SharedAsset[]>(Exchange, validationError);
 
-            return assets.AsExchangeResult<SharedAsset[]>(Exchange, TradingMode.Spot, assets.Data.Assets.Select(x => new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
-            {
-                FullName = x.FullName,
-                Networks = [new SharedAssetNetwork("HyperLiquid") {
+                    var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+                    if (!assets.Success)
+                        return HttpResult.Fail<SharedAsset[]>(assets);
+
+                    return HttpResult.Ok(assets, assets.Data.Assets.Select(x => new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
+                    {
+                        FullName = x.FullName,
+                        Networks = [new SharedAssetNetwork("HyperLiquid") {
                     ContractAddress = x.AssetId
                 }]
-            }).ToArray());
+                    }).ToArray());
+                
         }
 
-        EndpointOptions<GetAssetRequest> IAssetsRestClient.GetAssetOptions { get; } = new EndpointOptions<GetAssetRequest>(false);
-        async Task<ExchangeWebResult<SharedAsset>> IAssetsRestClient.GetAssetAsync(GetAssetRequest request, CancellationToken ct)
+        GetAssetOptions IAssetsRestClient.GetAssetOptions { get; } = new GetAssetOptions(_exchangeName, false);
+        async Task<HttpResult<SharedAsset>> IAssetsRestClient.GetAssetAsync(GetAssetRequest request, CancellationToken ct)
         {
-            var validationError = ((IAssetsRestClient)this).GetAssetOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.GetAssetOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedAsset>(Exchange, validationError);
+                return HttpResult.Fail<SharedAsset>(Exchange, validationError);
 
-            var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
-            if (!assets)
-                return assets.AsExchangeResult<SharedAsset>(Exchange, null, default);
+                    var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+                    if (!assets.Success)
+                        return HttpResult.Fail<SharedAsset>(assets);
 
-            var asset = assets.Data.Assets.SingleOrDefault(x => x.Name.Equals(HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset), StringComparison.InvariantCultureIgnoreCase));
-            if (asset == null)
-                return assets.AsExchangeError<SharedAsset>(Exchange, new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
+                    var asset = assets.Data.Assets.SingleOrDefault(x => x.Name.Equals(HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset), StringComparison.InvariantCultureIgnoreCase));
+                    if (asset == null)
+                        return HttpResult.Fail<SharedAsset>(assets, new ServerError(new ErrorInfo(ErrorType.UnknownAsset, "Asset not found")));
 
-            return assets.AsExchangeResult(Exchange, TradingMode.Spot, new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(asset.Name))
-            {
-                FullName = asset.FullName,
-                Networks = [new SharedAssetNetwork("HyperLiquid") {
+                    return HttpResult.Ok(assets, new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(asset.Name))
+                    {
+                        FullName = asset.FullName,
+                        Networks = [new SharedAssetNetwork("HyperLiquid") {
                     ContractAddress = asset.AssetId
                 }]
-            });
+                    });
+                
         }
 
         #endregion
 
         #region Fee Client
-        EndpointOptions<GetFeeRequest> IFeeRestClient.GetFeeOptions { get; } = new EndpointOptions<GetFeeRequest>(true);
+        GetFeeOptions IFeeRestClient.GetFeeOptions { get; } = new GetFeeOptions(_exchangeName, true);
 
-        async Task<ExchangeWebResult<SharedFee>> IFeeRestClient.GetFeesAsync(GetFeeRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedFee>> IFeeRestClient.GetFeesAsync(GetFeeRequest request, CancellationToken ct)
         {
-            var validationError = ((IFeeRestClient)this).GetFeeOptions.ValidateRequest(Exchange, request, request.TradingMode, SupportedTradingModes);
+            var validationError = SharedClient.GetFeeOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedFee>(Exchange, validationError);
+                return HttpResult.Fail<SharedFee>(Exchange, validationError);
 
-            // Get data
-            var result = await Account.GetFeeInfoAsync(ct: ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsExchangeResult<SharedFee>(Exchange, null, default);
+                    // Get data
+                    var result = await Account.GetFeeInfoAsync(ct: ct).ConfigureAwait(false);
+                    if (!result.Success)
+                        return HttpResult.Fail<SharedFee>(result);
 
-            // Return
-            return result.AsExchangeResult(Exchange, TradingMode.Spot, new SharedFee(result.Data.MakerFeeRateSpot * 100, result.Data.TakerFeeRateSpot * 100));
+                    // Return
+                    return HttpResult.Ok(result, new SharedFee(result.Data.MakerFeeRateSpot * 100, result.Data.TakerFeeRateSpot * 100));
+                
         }
         #endregion
 
         #region Withdraw client
 
-        WithdrawOptions IWithdrawRestClient.WithdrawOptions { get; } = new WithdrawOptions();
-        async Task<ExchangeWebResult<SharedId>> IWithdrawRestClient.WithdrawAsync(WithdrawRequest request, CancellationToken ct)
+        WithdrawOptions IWithdrawRestClient.WithdrawOptions { get; } = new WithdrawOptions(_exchangeName);
+        async Task<HttpResult<SharedId>> IWithdrawRestClient.WithdrawAsync(WithdrawRequest request, CancellationToken ct)
         {
-            var validationError = ((IWithdrawRestClient)this).WithdrawOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.WithdrawOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedId>(Exchange, validationError);
+                return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-            // Get data
-            var withdrawal = await Account.TransferSpotAsync(
-                request.Address,
-                HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset),
-                request.Quantity,
-                ct: ct).ConfigureAwait(false);
-            if (!withdrawal)
-                return withdrawal.AsExchangeResult<SharedId>(Exchange, null, default);
+                    // Get data
+                    var withdrawal = await Account.TransferSpotAsync(
+                        request.Address,
+                        HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset),
+                        request.Quantity,
+                        ct: ct).ConfigureAwait(false);
+                    if (!withdrawal.Success)
+                        return HttpResult.Fail<SharedId>(withdrawal);
 
-            return withdrawal.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(string.Empty));
+                    return HttpResult.Ok(withdrawal, new SharedId(string.Empty));
+                
         }
 
         #endregion
 
         #region Transfer client
 
-        TransferOptions ITransferRestClient.TransferOptions { get; } = new TransferOptions([
+        TransferOptions ITransferRestClient.TransferOptions { get; } = new TransferOptions(_exchangeName, [
             SharedAccountType.PerpetualLinearFutures,
             SharedAccountType.PerpetualInverseFutures,
             SharedAccountType.DeliveryLinearFutures,
             SharedAccountType.DeliveryInverseFutures,
             SharedAccountType.Spot
             ]);
-        async Task<ExchangeWebResult<SharedId>> ITransferRestClient.TransferAsync(TransferRequest request, CancellationToken ct)
+        async Task<HttpResult<SharedId>> ITransferRestClient.TransferAsync(TransferRequest request, CancellationToken ct)
         {
-            var validationError = ((ITransferRestClient)this).TransferOptions.ValidateRequest(Exchange, request, TradingMode.Spot, SupportedTradingModes);
+            var validationError = SharedClient.TransferOptions.ValidateRequest(request, this);
             if (validationError != null)
-                return new ExchangeWebResult<SharedId>(Exchange, validationError);
+                return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-            if (!request.Asset.Equals("USDC", StringComparison.InvariantCultureIgnoreCase)
-                && !request.Asset.Equals("USD", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return new ExchangeWebResult<SharedId>(Exchange, ArgumentError.Invalid("Asset", "invalid asset, only USD is supported"));
-            }
+                    if (!request.Asset.Equals("USDC", StringComparison.InvariantCultureIgnoreCase)
+                        && !request.Asset.Equals("USD", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("Asset", "invalid asset, only USD is supported"));
+                    }
 
-            var type = GetTransferType(request);
-            if (type == null)
-                return new ExchangeWebResult<SharedId>(Exchange, ArgumentError.Invalid("To/From AccountType", "invalid to/from account combination"));
+                    var type = GetTransferType(request);
+                    if (type == null)
+                        return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("To/From AccountType", "invalid to/from account combination"));
 
-            // Get data
-            var transfer = await Account.TransferInternalAsync(
-                type.Value,
-                request.Quantity,
-                ct: ct).ConfigureAwait(false);
-            if (!transfer)
-                return transfer.AsExchangeResult<SharedId>(Exchange, null, default);
+                    // Get data
+                    var transfer = await Account.TransferInternalAsync(
+                        type.Value,
+                        request.Quantity,
+                        ct: ct).ConfigureAwait(false);
+                    if (!transfer.Success)
+                        return HttpResult.Fail<SharedId>(transfer);
 
-            return transfer.AsExchangeResult(Exchange, TradingMode.Spot, new SharedId(""));
+                    return HttpResult.Ok(transfer, new SharedId(""));
+                
         }
 
         private TransferDirection? GetTransferType(TransferRequest request)

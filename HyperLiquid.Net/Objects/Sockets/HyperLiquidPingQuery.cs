@@ -10,7 +10,7 @@ namespace HyperLiquid.Net.Objects.Sockets
         public HyperLiquidPingQuery() : base(new HyperLiquidPing(), false)
         {
             RequestTimeout = TimeSpan.FromSeconds(5);
-            MessageRouter = MessageRouter.CreateWithoutHandler<HyperLiquidPong>("pong");
+            MessageRouter = MessageRouter.CreateVoid<HyperLiquidPong>("pong");
         }
     }
 }

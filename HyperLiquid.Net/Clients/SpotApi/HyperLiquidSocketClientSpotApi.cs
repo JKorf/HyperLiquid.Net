@@ -19,12 +19,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
         /// <summary>
         /// ctor
         /// </summary>
-        internal HyperLiquidSocketClientSpotApi(ILogger logger, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
-            base(logger, baseClient, options, options.SpotOptions)
+        internal HyperLiquidSocketClientSpotApi(ILoggerFactory? loggerFactory, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
+            base(loggerFactory, baseClient, options, options.SpotOptions)
         {
-            Account = new HyperLiquidSocketClientSpotApiAccount(logger, this);
-            ExchangeData = new HyperLiquidSocketClientSpotApiExchangeData(logger, this);
-            Trading = new HyperLiquidSocketClientSpotApiTrading(logger, this);
+            Account = new HyperLiquidSocketClientSpotApiAccount(_logger, this);
+            ExchangeData = new HyperLiquidSocketClientSpotApiExchangeData(_logger, this);
+            Trading = new HyperLiquidSocketClientSpotApiTrading(_logger, this);
         }
         #endregion
 

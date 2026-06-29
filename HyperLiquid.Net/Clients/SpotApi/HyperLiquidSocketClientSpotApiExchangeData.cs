@@ -21,6 +21,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// </summary>
     internal partial class HyperLiquidSocketClientSpotApiExchangeData : HyperLiquidSocketClientApiExchangeData, IHyperLiquidSocketClientSpotApiExchangeData
     {
+
         #region constructor/destructor
 
         /// <summary>
@@ -32,14 +33,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
         #endregion
 
-
-
         #region Get Spot Exchange Info
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidSpotExchangeInfo>> GetExchangeInfoAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotMeta" }
             };
@@ -52,22 +51,22 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Spot Exchange Info And Tickers
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidExchangeInfoAndTickers>> GetExchangeInfoAndTickersAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotMetaAndAssetCtxs" }
             };
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidExchangeInfoAndTickers>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var ticker in result.Data.Tickers)
             {
                 var nameResult = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, ticker.Symbol!).ConfigureAwait(false);
-                if (nameResult)
+                if (nameResult.Success)
                     ticker.Symbol = nameResult.Data;
             }
 
@@ -79,9 +78,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Asset Info
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidAssetInfo>> GetAssetInfoAsync(string assetId, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "tokenDetails" },
                 { "tokenId", assetId }
@@ -92,13 +91,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         #endregion
 
-
         #region Get Outcomes Info
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidQuestionsAndOutcomesInfo>> GetQuestionsAndOutcomesInfoAsync(CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "outcomeMeta" }
             };
@@ -111,9 +109,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Settled Outcome
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidSettledOutcome>> GetSettledOutcomeAsync(long outcomeId, CancellationToken ct = default)
         {
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "settledOutcome" },
                 { "outcome", outcomeId }
@@ -125,15 +123,15 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToSymbolUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidTicker>> onMessage, CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
             {
                 // Spot symbol
                 var spotName = await HyperLiquidUtils.GetExchangeNameFromSymbolNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-                if (!spotName)
-                    return new WebCallResult<UpdateSubscription>(spotName.Error);
+                if (!spotName.Success)
+                    return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, spotName.Error);
 
                 coin = spotName.Data;
             }
@@ -159,7 +157,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOutcomeInfoUpdatesAsync(
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOutcomeInfoUpdatesAsync(
             Action<DataEvent<long>>? onOutcomeCreateUpdate = null,
             Action<DataEvent<HyperLiquidOutcomeInfo>>? onOutcomeSettleUpdate = null,
             Action<DataEvent<HyperLiquidQuestion>>? onQuestionUpdate = null,

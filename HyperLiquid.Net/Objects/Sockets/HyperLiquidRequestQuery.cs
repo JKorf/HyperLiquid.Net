@@ -16,7 +16,7 @@ namespace HyperLiquid.Net.Objects.Sockets
             HyperLiquidSocketClientApi client,
             string method,
             string type,
-            ParameterCollection request,
+            Parameters request,
             bool authenticated, 
             int weight = 1) 
             : base(
@@ -34,13 +34,13 @@ namespace HyperLiquid.Net.Objects.Sockets
                 client.AuthenticationProvider!.ProcessRequest(client, request);
 
                 MessageRouter = MessageRouter.Create([
-                    MessageRoute<HyperLiquidSocketUpdate<HyperLiquidSocketResponseAuth<TResponse>>>.CreateWithoutTopicFilter(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
+                    MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<HyperLiquidSocketResponseAuth<TResponse>>, TResponse>(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
                 ]);
             }
             else
             {
                 MessageRouter = MessageRouter.Create([
-                    MessageRoute<HyperLiquidSocketUpdate<HyperLiquidSocketResponse<TResponse>>>.CreateWithoutTopicFilter(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
+                    MessageRoute.CreateForQuery<HyperLiquidSocketUpdate<HyperLiquidSocketResponse<TResponse>>, TResponse>(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
                 ]);
             }
         }
@@ -48,14 +48,14 @@ namespace HyperLiquid.Net.Objects.Sockets
         public CallResult<TResponse> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<HyperLiquidSocketResponseAuth<TResponse>> message)
         {
             if (!message.Data.Response.Payload.Status.Equals("ok"))
-                return new CallResult<TResponse>(new ServerError(ErrorInfo.Unknown with { Message = message.Data.Response.Payload.Status }), originalData);
+                return CallResult<TResponse>.Fail(new ServerError(ErrorInfo.Unknown with { Message = message.Data.Response.Payload.Status }), originalData);
 
-            return new CallResult<TResponse>(message.Data.Response.Payload.Data!.Data, originalData, null);
+            return CallResult<TResponse>.Ok(message.Data.Response.Payload.Data!.Data, originalData);
         }
 
         public CallResult<TResponse> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketUpdate<HyperLiquidSocketResponse<TResponse>> message)
         {
-            return new CallResult<TResponse>(message.Data.Response.Payload.Data, originalData, null);
+            return CallResult<TResponse>.Ok(message.Data.Response.Payload.Data, originalData);
         }
     }
 }

@@ -34,14 +34,14 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Get Spot Balances
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotClearinghouseState" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -49,7 +49,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidBalances>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            return result.As<HyperLiquidBalance[]>(result.Data?.Balances);
+            if (!result.Success)
+                return QueryResult.Fail<HyperLiquidBalance[]>(result);
+
+            return QueryResult.Ok(result, result.Data.Balances);
         }
 
         #endregion
@@ -57,20 +60,20 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Spot Transfer
 
         /// <inheritdoc />
-        public async Task<CallResult> TransferSpotAsync(
+        public async Task<QueryResult> TransferSpotAsync(
             string destinationAddress,
             string asset,
             decimal quantity,
             CancellationToken ct = default)
         {
             var assetId = await HyperLiquidUtils.GetAssetNameAndIdAsync(_baseClient.BaseClient, asset).ConfigureAwait(false);
-            if (!assetId)
-                return new WebCallResult(assetId.Error!);
+            if (!assetId.Success)
+                return QueryResult.Fail(_baseClient.Exchange, assetId.Error!);
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "spotSend" },
                 { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
@@ -78,8 +81,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 { "destination", destinationAddress },
                 { "token", assetId.Data }
             };
-            actionParameters.AddString("amount", quantity);
-            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            actionParameters.Add("amount", quantity);
+            actionParameters.Add("time", DateTime.UtcNow);
             parameters.Add("action", actionParameters);
 
             return await _baseClient.QueryInternalAsync(
@@ -89,7 +92,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToBalanceUpdatesAsync(string? address, Action<DataEvent<HyperLiquidBalanceUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToBalanceUpdatesAsync(string? address, Action<DataEvent<HyperLiquidBalanceUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");

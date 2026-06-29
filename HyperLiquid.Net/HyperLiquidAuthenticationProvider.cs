@@ -2,6 +2,7 @@
 using CryptoExchange.Net.Authentication.Signing;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Sockets.Default;
@@ -48,10 +49,10 @@ namespace HyperLiquid.Net
 
         public override void ProcessRequest(RestApiClient apiClient, RestRequestConfiguration request)
         {
-            if (!request.Authenticated)
+            if (!request.RequestDefinition.Authenticated)
                 return;
 
-            var action = (Dictionary<string, object>)request.BodyParameters!["action"];
+            var action = (Parameters)request.BodyParameters!["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.BodyParameters!.Add("nonce", nonce);
 
@@ -64,9 +65,9 @@ namespace HyperLiquid.Net
             request.BodyParameters["signature"] = signature;
         }
 
-        public void ProcessRequest(SocketApiClient apiClient, ParameterCollection request)
+        public void ProcessRequest(SocketApiClient apiClient, Parameters request)
         {
-            var action = (Dictionary<string, object>)request["action"];
+            var action = (Parameters)request["action"];
             var nonce = GetNonce(action, () => GetMillisecondTimestampLong(apiClient));
             request.Add("nonce", nonce);
 
@@ -79,7 +80,7 @@ namespace HyperLiquid.Net
             request["signature"] = signature;
         }
 
-        private long GetNonce(Dictionary<string, object> actionParameters, Func<long> getTimestamp)
+        private long GetNonce(Parameters actionParameters, Func<long> getTimestamp)
         {
             if (actionParameters.TryGetValue("time", out var time))
                 return (long)time;
@@ -101,7 +102,7 @@ namespace HyperLiquid.Net
 
         internal Dictionary<string, object> GenerateSignature(
             HyperLiquidEnvironment environment,
-            Dictionary<string, object> action,
+            Parameters action,
             long nonce,
             string? vaultAddress,
             long? expiresAfter)

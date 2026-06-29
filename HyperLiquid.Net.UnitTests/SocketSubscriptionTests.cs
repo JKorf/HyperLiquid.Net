@@ -28,7 +28,7 @@ namespace HyperLiquid.Net.UnitTests
                 Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz")
             }), logger);
 
-            var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
+            var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz/ws", "data");
             await tester.ValidateConcurrentAsync<HyperLiquidKline>(
                 (client, handler) => client.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneDay, handler),
                 (client, handler) => client.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync("HYPE", Enums.KlineInterval.OneHour, handler),

@@ -35,26 +35,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
         #endregion
 
-
         #region Get Open Orders
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOpenOrder[]>> GetOpenOrdersAsync(string? address = null, string? dex = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidOpenOrder[]>> GetOpenOrdersAsync(string? address = null, string? dex = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "openOrders" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key  }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOpenOrder[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var order in result.Data)
@@ -83,22 +82,22 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Open Orders Extended
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOrder[]>> GetOpenOrdersExtendedAsync(string? address = null, string? dex = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidOrder[]>> GetOpenOrdersExtendedAsync(string? address = null, string? dex = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "frontendOpenOrders" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddOptional("dex", dex);
+            parameters.Add("dex", dex);
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrder[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var order in result.Data)
@@ -127,14 +126,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get User Trades
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidUserTrade[]>> GetUserTradesAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidUserTrade[]>> GetUserTradesAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFills" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
@@ -142,7 +141,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidUserTrade[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var order in result.Data)
@@ -150,7 +149,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                 {
                     var symbolName = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, order.ExchangeSymbol).ConfigureAwait(false);
-                    if (symbolName == null)
+                    if (!symbolName.Success)
                         continue;
 
                     order.Symbol = symbolName.Data;
@@ -171,7 +170,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get User Trades By Time
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidUserTrade[]>> GetUserTradesByTimeAsync(
+        public async Task<QueryResult<HyperLiquidUserTrade[]>> GetUserTradesByTimeAsync(
             DateTime startTime,
             DateTime? endTime = null,
             bool? aggregateByTime = null,
@@ -183,18 +182,18 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "userFillsByTime" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
-            parameters.AddMilliseconds("startTime", startTime);
-            parameters.AddOptionalMilliseconds("endTime", endTime);
-            parameters.AddOptional("aggregateByTime", aggregateByTime);
+            parameters.Add("startTime", startTime);
+            parameters.Add("endTime", endTime);
+            parameters.Add("aggregateByTime", aggregateByTime);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidUserTrade[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var order in result.Data)
@@ -202,7 +201,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                 {
                     var symbolName = await HyperLiquidUtils.GetSymbolNameFromExchangeNameAsync(_baseClient.BaseClient, order.ExchangeSymbol).ConfigureAwait(false);
-                    if (symbolName == null)
+                    if (!symbolName.Success)
                         continue;
 
                     order.Symbol = symbolName.Data;
@@ -223,29 +222,29 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Order
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOrderStatus>> GetOrderAsync(long? orderId = null, string? clientOrderId = null, string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidOrderStatus>> GetOrderAsync(long? orderId = null, string? clientOrderId = null, string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "orderStatus" },
                 { "user", address ?? _baseClient.AuthenticationProvider!.Key }
             };
 
-            parameters.AddOptional("oid", orderId);
-            parameters.AddOptional("oid", clientOrderId);
+            parameters.Add("oid", orderId);
+            parameters.Add("oid", clientOrderId);
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrderStatusResult>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
-                return result.As<HyperLiquidOrderStatus>(default);
+            if (!result.Success)
+                return QueryResult.Fail<HyperLiquidOrderStatus>(result);
 
             if (result.Data.Status != "order")
-                return result.AsError<HyperLiquidOrderStatus>(new ServerError(new ErrorInfo(ErrorType.Unknown, result.Data.Status)));
+                return QueryResult.Fail<HyperLiquidOrderStatus>(result, new ServerError(new ErrorInfo(ErrorType.Unknown, result.Data.Status)));
 
             if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(result.Data.Order!.Order.ExchangeSymbol))
             {
@@ -262,7 +261,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 result.Data.Order!.Order.SymbolType = SymbolType.Futures;
             }
 
-            return result.As(result.Data.Order);
+            return QueryResult.Ok(result, result.Data.Order);
         }
 
         #endregion
@@ -270,14 +269,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Get Order History
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOrderStatus[]>> GetOrderHistoryAsync(string? address = null, CancellationToken ct = default)
+        public async Task<QueryResult<HyperLiquidOrderStatus[]>> GetOrderHistoryAsync(string? address = null, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
 
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "historicalOrders" },
                 { "user",  address ?? _baseClient.AuthenticationProvider!.Key }
@@ -285,7 +284,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrderStatus[]>(_baseClient, "post", "info", parameters, false), ct).ConfigureAwait(false);
-            if (!result)
+            if (!result.Success)
                 return result;
 
             foreach (var order in result.Data)
@@ -313,7 +312,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #region Place Order
 
-        public async Task<CallResult<HyperLiquidOrderResult>> PlaceOrderAsync(
+        public async Task<QueryResult<HyperLiquidOrderResult>> PlaceOrderAsync(
             string symbol,
             OrderSide side,
             OrderType orderType,
@@ -333,14 +332,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 new HyperLiquidOrderRequest(symbol, side, orderType, quantity, price, timeInForce, reduceOnly, triggerPrice: triggerPrice, tpSlType: tpSlType, clientOrderId: clientOrderId)
                 ], tpSlGrouping, vaultAddress, expiresAfter, ct).ConfigureAwait(false);
 
-            if (!result)
-                return result.As<HyperLiquidOrderResult>(default);
+            if (!result.Success)
+                return QueryResult.Fail<HyperLiquidOrderResult>(result);
 
             var orderResult = result.Data.Single();
-            if (!orderResult)
-                return result.AsError<HyperLiquidOrderResult>(orderResult.Error!);
+            if (!orderResult.Success)
+                return QueryResult.Fail<HyperLiquidOrderResult>(result, orderResult.Error!);
 
-            return result.As(result.Data.Single().Data);
+            return QueryResult.Ok(result, result.Data.Single().Data!);
         }
 
         #endregion
@@ -348,7 +347,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Place Multiple Orders
 
         /// <inheritdoc />
-        public async Task<CallResult<CallResult<HyperLiquidOrderResult>[]>> PlaceMultipleOrdersAsync(
+        public async Task<QueryResult<CallResult<HyperLiquidOrderResult>[]>> PlaceMultipleOrdersAsync(
             IEnumerable<HyperLiquidOrderRequest> orders,
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
@@ -357,25 +356,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in orders)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
-                if (!symbolId)
-                    return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(symbolId.Error);
+                if (!symbolId.Success)
+                    return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(_baseClient.Exchange, symbolId.Error);
 
-                var orderParameters = new ParameterCollection();
+                var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 orderParameters.Add("a", symbolId.Data);
                 orderParameters.Add("b", order.Side == OrderSide.Buy);
 
-                var orderTypeParameters = new ParameterCollection();
+                var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 if (order.OrderType == OrderType.Limit)
                 {
-                    orderParameters.AddString("p", order.Price?.Normalize() ?? 0);
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", order.Price?.Normalize() ?? 0);
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.TimeInForce ?? TimeInForce.GoodTillCanceled);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else if (order.OrderType == OrderType.Market)
@@ -383,8 +382,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     var maxSlippage = order.MaxSlippage ?? 5;
                     var price = (order.Side == OrderSide.Buy ? order.Price * (1 + maxSlippage / 100m) : order.Price * (1 - maxSlippage / 100m)) ?? 0;
                     var quantityDecimals = await HyperLiquidUtils.GetQuantityDecimalPlacesForSymbolAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
-                    if (!quantityDecimals)
-                        return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(quantityDecimals.Error);
+                    if (!quantityDecimals.Success)
+                        return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(_baseClient.Exchange, quantityDecimals.Error);
 
                     // Price can be a max of 5 significant figures
                     // but no more than (Spot:8, Futures:6) - quantityDecimals decimal places for the symbol
@@ -392,11 +391,11 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     price = ExchangeHelpers.RoundToSignificantDigits(price, 5, RoundingType.Closest);
                     price = ExchangeHelpers.RoundDown(price, decimalMax - quantityDecimals.Data);
 
-                    orderParameters.AddString("p", price.Normalize());
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", price.Normalize());
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.TimeInForce ?? TimeInForce.ImmediateOrCancel);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.TimeInForce ?? TimeInForce.ImmediateOrCancel);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else
@@ -407,30 +406,30 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (order.TpSlType == null)
                         throw new ArgumentNullException(nameof(order.TpSlType), "Stop order should have a TpSlType");
 
-                    orderParameters.AddString("p", order.Price?.Normalize() ?? 0);
-                    orderParameters.AddString("s", order.Quantity.Normalize());
+                    orderParameters.Add("p", order.Price?.Normalize() ?? 0);
+                    orderParameters.Add("s", order.Quantity.Normalize());
                     orderParameters.Add("r", order.ReduceOnly ?? false);
-                    var triggerParameters = new ParameterCollection();
+                    var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                     triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
-                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
-                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
+                    triggerParameters.Add("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.Add("tpsl", order.TpSlType.Value);
                     orderTypeParameters.Add("trigger", triggerParameters);
                 }
 
                 orderParameters.Add("t", orderTypeParameters);
-                orderParameters.AddOptional("c", order.ClientOrderId);
+                orderParameters.Add("c", order.ClientOrderId);
 
                 orderRequests.Add(orderParameters);
             }
 
-            var actionParameters = new ParameterCollection
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "order" },
                 { "orders", orderRequests },
             };
 
             if (tpSlGrouping != null)
-                actionParameters.AddEnum("grouping", tpSlGrouping.Value);
+                actionParameters.Add("grouping", tpSlGrouping.Value);
             else
                 actionParameters.Add("grouping", "na");
 
@@ -439,7 +438,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 // Convert from percentage to 1/10 basis point
                 var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
                 actionParameters.Add("builder",
-                    new ParameterCollection
+                    new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "b", _baseClient.ClientOptions.BuilderAddress.ToLower() },
                         { "f", tenthPoints }
@@ -447,7 +446,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };
@@ -461,35 +460,35 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var intResult = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!intResult)
-                return intResult.As<CallResult<HyperLiquidOrderResult>[]>(default);
+            if (!intResult.Success)
+                return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult);
 
             var result = new List<CallResult<HyperLiquidOrderResult>>();
             foreach (var order in intResult.Data.Statuses)
             {
                 if (order.Error != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
+                    result.Add(CallResult.Fail<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
                 else if (order.ResultResting != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultResting with { Status = OrderStatus.Open }));
+                    result.Add(CallResult.Ok<HyperLiquidOrderResult>(order.ResultResting with { Status = OrderStatus.Open }));
                 else if (order.ResultFilled != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultFilled! with { Status = OrderStatus.Filled }));
+                    result.Add(CallResult.Ok<HyperLiquidOrderResult>(order.ResultFilled! with { Status = OrderStatus.Filled }));
                 else if (order.WaitingForFill != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.WaitingForFill! with { Status = OrderStatus.WaitingTrigger }));
+                    result.Add(CallResult.Ok<HyperLiquidOrderResult>(order.WaitingForFill! with { Status = OrderStatus.WaitingTrigger }));
                 else
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.WaitingForTrigger! with { Status = OrderStatus.WaitingTrigger }));
+                    result.Add(CallResult.Ok<HyperLiquidOrderResult>(order.WaitingForTrigger! with { Status = OrderStatus.WaitingTrigger }));
             }
 
             if (result.Count > 1 && result.All(x => !x.Success))
-                return intResult.AsErrorWithData<CallResult<HyperLiquidOrderResult>[]>(new ServerError(new ErrorInfo(ErrorType.AllOrdersFailed, "All orders failed")), result.ToArray());
+                return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult, new ServerError(new ErrorInfo(ErrorType.AllOrdersFailed, "All orders failed")), result.ToArray());
 
-            return intResult.As<CallResult<HyperLiquidOrderResult>[]>(result.ToArray());
+            return QueryResult.Ok(intResult, result.ToArray());
         }
 
         #endregion
 
         #region Cancel Order
 
-        public async Task<CallResult> CancelOrderAsync(
+        public async Task<QueryResult> CancelOrderAsync(
             string symbol,
             long orderId,
             string? vaultAddress = null,
@@ -497,14 +496,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
             CancellationToken ct = default)
         {
             var result = await CancelOrdersAsync([new HyperLiquidCancelRequest(symbol, orderId)], vaultAddress, expiresAfter, ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsDataless();
+            if (!result.Success)
+                return result;
 
             var cancelResult = result.Data.Single();
-            if (!cancelResult)
-                return result.AsDatalessError(cancelResult.Error!);
+            if (!cancelResult.Success)
+                return QueryResult.Fail(result, cancelResult.Error!);
 
-            return result.AsDataless();
+            return result;
         }
 
         #endregion
@@ -512,7 +511,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Orders
 
         /// <inheritdoc />
-        public async Task<CallResult<CallResult[]>> CancelOrdersAsync(
+        public async Task<QueryResult<CallResult[]>> CancelOrdersAsync(
             IEnumerable<HyperLiquidCancelRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
@@ -520,14 +519,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
-                if (!symbolId)
-                    return new WebCallResult<CallResult[]>(symbolId.Error);
+                if (!symbolId.Success)
+                    return QueryResult.Fail<CallResult[]>(_baseClient.Exchange, symbolId.Error);
 
-                orderRequests.Add(new ParameterCollection
+                orderRequests.Add(new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "a", symbolId.Data },
                         { "o", order.OrderId }
@@ -535,10 +534,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
-                    "action", new ParameterCollection
+                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancel" },
                         { "cancels", orderRequests
@@ -555,26 +554,26 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var resultInt = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!resultInt)
-                return resultInt.AsError<CallResult[]>(resultInt.Error!);
+            if (!resultInt.Success)
+                return QueryResult.Fail<CallResult[]>(resultInt);
 
             var result = new List<CallResult>();
             foreach (var order in resultInt.Data.Statuses)
             {
                 if (order.Equals("success"))
-                    result.Add(CallResult.SuccessResult);
+                    result.Add(CallResult.Ok());
                 else
-                    result.Add(new CallResult(new ServerError(_baseClient.GetErrorInfo("Order", order))));
+                    result.Add(CallResult.Fail(new ServerError(_baseClient.GetErrorInfo("Order", order))));
             }
 
-            return resultInt.As<CallResult[]>(result.ToArray());
+            return QueryResult.Ok(resultInt, result.ToArray());
         }
 
         #endregion
 
         #region Cancel Order By Client Order Id
 
-        public async Task<CallResult> CancelOrderByClientOrderIdAsync(
+        public async Task<QueryResult> CancelOrderByClientOrderIdAsync(
             string symbol,
             string clientOrderId,
             string? vaultAddress,
@@ -582,14 +581,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
             CancellationToken ct = default)
         {
             var result = await CancelOrdersByClientOrderIdAsync([new HyperLiquidCancelByClientOrderIdRequest(symbol, clientOrderId)], vaultAddress, expiresAfter, ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsDataless();
+            if (!result.Success)
+                return result;
 
             var cancelResult = result.Data.Single();
-            if (!cancelResult)
-                return result.AsDatalessError(cancelResult.Error!);
+            if (!cancelResult.Success)
+                return QueryResult.Fail(result, cancelResult.Error!);
 
-            return result.AsDataless();
+            return result;
         }
 
         #endregion
@@ -597,7 +596,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Orders By Client Order Id
 
         /// <inheritdoc />
-        public async Task<CallResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(
+        public async Task<QueryResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(
             IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
@@ -605,14 +604,14 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
-                if (!symbolId)
-                    return new WebCallResult<CallResult[]>(symbolId.Error);
+                if (!symbolId.Success)
+                    return QueryResult.Fail<CallResult[]>(_baseClient.Exchange, symbolId.Error);
 
-                orderRequests.Add(new ParameterCollection
+                orderRequests.Add(new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "asset", symbolId.Data },
                         { "cloid", order.OrderId }
@@ -620,10 +619,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 );
             }
 
-            var parameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 {
-                    "action", new ParameterCollection
+                    "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancelByCloid" },
                         { "cancels", orderRequests
@@ -640,19 +639,19 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var resultInt = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!resultInt)
-                return resultInt.AsError<CallResult[]>(resultInt.Error!);
+            if (!resultInt.Success)
+                return QueryResult.Fail<CallResult[]>(_baseClient.Exchange, resultInt.Error!);
 
             var result = new List<CallResult>();
             foreach (var order in resultInt.Data.Statuses)
             {
                 if (order.Equals("success"))
-                    result.Add(CallResult.SuccessResult);
+                    result.Add(CallResult.Ok());
                 else
-                    result.Add(new CallResult(new ServerError(_baseClient.GetErrorInfo("Order", order))));
+                    result.Add(CallResult.Fail(new ServerError(_baseClient.GetErrorInfo("Order", order))));
             }
 
-            return resultInt.As<CallResult[]>(result.ToArray());
+            return QueryResult.Ok(resultInt, result.ToArray());
         }
 
         #endregion
@@ -660,7 +659,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel after
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(
+        public async Task<QueryResult<HyperLiquidOrderStatus[]>> CancelAfterAsync(
             TimeSpan? timeout,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
@@ -668,12 +667,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "scheduleCancel" }
             };
-            actionParameters.AddOptionalMilliseconds("time", timeout == null ? null : DateTime.UtcNow + timeout);
+            actionParameters.Add("time", timeout == null ? null : DateTime.UtcNow + timeout);
             parameters.Add("action", actionParameters);
 
             if (vaultAddress != null)
@@ -691,7 +690,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Edit Order
 
         /// <inheritdoc />
-        public async Task<CallResult> EditOrderAsync(
+        public async Task<QueryResult> EditOrderAsync(
             string symbol,
             long? orderId,
             string? clientOrderId,
@@ -707,6 +706,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             TpSlGrouping? tpSlGrouping = null,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default)
         {
             if ((orderId == null) == (clientOrderId == null))
@@ -718,21 +718,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return QueryResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
-            var orderParameters = new ParameterCollection();
+            var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", side == OrderSide.Buy);
-            orderParameters.AddString("p", price.Normalize());
-            orderParameters.AddString("s", quantity.Normalize());
+            orderParameters.Add("p", price.Normalize());
+            orderParameters.Add("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly ?? false);
 
-            var orderTypeParameters = new ParameterCollection();
+            var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             if (orderType == OrderType.Limit)
             {
-                var limitParameters = new ParameterCollection();
-                limitParameters.AddEnum("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
+                var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                limitParameters.Add("tif", timeInForce ?? TimeInForce.GoodTillCanceled);
                 orderTypeParameters.Add("limit", limitParameters);
             }
             else
@@ -743,24 +743,26 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 if (tpSlType == null)
                     throw new ArgumentNullException(nameof(tpSlType), "Stop order should have a TpSlType");
 
-                var triggerParameters = new ParameterCollection();
+                var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 triggerParameters.Add("isMarket", orderType == OrderType.StopMarket);
-                triggerParameters.AddString("triggerPx", triggerPrice.Value.Normalize());
-                triggerParameters.AddEnum("tpsl", tpSlType.Value);
+                triggerParameters.Add("triggerPx", triggerPrice.Value.Normalize());
+                triggerParameters.Add("tpsl", tpSlType.Value);
                 orderTypeParameters.Add("trigger", triggerParameters);
             }
 
             orderParameters.Add("t", orderTypeParameters);
-            orderParameters.AddOptional("c", newClientOrderId);
+            orderParameters.Add("c", newClientOrderId);
 
-            var parameters = new ParameterCollection();
-            var actionParameters = new ParameterCollection()
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "modify" }
             };
-            actionParameters.AddOptional("oid", orderId);
-            actionParameters.AddOptional("oid", clientOrderId);
+            actionParameters.Add("oid", orderId);
+            actionParameters.Add("oid", clientOrderId);
             actionParameters.Add("order", orderParameters);
+            if (alwaysPlace == true)
+                actionParameters.Add("a", alwaysPlace.Value);
             parameters.Add("action", actionParameters);
 
             if (vaultAddress != null)
@@ -770,7 +772,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<object>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            return result.AsDataless();
+            return result;
         }
 
         #endregion
@@ -778,15 +780,16 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Edit Orders
 
         /// <inheritdoc />
-        public async Task<CallResult<CallResult<HyperLiquidOrderResult>[]>> EditOrdersAsync(
+        public async Task<QueryResult<CallResult<HyperLiquidOrderResult>[]>> EditOrdersAsync(
             IEnumerable<HyperLiquidEditOrderRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? alwaysPlace = null,
             CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
-            var orderRequests = new List<ParameterCollection>();
+            var orderRequests = new List<Parameters>();
             foreach (var order in requests)
             {
                 if ((order.OrderId == null) == (order.ClientOrderId == null))
@@ -796,24 +799,24 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     throw new ArgumentException("Order type can't be market");
 
                 var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, order.Symbol).ConfigureAwait(false);
-                if (!symbolId)
-                    return new WebCallResult<CallResult<HyperLiquidOrderResult>[]>(symbolId.Error!);
+                if (!symbolId.Success)
+                    return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(_baseClient.Exchange, symbolId.Error!);
 
-                var modifyParameters = new ParameterCollection();
-                modifyParameters.AddOptional("oid", order.OrderId);
-                modifyParameters.AddOptional("oid", order.ClientOrderId);
-                var orderParameters = new ParameterCollection();
+                var modifyParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                modifyParameters.Add("oid", order.OrderId);
+                modifyParameters.Add("oid", order.ClientOrderId);
+                var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 orderParameters.Add("a", symbolId.Data);
                 orderParameters.Add("b", order.Side == OrderSide.Buy);
-                orderParameters.AddString("p", order.Price.Normalize());
-                orderParameters.AddString("s", order.Quantity.Normalize());
+                orderParameters.Add("p", order.Price.Normalize());
+                orderParameters.Add("s", order.Quantity.Normalize());
                 orderParameters.Add("r", order.ReduceOnly ?? false);
 
-                var orderTypeParameters = new ParameterCollection();
+                var orderTypeParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                 if (order.OrderType is OrderType.Limit or OrderType.Market)
                 {
-                    var limitParameters = new ParameterCollection();
-                    limitParameters.AddEnum("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
+                    var limitParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
+                    limitParameters.Add("tif", order.OrderType == OrderType.Market ? TimeInForce.ImmediateOrCancel : order.TimeInForce ?? TimeInForce.GoodTillCanceled);
                     orderTypeParameters.Add("limit", limitParameters);
                 }
                 else
@@ -824,30 +827,31 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (order.TpSlType == null)
                         throw new ArgumentNullException(nameof(order.TpSlType), "Stop order should have a TpSlType");
 
-                    var triggerParameters = new ParameterCollection();
+                    var triggerParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
                     triggerParameters.Add("isMarket", order.OrderType == OrderType.StopMarket);
-                    triggerParameters.AddString("triggerPx", order.TriggerPrice.Value.Normalize());
-                    triggerParameters.AddEnum("tpsl", order.TpSlType.Value);
+                    triggerParameters.Add("triggerPx", order.TriggerPrice.Value.Normalize());
+                    triggerParameters.Add("tpsl", order.TpSlType.Value);
                     orderTypeParameters.Add("trigger", triggerParameters);
                 }
 
                 orderParameters.Add("t", orderTypeParameters);
 
-                orderParameters.AddOptional("c", order.ClientOrderId);
+                orderParameters.Add("c", order.ClientOrderId);
 
                 modifyParameters.Add("order", orderParameters);
                 orderRequests.Add(modifyParameters);
             }
 
-            var parameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
-                {
-                    "action", new ParameterCollection
-                    {
-                        { "type", "batchModify" },
-                        { "modifies", orderRequests }
-                    }
-                }
+                { "type", "batchModify" },
+                { "modifies", orderRequests }
+            };
+            if (alwaysPlace == true)
+                actionParameters.Add("a", alwaysPlace.Value);
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
+            {
+                { "action", actionParameters }
             };
 
             if (vaultAddress != null)
@@ -858,21 +862,21 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var intResult = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!intResult)
-                return intResult.As<CallResult<HyperLiquidOrderResult>[]>(default);
+            if (!intResult.Success)
+                return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult);
 
             var result = new List<CallResult<HyperLiquidOrderResult>>();
             foreach (var order in intResult.Data.Statuses)
             {
                 if (order.Error != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
+                    result.Add(CallResult.Fail<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
                 else if (order.ResultResting != null)
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultResting with { Status = OrderStatus.Open }));
+                    result.Add(CallResult.Ok(order.ResultResting with { Status = OrderStatus.Open }));
                 else
-                    result.Add(new CallResult<HyperLiquidOrderResult>(order.ResultFilled! with { Status = OrderStatus.Filled }));
+                    result.Add(CallResult.Ok(order.ResultFilled! with { Status = OrderStatus.Filled }));
             }
 
-            return intResult.As<CallResult<HyperLiquidOrderResult>[]>(result.ToArray());
+            return QueryResult.Ok(intResult, result.ToArray());
         }
 
         #endregion
@@ -880,7 +884,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Place TWAP order
 
         /// <inheritdoc />
-        public async Task<CallResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(
+        public async Task<QueryResult<HyperLiquidTwapOrderResult>> PlaceTwapOrderAsync(
             string symbol,
             OrderSide orderSide,
             decimal quantity,
@@ -894,23 +898,23 @@ namespace HyperLiquid.Net.Clients.BaseApi
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult<HyperLiquidTwapOrderResult>(symbolId.Error);
+            if (!symbolId.Success)
+                return QueryResult.Fail<HyperLiquidTwapOrderResult>(_baseClient.Exchange, symbolId.Error);
 
-            var orderParameters = new ParameterCollection();
+            var orderParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings);
             orderParameters.Add("a", symbolId.Data);
             orderParameters.Add("b", orderSide == OrderSide.Buy);
-            orderParameters.AddString("s", quantity.Normalize());
+            orderParameters.Add("s", quantity.Normalize());
             orderParameters.Add("r", reduceOnly);
             orderParameters.Add("m", minutes);
             orderParameters.Add("t", randomize);
 
-            var actionParameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "twapOrder" },
                 { "twap", orderParameters }
             };
-            var parameters = new ParameterCollection
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };
@@ -922,13 +926,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidTwapOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!result)
-                return result.As<HyperLiquidTwapOrderResult>(default);
+            if (!result.Success)
+                return QueryResult.Fail<HyperLiquidTwapOrderResult>(result);
 
             if (result.Data.Status.Error != null)
-                return result.AsError<HyperLiquidTwapOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status.Error)));
+                return QueryResult.Fail<HyperLiquidTwapOrderResult>(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status.Error)));
 
-            return result.As(result.Data.Status.ResultRunning!);
+            return QueryResult.Ok(result, result.Data.Status.ResultRunning!);
         }
 
         #endregion
@@ -936,7 +940,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         #region Cancel Twap Order
 
         /// <inheritdoc />
-        public async Task<CallResult> CancelTwapOrderAsync(
+        public async Task<QueryResult> CancelTwapOrderAsync(
             string symbol,
             long twapId,
             string? vaultAddress = null,
@@ -946,17 +950,17 @@ namespace HyperLiquid.Net.Clients.BaseApi
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
 
             var symbolId = await HyperLiquidUtils.GetSymbolIdFromNameAsync(_baseClient.BaseClient, symbol).ConfigureAwait(false);
-            if (!symbolId)
-                return new WebCallResult(symbolId.Error!);
+            if (!symbolId.Success)
+                return QueryResult.Fail(_baseClient.Exchange, symbolId.Error!);
 
-            var actionParameters = new ParameterCollection()
+            var actionParameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "type", "twapCancel" },
                 { "a", symbolId.Data },
                 { "t", twapId }
             };
 
-            var parameters = new ParameterCollection
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
             {
                 { "action", actionParameters }
             };
@@ -968,19 +972,19 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var result = await _baseClient.QueryInternalAsync(
                 new HyperLiquidRequestQuery<HyperLiquidTwapCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
-            if (!result)
-                return result.AsDataless();
+            if (!result.Success)
+                return result;
 
             if (result.Data.Status != "success")
-                return result.AsDatalessError(new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status)));
+                return QueryResult.Fail(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status)));
 
-            return result.AsDataless();
+            return result;
         }
 
         #endregion
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidOrderStatus[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidOrderStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -988,8 +992,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.ValidateAddress(address);
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOrderStatus[]>>((receiveTime, originalData, invocation, data) =>
             {
@@ -1024,6 +1028,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
+            // The update doesn't contain the address, so we can't specify the address as filter..
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderStatus[]>(_logger, _baseClient, "orderUpdates", null, new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
@@ -1033,7 +1038,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToOpenOrderUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidOpenOrderUpdate>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOpenOrderUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidOpenOrderUpdate>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1041,8 +1046,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.ValidateAddress(address);
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidOpenOrderUpdate>>((receiveTime, originalData, invocation, data) =>
             {
@@ -1081,7 +1086,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidOpenOrderUpdate>(_logger, _baseClient, "openOrders", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidOpenOrderUpdate>(_logger, _baseClient, "openOrders", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
                 { "dex", dex ?? "" },
@@ -1091,7 +1096,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserTrade[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserTrade[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1099,8 +1104,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.ValidateAddress(address);
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserTradeUpdate>>((receiveTime, originalData, invocation, data) =>
             {
@@ -1113,7 +1118,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                     {
                         var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(_baseClient.ClientOptions.Environment.Name, order.ExchangeSymbol);
-                        if (symbolName == null)
+                        if (!symbolName.Success)
                             continue;
 
                         order.Symbol = symbolName.Data;
@@ -1135,7 +1140,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, _baseClient, "userFills", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidUserTradeUpdate>(_logger, _baseClient, "userFills", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -1144,7 +1149,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapStatus[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToTwapTradeUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1152,8 +1157,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.ValidateAddress(address);
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTwapTradeUpdate>>((receiveTime, originalData, invocation, data) =>
             {
@@ -1162,7 +1167,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.ExchangeSymbol))
                     {
                         var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(_baseClient.ClientOptions.Environment.Name, order.ExchangeSymbol);
-                        if (symbolName == null)
+                        if (!symbolName.Success)
                             continue;
 
                         order.Symbol = symbolName.Data;
@@ -1188,7 +1193,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, _baseClient, "userTwapSliceFills", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapTradeUpdate>(_logger, _baseClient, "userTwapSliceFills", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
@@ -1197,7 +1202,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<CallResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapOrderStatus[]>> onMessage, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToTwapOrderUpdatesAsync(string? address, Action<DataEvent<HyperLiquidTwapOrderStatus[]>> onMessage, CancellationToken ct = default)
         {
             if (address == null && _baseClient.AuthenticationProvider == null)
                 throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
@@ -1205,8 +1210,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.ValidateAddress(address);
 
             var result = await HyperLiquidUtils.UpdateSpotSymbolInfoAsync(_baseClient.BaseClient).ConfigureAwait(false);
-            if (!result)
-                return new CallResult<UpdateSubscription>(result.Error!);
+            if (!result.Success)
+                return WebSocketResult.Fail<UpdateSubscription>(_baseClient.Exchange, result.Error!);
 
             var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidTwapOrderUpdate>>((receiveTime, originalData, invocation, data) =>
             {
@@ -1219,7 +1224,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     if (HyperLiquidUtils.ExchangeSymbolIsSpotSymbol(order.TwapInfo.ExchangeSymbol))
                     {
                         var symbolName = HyperLiquidUtils.GetSymbolNameFromExchangeName(_baseClient.ClientOptions.Environment.Name, order.TwapInfo.ExchangeSymbol);
-                        if (symbolName == null)
+                        if (!symbolName.Success)
                             continue;
 
                         order.TwapInfo.Symbol = symbolName.Data;
@@ -1241,7 +1246,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             });
 
             var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, _baseClient, "userTwapHistory", null, new Dictionary<string, object>
+            var subscription = new HyperLiquidSubscription<HyperLiquidTwapOrderUpdate>(_logger, _baseClient, "userTwapHistory", addressSub.ToLowerInvariant(), new Dictionary<string, object>
             {
                 { "user", addressSub.ToLowerInvariant() },
             },

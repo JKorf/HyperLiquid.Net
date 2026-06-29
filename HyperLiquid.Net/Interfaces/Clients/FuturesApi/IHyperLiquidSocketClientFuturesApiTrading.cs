@@ -30,7 +30,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> SetLeverageAsync(
+        Task<QueryResult> SetLeverageAsync(
             string symbol,
             int leverage,
             MarginType marginType,
@@ -52,7 +52,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
         /// <param name="ct">Cancellation token</param>
-        Task<CallResult> UpdateIsolatedMarginAsync(
+        Task<QueryResult> UpdateIsolatedMarginAsync(
             string symbol,
             decimal updateValue,
             string? vaultAddress = null,
@@ -73,7 +73,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidPositionUpdate>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAsync(string? address, string? dex, Action<DataEvent<HyperLiquidPositionUpdate>> onMessage, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to futures account margin and position snapshot updates for all dexes
@@ -88,6 +88,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<CallResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAllDexesAsync(string? address, Action<DataEvent<HyperLiquidAllDexPositionUpdate>> onMessage, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToBalanceAndPositionUpdatesAllDexesAsync(string? address, Action<DataEvent<HyperLiquidAllDexPositionUpdate>> onMessage, CancellationToken ct = default);
     }
 }
