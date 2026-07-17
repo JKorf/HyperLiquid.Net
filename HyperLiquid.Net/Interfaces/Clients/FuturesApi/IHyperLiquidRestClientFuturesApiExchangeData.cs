@@ -115,5 +115,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         /// <param name="dex">["<c>dex</c>"] DEX name, for example `xyz`, null for default Perp DEX</param>
         /// <param name="ct">Cancellation token</param>
         Task<HttpResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default);
+
+        Task<HttpResult<HyperLiquidPerpAnnotation[]>> GetPerpConciseAnnotationsAsync(CancellationToken ct = default);
     }
 }

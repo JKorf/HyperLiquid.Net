@@ -9,6 +9,7 @@ using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Enums;
 using CryptoExchange.Net;
 using CryptoExchange.Net.Objects.Errors;
+using HyperLiquid.Net.Objects.Models;
 
 namespace HyperLiquid.Net.Clients.SpotApi
 {
@@ -211,6 +212,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         #region Spot Symbol client
+
+        SharedSymbolCatalog? ISpotSymbolRestClient.SpotSymbolCatalog => ExchangeSymbolCache.GetSymbolCatalog(_topicId, EnvironmentName, null);
         GetSpotSymbolsOptions ISpotSymbolRestClient.GetSpotSymbolsOptions { get; } = new GetSpotSymbolsOptions(_exchangeName, false);
 
         async Task<HttpResult<SharedSpotSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)
@@ -219,22 +222,57 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return HttpResult.Fail<SharedSpotSymbol[]>(Exchange, validationError);
 
-                    var result = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
-                    if (!result.Success)
-                        return HttpResult.Fail<SharedSpotSymbol[]>(result);
+            var result = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<SharedSpotSymbol[]>(result);
 
-                    var resultData = result.Data.Symbols.Select(s => new SharedSpotSymbol(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.BaseAsset.Name), HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.QuoteAsset.Name), s.Name, true)
-                    {
-                        MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
-                        MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
-                        QuantityDecimals = s.BaseAsset.QuantityDecimals,
-                        PriceSignificantFigures = 5,
-                        PriceDecimals = 8 - s.BaseAsset.QuantityDecimals
-                    }).ToArray();
+            var resultData = result.Data.Symbols
+               .Select(x => ParseSymbol(x))
+               .ToArray();
 
-                    ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, resultData);
-                    return HttpResult.Ok(result, resultData);
-                
+            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, resultData);
+            return HttpResult.Ok(result, SharedUtils.ApplySymbolFilter(resultData, request));
+        }
+
+        private SharedSpotSymbol ParseSymbol(HyperLiquidSymbol s)
+        {
+            var result = new SharedSpotSymbol(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.BaseAsset.Name), HyperLiquidExchange.AssetAliases.ExchangeToCommonName(s.QuoteAsset.Name), s.Name, true)
+            {
+                MinTradeQuantity = 1m / (decimal)(Math.Pow(10, s.BaseAsset.QuantityDecimals)),
+                MinNotionalValue = 10, // Order API returns error mentioning at least 10$ order value, but value isn't returned by symbol API
+                QuantityDecimals = s.BaseAsset.QuantityDecimals,
+                PriceSignificantFigures = 5,
+                PriceDecimals = 8 - s.BaseAsset.QuantityDecimals,
+                DisplayName = s.Name,
+                QuoteAssetType = SharedAssetType.Crypto,
+                QuoteAssetSubType = SharedAssetSubType.StableCoin
+            };
+
+            if (LibraryHelpers.IsCryptoCurrency(result.BaseAsset))
+            {
+                result.BaseAssetType = SharedAssetType.Crypto;
+            }
+            else if (LibraryHelpers.IsCommodity(result.BaseAsset, "XAUT0"))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Commodity;
+            }
+            else if (LibraryHelpers.IsStableCoin(result.BaseAsset, "USDXL", "FEUSD", "USDHL", "USDUC", "USDT0"))
+            {
+                result.BaseAssetType = SharedAssetType.Crypto;
+                result.BaseAssetSubType = SharedAssetSubType.StableCoin;
+            }
+            else if (LibraryHelpers.IsStock(result.BaseAsset))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Stock;
+            }
+            else
+            {
+                result.BaseAssetType = SharedAssetType.Unspecified;
+            }
+
+            return result;
         }
 
         async Task<ExchangeCallResult<SharedSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsForBaseAssetAsync(string baseAsset)
