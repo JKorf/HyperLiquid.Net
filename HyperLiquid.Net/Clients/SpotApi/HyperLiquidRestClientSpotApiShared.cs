@@ -248,9 +248,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 QuoteAssetSubType = SharedAssetSubType.StableCoin
             };
 
-            if (LibraryHelpers.IsCryptoCurrency(result.BaseAsset))
+            if (LibraryHelpers.IsEquity(result.BaseAsset)
+                || (result.BaseAsset.EndsWith("X") && LibraryHelpers.IsEquity(result.BaseAsset.Substring(0, result.BaseAsset.Length - 1))))
             {
-                result.BaseAssetType = SharedAssetType.Crypto;
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Equity;
             }
             else if (LibraryHelpers.IsCommodity(result.BaseAsset, "XAUT0"))
             {
@@ -262,14 +264,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 result.BaseAssetType = SharedAssetType.Crypto;
                 result.BaseAssetSubType = SharedAssetSubType.StableCoin;
             }
-            else if (LibraryHelpers.IsStock(result.BaseAsset))
-            {
-                result.BaseAssetType = SharedAssetType.TradFi;
-                result.BaseAssetSubType = SharedAssetSubType.Stock;
-            }
             else
             {
-                result.BaseAssetType = SharedAssetType.Unspecified;
+                result.BaseAssetType = SharedAssetType.Crypto;
             }
 
             return result;

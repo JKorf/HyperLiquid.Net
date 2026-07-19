@@ -290,9 +290,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 {
                     // No annotation and on a dex, could be any type since annotations aren't always assigned
                     var baseAssetName = result.BaseAsset.Split(':')[1];
-                    if (LibraryHelpers.IsCryptoCurrency(baseAssetName))
+                    if (LibraryHelpers.IsEquity(baseAssetName))
                     {
-                        result.BaseAssetType = SharedAssetType.Crypto;
+                        result.BaseAssetType = SharedAssetType.TradFi;
+                        result.BaseAssetSubType = SharedAssetSubType.Equity;
                     }
                     else if (LibraryHelpers.IsCommodity(baseAssetName))
                     {
@@ -303,14 +304,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                     {
                         result.BaseAssetType = SharedAssetType.Fiat;
                     }
-                    else if (LibraryHelpers.IsStock(baseAssetName))
-                    {
-                        result.BaseAssetType = SharedAssetType.TradFi;
-                        result.BaseAssetSubType = SharedAssetSubType.Stock;
-                    }
                     else
                     {
-                        result.BaseAssetType = SharedAssetType.Unspecified;
+                        result.BaseAssetType = SharedAssetType.Crypto;
                     }
                 }
                 else
@@ -326,7 +322,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             else if (annotation.Annotations.Category.Equals("indices", StringComparison.OrdinalIgnoreCase))
             {
                 result.BaseAssetType = SharedAssetType.TradFi;
-                result.BaseAssetSubType = SharedAssetSubType.Index;
+                result.BaseAssetSubType = SharedAssetSubType.Equity;
             }
             else if (annotation.Annotations.Category.Equals("fx", StringComparison.OrdinalIgnoreCase))
             {
@@ -335,7 +331,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             else if (annotation.Annotations.Category.Equals("stocks", StringComparison.OrdinalIgnoreCase))
             {
                 result.BaseAssetType = SharedAssetType.TradFi;
-                result.BaseAssetSubType = SharedAssetSubType.Stock;
+                result.BaseAssetSubType = SharedAssetSubType.Equity;
             }
             else if (annotation.Annotations.Category.Equals("commodities", StringComparison.OrdinalIgnoreCase))
             {
