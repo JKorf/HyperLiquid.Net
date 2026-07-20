@@ -23,6 +23,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public void ResetDefaultExchangeParameters() => ExchangeParameters.ResetStaticParameters();
         public SharedClientInfo Discover() => SharedUtils.GetClientInfo(HyperLiquidExchange.Metadata, this);
 
+        private static readonly HashSet<string> _exchangeKnownFiat = ["EUR", "USD"];
+
 
         #region Balance Client
         GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new GetBalancesOptions(_exchangeName, AccountTypeFilter.Futures)
@@ -216,6 +218,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #endregion
 
         #region Futures Symbol client
+
+        SharedSymbolCatalog? IFuturesSymbolRestClient.FuturesSymbolCatalog => ExchangeSymbolCache.GetSymbolCatalog(_exchangeName, _topicId, EnvironmentName, null);
+
         GetFuturesSymbolsOptions IFuturesSymbolRestClient.GetFuturesSymbolsOptions { get; } = new GetFuturesSymbolsOptions(_exchangeName, false)
         {
             OptionalExchangeParameters = new List<ParameterDescription>
@@ -231,28 +236,35 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return HttpResult.Fail<SharedFuturesSymbol[]>(Exchange, validationError);
 
             string? dex = ExchangeParameters.GetValue<string>(request.ExchangeParameters, Exchange, "dex");
-            var result = await ExchangeData.GetExchangeInfoAllDexesAsync(ct: ct).ConfigureAwait(false);
-            if (!result.Success)
-                return HttpResult.Fail<SharedFuturesSymbol[]>(result);
+            var annotationsTask = ExchangeData.GetPerpConciseAnnotationsAsync(ct: ct);
+            var exchangeInfoTask = ExchangeData.GetExchangeInfoAllDexesAsync(ct: ct);
+            await Task.WhenAll(annotationsTask, exchangeInfoTask).ConfigureAwait(false);
+            var annotationsResult = annotationsTask.Result;
+            var exchangeInfoResult = exchangeInfoTask.Result;
+            if (!exchangeInfoResult.Success)
+                return HttpResult.Fail<SharedFuturesSymbol[]>(exchangeInfoResult);
+            if (!annotationsResult.Success)
+                return HttpResult.Fail<SharedFuturesSymbol[]>(annotationsResult);
 
-            var data = result.Data.SelectMany(x => x.Symbols);
+            var data = exchangeInfoResult.Data.SelectMany(x => x.Symbols);
             if (dex != null)
-                data = result.Data.SingleOrDefault(x => x.Name == dex)?.Symbols ?? [];
+                data = exchangeInfoResult.Data.SingleOrDefault(x => x.Name == dex)?.Symbols ?? [];
 
-            var response = data.Where(x => !x.IsDelisted).Select(ParseSymbol).ToArray();
+            var resultData = data
+               .Select(x => ParseSymbol(x, annotationsResult.Data))
+               .ToArray();
 
             // Register both HYPE/USDC and HYPE as symbol names
-            var symbolRegistrations = result.Data.SelectMany(x => x.Symbols.Where(x => !x.IsDelisted).Select(ParseSymbol))
-                .Concat(result.Data.SelectMany(x => x.Symbols.Select(x => new SharedSpotSymbol(x.Name, "USDC", x.Name, true, TradingMode.PerpetualLinear)))).ToArray();
+            var symbolRegistrations = resultData
+                .Concat(resultData.Select(x => new SharedSpotSymbol(x.BaseAsset, "USDC", x.BaseAsset, true, TradingMode.PerpetualLinear))).ToArray();
 
-            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, null, symbolRegistrations);
-            return HttpResult.Ok(result, response);
-                                
+            ExchangeSymbolCache.UpdateSymbolInfo(_topicId, EnvironmentName, dex, symbolRegistrations);
+            return HttpResult.Ok(exchangeInfoResult, SharedUtils.ApplySymbolFilter(resultData, request));
         }
 
-        private SharedFuturesSymbol ParseSymbol(HyperLiquidFuturesSymbol symbol)
+        private SharedFuturesSymbol ParseSymbol(HyperLiquidFuturesSymbol symbol, HyperLiquidPerpAnnotation[] annotations)
         {
-            return new SharedFuturesSymbol(
+            var result = new SharedFuturesSymbol(
                 TradingMode.PerpetualLinear,
                 symbol.Name,
                 "USDC",
@@ -265,8 +277,73 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 PriceSignificantFigures = 5,
                 PriceDecimals = 6 - symbol.QuantityDecimals,
                 MaxLongLeverage = symbol.MaxLeverage,
-                MaxShortLeverage = symbol.MaxLeverage
+                MaxShortLeverage = symbol.MaxLeverage,
+                DisplayName = symbol.Name,
+                QuoteAssetType = SharedAssetType.Crypto,
+                QuoteAssetSubType = SharedAssetSubType.StableCoin
             };
+
+            var annotation = annotations.SingleOrDefault(x => x.Symbol == symbol.Name);
+            if (annotation == null)
+            {
+                if (symbol.Name.Contains(":"))
+                {
+                    // No annotation and on a dex, could be any type since annotations aren't always assigned
+                    var baseAssetName = result.BaseAsset.Split(':')[1];
+                    if (LibraryHelpers.IsEquity(baseAssetName))
+                    {
+                        result.BaseAssetType = SharedAssetType.TradFi;
+                        result.BaseAssetSubType = SharedAssetSubType.Equity;
+                    }
+                    else if (LibraryHelpers.IsCommodity(baseAssetName))
+                    {
+                        result.BaseAssetType = SharedAssetType.TradFi;
+                        result.BaseAssetSubType = SharedAssetSubType.Commodity;
+                    }
+                    else if (_exchangeKnownFiat.Contains(baseAssetName))
+                    {
+                        result.BaseAssetType = SharedAssetType.Fiat;
+                    }
+                    else
+                    {
+                        result.BaseAssetType = SharedAssetType.Crypto;
+                    }
+                }
+                else
+                {
+                    // Main exchange only has crypto
+                    result.BaseAssetType = SharedAssetType.Crypto; 
+                }
+            }
+            else if (annotation.Annotations.Category.Equals("crypto", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.Crypto;
+            }
+            else if (annotation.Annotations.Category.Equals("indices", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Equity;
+            }
+            else if (annotation.Annotations.Category.Equals("fx", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.Fiat;
+            }
+            else if (annotation.Annotations.Category.Equals("stocks", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Equity;
+            }
+            else if (annotation.Annotations.Category.Equals("commodities", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+                result.BaseAssetSubType = SharedAssetSubType.Commodity;
+            }
+            else if (annotation.Annotations.Category.Equals("preipo", StringComparison.OrdinalIgnoreCase))
+            {
+                result.BaseAssetType = SharedAssetType.TradFi;
+            }
+
+            return result;
         }
 
         async Task<ExchangeCallResult<SharedSymbol[]>> IFuturesSymbolRestClient.GetFuturesSymbolsForBaseAssetAsync(string baseAsset)
