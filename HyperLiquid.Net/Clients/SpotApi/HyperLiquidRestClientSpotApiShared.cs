@@ -248,8 +248,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 QuoteAssetSubType = SharedAssetSubType.StableCoin
             };
 
-            if (LibraryHelpers.IsEquity(result.BaseAsset)
-                || (result.BaseAsset.EndsWith("X") && LibraryHelpers.IsEquity(result.BaseAsset.Substring(0, result.BaseAsset.Length - 1))))
+            if (LibraryHelpers.IsEquity(result.BaseAsset, ["X"], []))
             {
                 result.BaseAssetType = SharedAssetType.TradFi;
                 result.BaseAssetSubType = SharedAssetSubType.Equity;
