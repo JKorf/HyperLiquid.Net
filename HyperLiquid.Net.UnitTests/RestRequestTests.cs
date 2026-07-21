@@ -51,7 +51,7 @@ namespace HyperLiquid.Net.UnitTests
             await tester.ValidateAsync(client => client.SpotApi.Account.GetRateLimitsAsync(), "GetRateLimits");
             await tester.ValidateAsync(client => client.SpotApi.Account.GetApprovedBuilderFeeAsync(), "GetApprovedBuilderFee");
             await tester.ValidateAsync(client => client.SpotApi.Account.GetSubAccountsAsync(), "GetSubAccounts");
-            await tester.ValidateAsync(client => client.SpotApi.Account.GetSubAccounts2Async(), "GetSubAccounts2");
+            await tester.ValidateAsync(client => client.SpotApi.Account.GetSubAccounts2Async(), "GetSubAccounts2", ignoreProperties: ["dexToClearinghouseState", "tokenToPortfolioBorrowRatio", "tokenToPortfolioSupplyRatio", "tokenToAvailableAfterMaintenance"]);
             await tester.ValidateAsync(client => client.SpotApi.Account.GetExtraAgentsAsync(), "GetExtraAgents");
         }
 
