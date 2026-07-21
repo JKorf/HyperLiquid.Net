@@ -358,7 +358,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #endregion
 
-        #region Get Sub account list
+        #region Get Sub Accounts
 
         /// <inheritdoc />
         public async Task<HttpResult<HyperLiquidSubAccount[]>> GetSubAccountsAsync(string? address = null, CancellationToken ct = default)
@@ -383,7 +383,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #endregion
 
-        #region Get Sub account list
+        #region Get Sub Accounts 2
 
         /// <inheritdoc />
         public async Task<HttpResult<HyperLiquidSubAccount2[]>> GetSubAccounts2Async(string? address = null, CancellationToken ct = default)

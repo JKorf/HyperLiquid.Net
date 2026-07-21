@@ -1,0 +1,28 @@
+POST
+/info
+false
+[{
+"dexToClearinghouseState": [["", {
+"marginSummary": {"accountValue": "147.412857", "totalNtlPos": "1352.7404", "totalRawUsd": "-1205.327543", "totalMarginUsed": "140.43678"},
+"crossMarginSummary": {},
+"crossMaintenanceMarginUsed": "23.104792",
+"withdrawable": "6.976077",
+"assetPositions": [
+{"type": "oneWay", "position": {"coin": "BTC", "szi": "0.01948"}}
+],
+"time": 1784400625798
+}]],
+"spotState": {
+"portfolioMarginEnabled": true,
+"balances": [
+{"coin": "USDC", "token": 0, "total": "894.08996004", "hold": "140.43677994", "entryNtl": "0.0", "ltv": "0.0", "supplied": "746.67710305"},
+{"coin": "HYPE", "token": 150, "total": "0.0", "hold": "0.0", "entryNtl": "0.0", "ltv": "0.5"},
+{"coin": "UBTC", "token": 197, "total": "0.0", "hold": "0.0", "entryNtl": "0.0", "ltv": "0.5"}
+],
+"portfolioMarginRatio": "0.025841686",
+"tokenToPortfolioBorrowRatio": [[0, "0.0"]],
+"tokenToPortfolioSupplyRatio": [],
+"tokenToAvailableAfterMaintenance": [[0, "870.98516812"], [150, "0.0"], [197, "0.0"]]
+},
+"abstraction": "portfolioMargin"
+}]
