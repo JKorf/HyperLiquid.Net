@@ -4,8 +4,8 @@
 
 HyperLiquid.Net is a strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. It is part of the CryptoExchange.Net ecosystem and uses the same result, shared API, logging, rate limiting, dependency injection, and socket patterns as the other JKorf exchange libraries.
 
-Current package version in this repository: 5.1.0.
-CryptoExchange.Net dependency: 11.2.0.
+Current package version in this repository: 5.3.0.
+CryptoExchange.Net dependency: 12.2.0.
 Target frameworks: netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 Native AOT: supported on compatible .NET targets.
 
@@ -33,7 +33,7 @@ Primary documentation:
 - Do not invent endpoint names. If unsure, inspect `HyperLiquid.Net/Interfaces/Clients/**`.
 - Spot symbols are slash separated, for example `HYPE/USDC`; futures symbols are base asset only, for example `ETH`.
 - Market order examples still need a price argument because `PlaceOrderAsync` requires price for slippage calculation.
-- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features.
+- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features. Shared symbol clients expose catalogs and classified asset metadata, and their symbol-list requests honor filters.
 
 ## Installation
 
@@ -232,6 +232,8 @@ Get HIP-4 questions and outcomes -> client.SpotApi.ExchangeData.GetQuestionsAndO
 Get HIP-4 settled outcome -> client.SpotApi.ExchangeData.GetSettledOutcomeAsync(outcomeId)
 Resolve HIP-4 encoded outcome side -> HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)
 Get spot balances -> client.SpotApi.Account.GetBalancesAsync()
+Get user portfolio history -> client.SpotApi.Account.GetUserPortfolioAsync() or client.FuturesApi.Account.GetUserPortfolioAsync()
+Get subaccounts with spot balances and per-DEX futures state -> client.SpotApi.Account.GetSubAccounts2Async()
 Get user abstraction state -> client.SpotApi.Account.GetUserAbstractionStateAsync() or client.FuturesApi.Account.GetUserAbstractionStateAsync()
 Place spot order -> client.SpotApi.Trading.PlaceOrderAsync(...)
 Get open spot orders -> client.SpotApi.Trading.GetOpenOrdersAsync()
@@ -239,6 +241,9 @@ Cancel spot order -> client.SpotApi.Trading.CancelOrderAsync(symbol, orderId)
 Get futures prices -> client.FuturesApi.ExchangeData.GetPricesAsync()
 Get futures exchange info -> client.FuturesApi.ExchangeData.GetExchangeInfoAsync()
 Get futures exchange info and tickers -> client.FuturesApi.ExchangeData.GetExchangeInfoAndTickersAsync()
+Get perp annotation -> client.FuturesApi.ExchangeData.GetPerpAnnotationAsync(asset)
+Get perp categories -> client.FuturesApi.ExchangeData.GetPerpCategoriesAsync()
+Get concise annotations across DEXes -> client.FuturesApi.ExchangeData.GetPerpConciseAnnotationsAsync()
 Get futures account and positions -> client.FuturesApi.Account.GetAccountInfoAsync()
 Set futures leverage -> client.FuturesApi.Trading.SetLeverageAsync(symbol, leverage, marginType)
 Place futures order -> client.FuturesApi.Trading.PlaceOrderAsync(...)
@@ -371,7 +376,7 @@ if (!ticker.Success)
 Console.WriteLine(ticker.Data.LastPrice);
 ```
 
-Shared REST methods return `HttpResult<T>` / `HttpResult`. Shared socket subscriptions return `WebSocketResult<UpdateSubscription>` with an `UpdateSubscription` in `.Data`. Shared symbol helpers can return `ExchangeCallResult<T>`.
+Shared REST methods return `HttpResult<T>` / `HttpResult`. Shared socket subscriptions return `WebSocketResult<UpdateSubscription>` with an `UpdateSubscription` in `.Data`. Shared symbol helpers can return `ExchangeCallResult<T>`. `ISpotSymbolRestClient` and `IFuturesSymbolRestClient` expose symbol catalogs; returned symbols include display names and crypto, stablecoin, equity, commodity, or fiat classifications, and `GetSymbolsRequest` filters are applied.
 
 Keep the concrete socket client and unsubscribe through it:
 

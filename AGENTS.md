@@ -56,11 +56,11 @@ var hypePrice = prices.Data["HYPE/USDC"];
 
 ```csharp
 restClient.SpotApi.ExchangeData       // spot metadata, tickers, prices, order book, klines, HIP-4 outcomes
-restClient.SpotApi.Account            // spot balances, transfers, staking, ledger, fee info
+restClient.SpotApi.Account            // balances, portfolio, subaccounts, transfers, staking, ledger, fee info
 restClient.SpotApi.Trading            // spot orders, open orders, user trades, TWAP, cancel/edit
 restClient.SpotApi.SharedClient       // shared spot REST interfaces
 
-restClient.FuturesApi.ExchangeData    // perp metadata, tickers, funding, HIP-3 DEX info
+restClient.FuturesApi.ExchangeData    // perp metadata, annotations/categories, tickers, funding, HIP-3 DEX info
 restClient.FuturesApi.Account         // perp account, funding history, user symbol state
 restClient.FuturesApi.Trading         // perp orders, leverage, margin, TWAP, cancel/edit
 restClient.FuturesApi.SharedClient    // shared futures REST interfaces
@@ -78,7 +78,7 @@ Spot:    HYPE/USDC
 Futures: ETH
 ```
 
-Use `HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode)` or `SharedSymbol` instead of ad hoc string formatting when building reusable code. In SharedApis, HyperLiquid maps spot aliases such as `UBTC`/`UETH` and stable quote handling for you.
+Use `HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode)` or `SharedSymbol` instead of ad hoc string formatting when building reusable code. In SharedApis, HyperLiquid maps spot aliases such as `UBTC`/`UETH`, handles stable quotes, exposes spot/futures symbol catalogs, and populates shared display names plus crypto, stablecoin, equity, commodity, and fiat asset classifications.
 
 ## Core Pattern: Spot Order
 
@@ -168,7 +168,7 @@ if (!ticker.Success) { Console.WriteLine(ticker.Error); return; }
 Console.WriteLine(ticker.Data.LastPrice);
 ```
 
-Available shared interfaces include `ISpotTickerRestClient`, `IFuturesTickerRestClient`, `ISpotOrderRestClient`, `IFuturesOrderRestClient`, `IBalanceRestClient`, `IPositionRestClient`, `IOrderBookRestClient`, `IKlineRestClient`, `ITickerSocketClient`, `IOrderBookSocketClient`, and more.
+Available shared interfaces include `ISpotTickerRestClient`, `IFuturesTickerRestClient`, `ISpotSymbolRestClient`, `IFuturesSymbolRestClient`, `ISpotOrderRestClient`, `IFuturesOrderRestClient`, `IBalanceRestClient`, `IPositionRestClient`, `IOrderBookRestClient`, `IKlineRestClient`, `ITickerSocketClient`, `IOrderBookSocketClient`, and more. Shared symbol requests honor `GetSymbolsRequest` filters.
 
 ## Dependency Injection
 
@@ -230,6 +230,8 @@ Trading clients may need builder fee approval. Use `GetApprovedBuilderFeeAsync()
 ## When the User Wants Other HyperLiquid Features
 
 - Spot balances: `restClient.SpotApi.Account.GetBalancesAsync()`
+- User portfolio history: `restClient.SpotApi.Account.GetUserPortfolioAsync()` or `restClient.FuturesApi.Account.GetUserPortfolioAsync()`
+- Subaccounts with spot balances and per-DEX futures state: `restClient.SpotApi.Account.GetSubAccounts2Async()`
 - User abstraction state: `restClient.SpotApi.Account.GetUserAbstractionStateAsync()` or `restClient.FuturesApi.Account.GetUserAbstractionStateAsync()`
 - Futures account and positions: `restClient.FuturesApi.Account.GetAccountInfoAsync()`
 - Mid prices: `restClient.SpotApi.ExchangeData.GetPricesAsync()` or `restClient.FuturesApi.ExchangeData.GetPricesAsync()`
@@ -242,6 +244,7 @@ Trading clients may need builder fee approval. Use `GetApprovedBuilderFeeAsync()
 - Staking: `Account.GetStaking*`, `DepositIntoStakingAsync`, `WithdrawFromStakingAsync`, `DelegateOrUndelegateStakeFromValidatorAsync`
 - Vaults: `Account.DepositOrWithdrawFromVaultAsync(...)`
 - HIP-3 DEX: `FuturesApi.ExchangeData.GetPerpDexesAsync()`, `GetExchangeInfoAllDexesAsync()`, `FuturesApi.Account.GetHip3DexAbstractionAsync()`
+- Perp annotations and categories: `FuturesApi.ExchangeData.GetPerpAnnotationAsync(asset)`, `GetPerpCategoriesAsync()`, `GetPerpConciseAnnotationsAsync()`
 - HIP-4 outcomes: `SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, `socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)`
 
 ## Reference

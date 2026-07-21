@@ -38,6 +38,8 @@ Use this file to route common user intents to the correct HyperLiquid.Net client
 | Withdraw USD | `client.SpotApi.Account.WithdrawAsync(destinationAddress, quantity)` |
 | Transfer between spot and futures | `client.SpotApi.Account.TransferInternalAsync(direction, quantity)` |
 | Get subaccounts | `client.SpotApi.Account.GetSubAccountsAsync()` |
+| Get extended subaccounts with spot balances and per-DEX futures state | `client.SpotApi.Account.GetSubAccounts2Async()` |
+| Get user portfolio history | `client.SpotApi.Account.GetUserPortfolioAsync()` or `client.FuturesApi.Account.GetUserPortfolioAsync()` |
 | Get user role | `client.SpotApi.Account.GetUserRoleAsync()` |
 | Get extra agents | `client.SpotApi.Account.GetExtraAgentsAsync()` |
 | Get staking delegations | `client.SpotApi.Account.GetStakingDelegationsAsync()` |
@@ -79,6 +81,9 @@ Use this file to route common user intents to the correct HyperLiquid.Net client
 | Get symbols at max open interest | `client.FuturesApi.ExchangeData.GetSymbolsAtMaxOpenInterestAsync(dex)` |
 | Get Perp DEX market limits | `client.FuturesApi.ExchangeData.GetPerpDexMarketLimitsAsync(dex)` |
 | Get Perp DEX market status | `client.FuturesApi.ExchangeData.GetPerpDexMarketStatusAsync(dex)` |
+| Get perp annotation | `client.FuturesApi.ExchangeData.GetPerpAnnotationAsync(asset)` |
+| Get perp categories | `client.FuturesApi.ExchangeData.GetPerpCategoriesAsync()` |
+| Get concise perp annotations across DEXes | `client.FuturesApi.ExchangeData.GetPerpConciseAnnotationsAsync()` |
 | Get futures order book | `client.FuturesApi.ExchangeData.GetOrderBookAsync("ETH")` |
 | Get futures klines | `client.FuturesApi.ExchangeData.GetKlinesAsync("ETH", KlineInterval.OneMinute, start, end)` |
 | Get futures account and positions | `client.FuturesApi.Account.GetAccountInfoAsync()` |
@@ -150,6 +155,8 @@ Use SharedApis for exchange-agnostic code across HyperLiquid, Binance, OKX, Bybi
 | Shared spot socket client | `new HyperLiquidSocketClient().SpotApi.SharedClient` |
 | Shared futures socket client | `new HyperLiquidSocketClient().FuturesApi.SharedClient` |
 | Discover shared capabilities | `client.SpotApi.SharedClient.Discover()` |
+| Get shared spot symbols with catalog, filters, and asset classifications | `ISpotSymbolRestClient.GetSpotSymbolsAsync(new GetSymbolsRequest(...))` |
+| Get shared futures symbols with catalog, filters, and asset classifications | `IFuturesSymbolRestClient.GetFuturesSymbolsAsync(new GetSymbolsRequest(...))` |
 | Shared spot ticker REST | `ISpotTickerRestClient.GetSpotTickerAsync(new GetTickerRequest(symbol))` |
 | Shared futures ticker REST | `IFuturesTickerRestClient.GetFuturesTickerAsync(new GetTickerRequest(symbol))` |
 | Shared spot order REST | `ISpotOrderRestClient.PlaceSpotOrderAsync(...)` |

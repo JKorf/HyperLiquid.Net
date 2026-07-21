@@ -29,9 +29,9 @@ Methods return `WebCallResult<T>` for REST or `CallResult<T>` for WebSocket. Alw
 ## API structure
 
 - `restClient.SpotApi.ExchangeData` - spot metadata, prices, order books, klines, HIP-4 outcomes
-- `restClient.SpotApi.Account` - spot balances, transfers, staking, ledger, fee info
+- `restClient.SpotApi.Account` - balances, portfolio history, subaccounts, transfers, staking, ledger, fee info
 - `restClient.SpotApi.Trading` - spot order and trade endpoints
-- `restClient.FuturesApi.ExchangeData` - perp metadata, prices, funding, DEX info
+- `restClient.FuturesApi.ExchangeData` - perp metadata, annotations/categories, prices, funding, DEX info
 - `restClient.FuturesApi.Account` - futures account, positions, funding history
 - `restClient.FuturesApi.Trading` - futures order, leverage, margin endpoints
 - `socketClient.SpotApi.{Account|ExchangeData|Trading}` - spot WebSocket requests and subscriptions
@@ -56,6 +56,8 @@ var shared = new HyperLiquidRestClient().SpotApi.SharedClient;
 var ticker = await shared.GetSpotTickerAsync(
     new GetTickerRequest(new SharedSymbol(TradingMode.Spot, "HYPE", "USDC")));
 ```
+
+Shared spot/futures symbol clients expose catalogs, honor `GetSymbolsRequest` filters, and return display names plus asset type/subtype metadata.
 
 ## Avoid
 
