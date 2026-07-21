@@ -9,10 +9,14 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+    [JsonSerializable(typeof(HyperLiquidCategory[]))]
     [JsonSerializable(typeof(HyperLiquidPerpAnnotation[]))]
     [JsonSerializable(typeof(HyperLiquidPerpAnnotationDetails))]
     [JsonSerializable(typeof(HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2<HyperLiquidDefault>>>>))]
     [JsonSerializable(typeof(HyperLiquidDefaultInt))]
+    [JsonSerializable(typeof(HyperLiquidUserPortfolioData[]))]
+    [JsonSerializable(typeof(HyperLiquidUserPortfolioHistory))]
+    [JsonSerializable(typeof(HyperLiquidAnnotation))]
 
     [JsonSerializable(typeof(Parameters))]
     [JsonSerializable(typeof(Parameters[]))]

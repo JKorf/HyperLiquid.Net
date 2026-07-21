@@ -244,6 +244,37 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         #endregion
 
+        #region Get Perp Annotation
+
+        /// <inheritdoc />
+        public async Task<HttpResult<HyperLiquidAnnotation>> GetPerpAnnotationAsync(string asset, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
+            {
+                { "type", "perpAnnotation" },
+                { "coin", asset }
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            return await _baseClient.SendAsync<HyperLiquidAnnotation>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Perp Categories
+
+        /// <inheritdoc />
+        public async Task<HttpResult<HyperLiquidCategory[]>> GetPerpCategoriesAsync(CancellationToken ct = default)
+        {
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
+            {
+                { "type", "perpCategories" },
+            };
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 20, false);
+            return await _baseClient.SendAsync<HyperLiquidCategory[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
         #region Get Perp Market Status
 
         /// <inheritdoc />

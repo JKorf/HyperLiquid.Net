@@ -543,5 +543,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
             return await _baseClient.SendAsync<UserAbstractionState>(request, parameters, ct).ConfigureAwait(false);
         }
         #endregion
+
+        #region Get User Portfolio
+        /// <inheritdoc />
+        public async Task<HttpResult<HyperLiquidUserPortfolioData[]>> GetUserPortfolioAsync(string? address = null, CancellationToken ct = default)
+        {
+            if (address == null && _baseClient.AuthenticationProvider == null)
+                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
+
+            await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
+
+            var parameters = new Parameters(HyperLiquidExchange._parameterSerializationSettings)
+            {
+                { "type", "portfolio" },
+                { "user", address ?? _baseClient.AuthenticationProvider!.Key }
+            };
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "info", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 2, false);
+            return await _baseClient.SendAsync<HyperLiquidUserPortfolioData[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+        #endregion
     }
 }

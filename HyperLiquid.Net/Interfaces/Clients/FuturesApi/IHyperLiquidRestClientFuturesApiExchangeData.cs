@@ -117,12 +117,37 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         Task<HttpResult<HyperLiquidPerpDexStatus>> GetPerpDexMarketStatusAsync(string? dex = null, CancellationToken ct = default);
 
         /// <summary>
+        /// Get perp annotation for a symbol
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-perp-annotation" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: perpAnnotation)
+        /// </para>
+        /// </summary>
+        /// <param name="asset">Asset name</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<HyperLiquidAnnotation>> GetPerpAnnotationAsync(string asset, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get perp categories
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#retrieve-perp-categories" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: perpCategories)
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<HyperLiquidCategory[]>> GetPerpCategoriesAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Get annotations for symbols across dexes
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals#get-perp-market-status" /><br />
         /// Endpoint:<br />
-        /// POST /info (type: perpDexStatus)
+        /// POST /info (type: perpConciseAnnotations)
         /// </para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>

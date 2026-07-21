@@ -305,5 +305,18 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
         Task<HttpResult<UserAbstractionState>> GetUserAbstractionStateAsync(string? address = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get the user's portfolio data
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#query-a-users-portfolio" /><br />
+        /// Endpoint:<br />
+        /// POST /info (type: portfolio)
+        /// </para>
+        /// </summary>
+        /// <param name="address">["<c>user</c>"] Address to request rewards for. If not provided will use the address provided in the API credentials</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<HyperLiquidUserPortfolioData[]>> GetUserPortfolioAsync(string? address = null, CancellationToken ct = default);
     }
 }
