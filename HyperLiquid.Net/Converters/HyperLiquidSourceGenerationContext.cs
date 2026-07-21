@@ -12,6 +12,7 @@ namespace HyperLiquid.Net.Converters
     [JsonSerializable(typeof(HyperLiquidPerpAnnotation[]))]
     [JsonSerializable(typeof(HyperLiquidPerpAnnotationDetails))]
     [JsonSerializable(typeof(HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2<HyperLiquidDefault>>>>))]
+    [JsonSerializable(typeof(HyperLiquidDefaultInt))]
 
     [JsonSerializable(typeof(Parameters))]
     [JsonSerializable(typeof(Parameters[]))]

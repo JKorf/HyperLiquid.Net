@@ -6,14 +6,24 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace HyperLiquid.Net.Converters
 {
+    internal record HyperLiquidDefaultInt
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = string.Empty;
+    }
+
     internal class HyperLiquidDefaultConverter : JsonConverter<HyperLiquidDefault>
     {
         public override HyperLiquidDefault Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.StartObject)
             {
-                var result = JsonSerializer.Deserialize<HyperLiquidDefault>(ref reader, (JsonTypeInfo<HyperLiquidDefault>)options.GetTypeInfo(typeof(HyperLiquidDefault)));
-                return result!;
+                // Can't deserialize to HyperLiquidDefault type or we will cause a stack overflow
+                var result = JsonSerializer.Deserialize<HyperLiquidDefaultInt>(ref reader, (JsonTypeInfo<HyperLiquidDefaultInt>)options.GetTypeInfo(typeof(HyperLiquidDefaultInt)));
+                return new HyperLiquidDefault()
+                {
+                    Type = result!.Type
+                };
             }
             else
             {
