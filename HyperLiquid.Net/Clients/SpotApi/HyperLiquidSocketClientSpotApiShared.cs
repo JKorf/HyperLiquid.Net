@@ -31,9 +31,16 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
             var result = await ExchangeData.SubscribeToSymbolUpdatesAsync(symbol, update => 
-            handler(update.ToType(new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, update.Data.Symbol), update.Data.Symbol!, update.Data.MidPrice, null, null, update.Data.BaseVolume, update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+            handler(update.ToType(
+                new SharedSpotTicker(
+                    ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, update.Data.Symbol),
+                    update.Data.Symbol!,
+                    update.Data.MidPrice,
+                    null, 
+                    null, 
+                    new SharedOrderQuantity(update.Data.BaseVolume, update.Data.QuoteVolume),
+                    update.Data.MidPrice == null ? null : Math.Round((update.Data.MidPrice.Value / update.Data.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
             {
-                QuoteVolume = update.Data.QuoteVolume
             })), ct).ConfigureAwait(false);
 
             return result;
@@ -56,7 +63,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     return;
 
                 handler(update.ToType<SharedTrade[]>(update.Data.Select(x =>
-                    new SharedTrade(request.Symbol, symbol, x.Quantity, x.Price, x.Timestamp)
+                    new SharedTrade(request.Symbol, symbol, new SharedOrderQuantity(x.Quantity), x.Price, x.Timestamp)
                     {
                         Side = x.Side == Enums.OrderSide.Sell ? SharedOrderSide.Sell : SharedOrderSide.Buy,
                     }).ToArray()
@@ -97,7 +104,16 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (update.UpdateType == SocketUpdateType.Snapshot)
                         return;
 
-                    handler(update.ToType(new SharedKline(request.Symbol, symbol, update.Data.OpenTime, update.Data.ClosePrice, update.Data.HighPrice, update.Data.LowPrice, update.Data.OpenPrice, update.Data.Volume)));
+                    handler(update.ToType(
+                        new SharedKline(
+                            request.Symbol, 
+                            symbol, 
+                            update.Data.OpenTime,
+                            update.Data.ClosePrice,
+                            update.Data.HighPrice, 
+                            update.Data.LowPrice,
+                            update.Data.OpenPrice, 
+                            new SharedOrderQuantity(update.Data.Volume))));
                 }, ct).ConfigureAwait(false);
 
             return result;

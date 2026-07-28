@@ -107,7 +107,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                                     x.HighPrice,
                                     x.LowPrice,
                                     x.OpenPrice,
-                                    x.Volume))
+                                    new SharedOrderQuantity(x.Volume)))
                             .ToArray(), nextPageRequest);
                 
         }
@@ -155,9 +155,16 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (symbol == null)
                         return HttpResult.Fail<SharedSpotTicker>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-                    return HttpResult.Ok(result, new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol.Symbol!), symbol.Symbol!, symbol.MidPrice, null, null, symbol.BaseVolume, (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                    return HttpResult.Ok(result, 
+                        new SharedSpotTicker(
+                            ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol.Symbol!),
+                            symbol.Symbol!,
+                            symbol.MidPrice, 
+                            null, 
+                            null,
+                            new SharedOrderQuantity(symbol.BaseVolume, symbol.QuoteVolume),
+                            (symbol.MidPrice == null || symbol.PreviousDayPrice == 0) ? null : Math.Round((symbol.MidPrice.Value / symbol.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
                     {
-                        QuoteVolume = symbol.QuoteVolume
                     });
                 
         }
@@ -173,10 +180,17 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (!result.Success)
                         return HttpResult.Fail<SharedSpotTicker[]>(result);
 
-                    return HttpResult.Ok(result, result.Data.Tickers.Select(x => new SharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol!), x.Symbol!, x.MidPrice, null, null, x.BaseVolume, (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
-                    {
-                        QuoteVolume = x.QuoteVolume
-                    }).ToArray());
+                    return HttpResult.Ok(result, result.Data.Tickers.Select(x => 
+                        new SharedSpotTicker(
+                            ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Symbol!),
+                            x.Symbol!, 
+                            x.MidPrice, 
+                            null,
+                            null, 
+                            new SharedOrderQuantity(x.BaseVolume, x.QuoteVolume),
+                            (x.MidPrice == null || x.PreviousDayPrice == 0) ? null : Math.Round((x.MidPrice.Value / x.PreviousDayPrice * 100 - 100) / 10, 3) * 10)
+                        {
+                        }).ToArray());
                 
         }
 
