@@ -2,7 +2,7 @@
 
 > Strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. Supports spot, perpetual futures, portfolio history, staking, vaults, HIP-3 DEX and perp annotation metadata, HIP-4 outcome metadata and streams, REST requests, WebSocket subscriptions, local order books, and CryptoExchange.Net SharedApis.
 
-HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. REST methods return `HttpResult<T>` / `HttpResult`, WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`, WebSocket request APIs return `QueryResult<T>` / `QueryResult`, and selected shared helper methods return `ExchangeCallResult<T>`. Current version in this repository: 5.3.0. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
+HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosystem. It provides strongly typed models, automatic WebSocket reconnection, client-side rate limiting, local order book support, user client management, native AOT support, and shared interfaces for multi-exchange applications. REST methods return `HttpResult<T>` / `HttpResult`, WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`, WebSocket request APIs return `QueryResult<T>` / `QueryResult`, and selected shared helper methods return `ExchangeCallResult<T>`. Current version in this repository: 5.4.0. Targets netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 
 ## Documentation
 
