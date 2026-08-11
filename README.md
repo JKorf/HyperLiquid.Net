@@ -3,6 +3,8 @@
 [![.NET](https://img.shields.io/github/actions/workflow/status/JKorf/HyperLiquid.Net/dotnet.yml?style=for-the-badge)](https://github.com/JKorf/HyperLiquid.Net/actions/workflows/dotnet.yml) ![License](https://img.shields.io/github/license/JKorf/HyperLiquid.Net?style=for-the-badge)
 ![Since](https://img.shields.io/badge/since-2025-brightgreen?style=for-the-badge)
 
+[![Docs](https://img.shields.io/badge/Docs-HyperLiquid.Net-1b7f50?style=for-the-badge)](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=HyperLiquid.Net)
+
 HyperLiquid.Net is a client library for accessing the [HyperLiquid DEX REST and Websocket API](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api). 
 
 ## Features
@@ -17,6 +19,17 @@ HyperLiquid.Net is a client library for accessing the [HyperLiquid DEX REST and 
 * Support for different environments
 * Easy integration with other exchange client based on the CryptoExchange.Net base library
 * Native AOT support
+
+## Documentation
+
+The [HyperLiquid.Net documentation](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=HyperLiquid.Net) is the main resource for installing, configuring, and using the library.
+
+| Resource | Description |
+|--|--|
+| [Client guide](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=HyperLiquid.Net) | Installation, REST and WebSocket clients, authentication, dependency injection, error handling, and advanced features |
+| [Examples](https://cryptoexchange.jkorf.dev/docs/exchange-clients/examples?library=HyperLiquid.Net) | Common REST and WebSocket operations |
+| [API reference](https://cryptoexchange.jkorf.dev/docs/exchange-clients/reference?library=HyperLiquid.Net) | Client interfaces, methods, and properties |
+| [Shared API guide](https://cryptoexchange.jkorf.dev/docs/shared-api) | Common interfaces and models for working with multiple exchanges |
 
 ## Supported Frameworks
 The library is targeting both `.NET Standard 2.0` and `.NET Standard 2.1` for optimal compatibility, as well as the latest dotnet versions to use the latest framework features.
@@ -92,7 +105,7 @@ var tickerSubscriptionResult = await hyperLiquidSocketClient.SpotApi.SubscribeTo
 });
 ```
 
-For information on the clients, dependency injection, response processing and more see the [documentation](https://cryptoexchange.jkorf.dev?library=HyperLiquid.Net), or have a look at the examples [here](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples) or [here](https://github.com/JKorf/CryptoExchange.Net/tree/master/Examples).
+For more examples and explanations, continue with the [HyperLiquid.Net documentation](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=HyperLiquid.Net) or browse the [compilable repository examples](https://github.com/JKorf/HyperLiquid.Net/tree/main/Examples).
 
 **NOTE**  
 HyperLiquid.Net uses the Builder Code mechanism for HyperLiquid, which means that an additional 1bps / 0.01% fee is charged on top of orders placed with the library to fund development. This is entirely optional and can be disabled in the client options by setting `BuilderFeePercentage` to `0` or `null` in the client options.
@@ -113,7 +126,7 @@ See [cryptoexchange-skills-hub](https://github.com/JKorf/cryptoexchange-skills-h
 
 ## Shared / unified API
 
-The CryptoExchange.Net [Shared APIs](https://cryptoexchange.jkorf.dev/client-libs/shared) provide exchange-agnostic, unified interfaces for common operations such as retrieving tickers, order books and balances, placing orders, and subscribing to market updates.
+The CryptoExchange.Net [Shared APIs](https://cryptoexchange.jkorf.dev/docs/shared-api) provide exchange-agnostic, unified interfaces for common operations such as retrieving tickers, order books and balances, placing orders, and subscribing to market updates.
 
 This allows the same application code to work with different exchange libraries. The supported HyperLiquid API surfaces expose their shared functionality through a `SharedClient` property. Because support differs between exchanges and API surfaces, call `Discover()` to inspect the available trading modes, environments, endpoints, and subscriptions at runtime.
 
@@ -162,7 +175,7 @@ The request and response models belong to `CryptoExchange.Net.SharedApis`, so th
 ## CryptoExchange.Net
 HyperLiquid.Net is based on the [CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net) base library. Other exchange API implementations based on the CryptoExchange.Net base library are available and follow the same logic.
 
-CryptoExchange.Net also allows for [easy access to different exchange API's](https://cryptoexchange.jkorf.dev/client-libs/shared).
+CryptoExchange.Net also provides [shared access to different exchange APIs](https://cryptoexchange.jkorf.dev/docs/shared-api).
 
 |Exchange|Repository|Nuget|
 |--|--|--|
