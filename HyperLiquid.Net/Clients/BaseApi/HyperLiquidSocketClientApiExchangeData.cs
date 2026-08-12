@@ -202,7 +202,13 @@ namespace HyperLiquid.Net.Clients.BaseApi
         }
 
         /// <inheritdoc />
-        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default)
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(
+            string symbol,
+            Action<DataEvent<HyperLiquidOrderBook>> onMessage, 
+            int? nSigFigs = null, 
+            int? mantissa = null,
+            bool? fast = null,
+            CancellationToken ct = default)
         {
             var coin = symbol;
             if (HyperLiquidUtils.SymbolIsExchangeSpotSymbol(coin))
@@ -236,7 +242,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             
             parameters.AddOptionalParameter("nSigFigs", nSigFigs);
             parameters.AddOptionalParameter("mantissa", mantissa);
-            
+            parameters.AddOptionalParameter("fast", fast);
+
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, _baseClient, "l2Book", coin, parameters, internalHandler, false);
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }

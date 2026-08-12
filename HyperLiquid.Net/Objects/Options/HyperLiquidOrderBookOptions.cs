@@ -33,12 +33,20 @@ namespace HyperLiquid.Net.Objects.Options
         /// </summary>
         public int? Mantissa { get; set; }
 
+        /// <summary>
+        /// Optional fast parameter, true for 5 level fast updates or false for 20 level slow updates
+        /// </summary>
+        public bool? Fast { get; set; }
+
 
         internal HyperLiquidOrderBookOptions Copy()
         {
             var result = Copy<HyperLiquidOrderBookOptions>();
             result.Limit = Limit;
             result.InitialDataTimeout = InitialDataTimeout;
+            result.NSigFigs = NSigFigs;
+            result.Mantissa = Mantissa;
+            result.Fast = Fast;
             return result;
         }
     }

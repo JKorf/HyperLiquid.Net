@@ -95,9 +95,10 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="onMessage">The data handler</param>
         /// <param name="nSigFigs">Number of significant figures to use for price, if not provided will use the default from the options</param>
         /// <param name="mantissa">Mantissa to use for price, if not provided will use the default from the options</param>
+        /// <param name="fast">True for 5 levels at higher speed, false (default) for 20 levels at reduced speed</param>
         /// <param name="ct">Cancellation token for closing this subscription</param>
         /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected and to unsubscribe</returns>
-        Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, CancellationToken ct = default);
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(string symbol, Action<DataEvent<HyperLiquidOrderBook>> onMessage, int? nSigFigs = null, int? mantissa = null, bool? fast = null, CancellationToken ct = default);
 
         /// <summary>
         /// Subscribe to trade updates
