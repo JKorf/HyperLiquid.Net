@@ -8,6 +8,7 @@ using HyperLiquid.Net.Objects.Models;
 using HyperLiquid.Net.Objects.Options;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -33,11 +34,8 @@ namespace HyperLiquid.Net.Utils
         private static readonly SemaphoreSlim _semaphoreOutcomes = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreSpot = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreFutures = new SemaphoreSlim(1, 1);
-        private static readonly SemaphoreSlim _semaphoreBuilderFee = new SemaphoreSlim(1, 1);
-        private static bool _checkedBuilderFee = false;
-        // We should only send builder credentials if the check has succeeded
-        internal static bool _builderFeeSuccess = false;
-
+        internal static readonly ConcurrentDictionary<string, BuilderFeeStatus> _builderFeeStatus = new ConcurrentDictionary<string, BuilderFeeStatus>();
+        
         internal static async Task<ICallResult> CheckBuilderFeeAsync(HyperLiquidSocketClient client)
         {
             if (!client.SpotApi.Authenticated)
@@ -50,6 +48,7 @@ namespace HyperLiquid.Net.Utils
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
+                client.SpotApi.ApiCredentials!.Key,
                 options.BuilderFeePercentage,
                 async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
                 async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
@@ -72,6 +71,7 @@ namespace HyperLiquid.Net.Utils
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
+                client.SpotApi.ApiCredentials!.Key,
                 options.BuilderFeePercentage,
                 async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
                 async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
@@ -83,11 +83,13 @@ namespace HyperLiquid.Net.Utils
         }
 
         internal static async Task<ICallResult> CheckBuilderFeeAsync(
+            string key,
             decimal? builderFeePercentage,
             Func<Task<ICallResult<int>>> getApprovedFee,
             Func<Task<ICallResult>> approveFee)
         {
-            if (_checkedBuilderFee)
+            var builderStatus = _builderFeeStatus.GetOrAdd(key, (key) => new BuilderFeeStatus());
+            if (builderStatus.Checked)
                 return CallResult.Ok();
 
             if (builderFeePercentage == null
@@ -97,11 +99,12 @@ namespace HyperLiquid.Net.Utils
                 return CallResult.Ok();
             }
 
-            await _semaphoreBuilderFee.WaitAsync().ConfigureAwait(false);
+            await builderStatus.Semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
                 // Set to true even if the check fails to avoid continuously trying to check and approve the builder fee if there's an issue
-                _checkedBuilderFee = true;
+                
+                builderStatus.Checked = true;
 
                 var approvedResult = await getApprovedFee().ConfigureAwait(false);
                 if (!approvedResult.Success)
@@ -110,20 +113,20 @@ namespace HyperLiquid.Net.Utils
                 var targetBps = (int)(builderFeePercentage.Value * 1000);
                 if (approvedResult.Data >= targetBps)
                 {
-                    // Builder fee is approved, we're good
-                    _builderFeeSuccess = true;
+                    // Builder fee already approved, we're good
+                    builderStatus.Success = true;
                     return CallResult.Ok();
                 }
 
                 var approveResult = await approveFee().ConfigureAwait(false);
                 if (approveResult.Success)
-                    _builderFeeSuccess = true;
+                    builderStatus.Success = true;
 
                 return approveResult;
             }
             finally
             {
-                _semaphoreBuilderFee.Release();
+                builderStatus.Semaphore.Release();
             }
         }
 
@@ -653,8 +656,6 @@ namespace HyperLiquid.Net.Utils
             });
         }
 
-
-
         internal static bool ExchangeSymbolIsSpotSymbol(string symbol)
         {
             return symbol.StartsWith("@") || symbol.EndsWith("/USDC");
@@ -664,5 +665,21 @@ namespace HyperLiquid.Net.Utils
         {
             return symbol.EndsWith("/USDC") || symbol.EndsWith("/USDH") || symbol.EndsWith("/USDT0") || symbol.EndsWith("/USDE");
         }
+    }
+
+    internal class BuilderFeeStatus
+    {
+        /// <summary>
+        /// Whether builder fee was checked
+        /// </summary>
+        public bool Checked { get; set; }
+        /// <summary>
+        /// Whether builder fee is approved and can be applied
+        /// </summary>
+        public bool Success { get; set; }
+        /// <summary>
+        /// Key-specific semaphore
+        /// </summary>
+        public SemaphoreSlim Semaphore { get; set; } = new SemaphoreSlim(1, 1);
     }
 }

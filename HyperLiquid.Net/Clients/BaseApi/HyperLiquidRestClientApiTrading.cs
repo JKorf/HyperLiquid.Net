@@ -436,7 +436,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             if (_baseClient.ClientOptions.BuilderFeePercentage > 0
                 && _baseClient.ClientOptions.BuilderAddress != null
-                && HyperLiquidUtils._builderFeeSuccess)
+                && HyperLiquidUtils._builderFeeStatus.TryGetValue(_baseClient.ApiCredentials?.Key ?? "", out var status) && status.Success)
             {
                 // Convert from percentage to 1/10 basis point
                 var tenthPoints = (int)(_baseClient.ClientOptions.BuilderFeePercentage * 1000);
