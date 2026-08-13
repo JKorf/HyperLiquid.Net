@@ -734,7 +734,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #endregion
 
         #region Asset client
-        GetAssetsOptions IAssetsRestClient.GetAssetsOptions { get; } = new GetAssetsOptions(_exchangeName, true);
+        GetAssetsOptions IAssetsRestClient.GetAssetsOptions { get; } = new GetAssetsOptions(_exchangeName, false);
 
         async Task<HttpResult<SharedAsset[]>> IAssetsRestClient.GetAssetsAsync(GetAssetsRequest request, CancellationToken ct)
         {
@@ -742,18 +742,18 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return HttpResult.Fail<SharedAsset[]>(Exchange, validationError);
 
-                    var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
-                    if (!assets.Success)
-                        return HttpResult.Fail<SharedAsset[]>(assets);
+            var assets = await ExchangeData.GetExchangeInfoAsync(ct: ct).ConfigureAwait(false);
+            if (!assets.Success)
+                return HttpResult.Fail<SharedAsset[]>(assets);
 
-                    return HttpResult.Ok(assets, assets.Data.Assets.Select(x => new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
-                    {
-                        FullName = x.FullName,
-                        Networks = [new SharedAssetNetwork("HyperLiquid") {
+            return HttpResult.Ok(assets, assets.Data.Assets.Select(x =>
+                new SharedAsset(HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Name))
+                {
+                    FullName = x.FullName,
+                    Networks = [new SharedAssetNetwork("HyperLiquid") {
                     ContractAddress = x.AssetId
                 }]
-                    }).ToArray());
-                
+            }).ToArray());
         }
 
         GetAssetOptions IAssetsRestClient.GetAssetOptions { get; } = new GetAssetOptions(_exchangeName, false);
@@ -792,14 +792,13 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return HttpResult.Fail<SharedFee>(Exchange, validationError);
 
-                    // Get data
-                    var result = await Account.GetFeeInfoAsync(ct: ct).ConfigureAwait(false);
-                    if (!result.Success)
-                        return HttpResult.Fail<SharedFee>(result);
+            // Get data
+            var result = await Account.GetFeeInfoAsync(ct: ct).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<SharedFee>(result);
 
-                    // Return
-                    return HttpResult.Ok(result, new SharedFee(result.Data.MakerFeeRateSpot * 100, result.Data.TakerFeeRateSpot * 100));
-                
+            // Return
+            return HttpResult.Ok(result, new SharedFee(result.Data.MakerFeeRateSpot * 100, result.Data.TakerFeeRateSpot * 100));                
         }
         #endregion
 
