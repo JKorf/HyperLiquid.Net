@@ -86,6 +86,24 @@ namespace HyperLiquid.Net.UnitTests
         }
 
         [Test]
+        public void CheckSpotBalancesTokenToDeserialization()
+        {
+            // The tokenTo* fields are serialized as an array of [token, value] pairs rather than an object,
+            // and are only present for unified account and portfolio margin users. The request validator cannot
+            // compare them (its comparer expects an object), so this covers the converter directly.
+            var json = "{\"balances\":[{\"coin\":\"USDC\",\"token\":0,\"total\":\"798.0\",\"hold\":\"0.0\",\"entryNtl\":\"0.0\"}]," +
+                "\"tokenToAvailableAfterMaintenance\":[[0,\"798.0\"],[150,\"1.5\"]]}";
+
+            var result = System.Text.Json.JsonSerializer.Deserialize<HyperLiquid.Net.Objects.Models.HyperLiquidBalances>(json, HyperLiquidExchange._serializerContext);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Balances.Length, Is.EqualTo(1));
+            Assert.That(result.TokenAvailableAfterMaintenance, Is.Not.Null);
+            Assert.That(result.TokenAvailableAfterMaintenance[0], Is.EqualTo(798.0m));
+            Assert.That(result.TokenAvailableAfterMaintenance[150], Is.EqualTo(1.5m));
+        }
+
+        [Test]
         public void CheckInterfaces()
         {
             CryptoExchange.Net.Testing.TestHelpers.CheckForMissingRestInterfaces<HyperLiquidRestClient>(

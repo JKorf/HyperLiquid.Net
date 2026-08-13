@@ -48,7 +48,7 @@ namespace HyperLiquid.Net.UnitTests
         public async Task TestSpotAccount()
         {
             var warnings = new List<Exception>();
-            await RunAndCheckResult(warnings, client => client.SpotApi.Account.GetBalancesAsync(default, default), true, "balances");
+            await RunAndCheckResult(warnings, client => client.SpotApi.Account.GetBalancesAsync(default, default), true);
             await RunAndCheckResult(warnings, client => client.SpotApi.Account.GetAccountLedgerAsync(DateTime.UtcNow.AddDays(-30), default, default, default), true);
             await RunAndCheckResult(warnings, client => client.SpotApi.Account.GetRateLimitsAsync(default, default), true);
             await RunAndCheckResult(warnings, client => client.SpotApi.Account.GetApprovedBuilderFeeAsync(default, default, default), true);

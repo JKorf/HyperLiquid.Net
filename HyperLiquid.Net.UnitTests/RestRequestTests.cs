@@ -46,7 +46,7 @@ namespace HyperLiquid.Net.UnitTests
                 opts.ApiCredentials = new HyperLiquidCredentials("123", "456");
             });
             var tester = new RestRequestValidator<HyperLiquidRestClient>(client, "Endpoints/Spot/Account", "https://api.hyperliquid.xyz", IsAuthenticated);
-            await tester.ValidateAsync(client => client.SpotApi.Account.GetBalancesAsync(), "GetBalances", nestedJsonProperty: "balances");
+            await tester.ValidateAsync(client => client.SpotApi.Account.GetBalancesAsync(), "GetBalances", ignoreProperties: ["tokenToPortfolioBorrowRatio", "tokenToPortfolioSupplyRatio", "tokenToAvailableAfterMaintenance"]);
             await tester.ValidateAsync(client => client.SpotApi.Account.GetAccountLedgerAsync(DateTime.UtcNow), "GetAccountLedger");
             await tester.ValidateAsync(client => client.SpotApi.Account.GetRateLimitsAsync(), "GetRateLimits");
             await tester.ValidateAsync(client => client.SpotApi.Account.GetApprovedBuilderFeeAsync(), "GetApprovedBuilderFee");

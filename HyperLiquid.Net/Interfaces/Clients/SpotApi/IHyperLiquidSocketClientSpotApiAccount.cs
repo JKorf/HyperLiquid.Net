@@ -15,7 +15,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
     public interface IHyperLiquidSocketClientSpotApiAccount : IHyperLiquidSocketClientApiAccount
     {
         /// <summary>
-        /// Get user asset balances
+        /// Get user asset balances along with the account level margin info. For unified account and portfolio margin users all balances and holds
+        /// are reported here rather than in the per perp dex user state, and the quantity available after the maintenance margin requirement is
+        /// reported per token.
         /// <para>
         /// Docs:<br />
         /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/spot#retrieve-a-users-token-balances" /><br />
@@ -23,7 +25,7 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         /// </summary>
         /// <param name="address">["<c>user</c>"] Address to request balances for. If not provided will use the address provided in the API credentials</param>
         /// <param name="ct">Cancellation token</param>
-        Task<QueryResult<HyperLiquidBalance[]>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
+        Task<QueryResult<HyperLiquidBalances>> GetBalancesAsync(string? address = null, CancellationToken ct = default);
 
         /// <summary>
         /// Send spot assets to another address. This transfer does not touch the EVM bridge.

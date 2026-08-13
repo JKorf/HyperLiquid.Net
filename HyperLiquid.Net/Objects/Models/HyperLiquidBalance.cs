@@ -27,19 +27,20 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("portfolioMarginRatio")]
         public decimal? PortfolioMarginRatio { get; set; }
         /// <summary>
-        /// ["<c>tokenToPortfolioBorrowRatio</c>"] Portfolio margin ratio
+        /// ["<c>tokenToPortfolioBorrowRatio</c>"] Portfolio margin borrow ratio per token
         /// </summary>
         [JsonConverter(typeof(TokenToConverter))]
         [JsonPropertyName("tokenToPortfolioBorrowRatio")]
         public Dictionary<long, decimal>? TokenPortfolioBorrowRatio { get; set; }
         /// <summary>
-        /// ["<c>tokenToPortfolioSupplyRatio</c>"] Portfolio margin ratio
+        /// ["<c>tokenToPortfolioSupplyRatio</c>"] Portfolio margin supply ratio per token
         /// </summary>
         [JsonConverter(typeof(TokenToConverter))]
         [JsonPropertyName("tokenToPortfolioSupplyRatio")]
         public Dictionary<long, decimal>? TokenPortfolioSupplyRatio { get; set; }
         /// <summary>
-        /// ["<c>tokenToAvailableAfterMaintenance</c>"] Portfolio margin ratio
+        /// ["<c>tokenToAvailableAfterMaintenance</c>"] Quantity per token which is available to deploy, withdraw or transfer after the maintenance margin
+        /// requirement and any holds are accounted for
         /// </summary>
         [JsonConverter(typeof(TokenToConverter))]
         [JsonPropertyName("tokenToAvailableAfterMaintenance")]
