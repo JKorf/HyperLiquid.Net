@@ -270,6 +270,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.6.0 - 14 Aug 2026
+    * Updated restClient.SpotApi.Account.GetBalancesAsync to return full balance response instead of only the nested Balances. Update `Data` to `Data.Balances` to maintain the exact same behavior as previous version.
+    * Fixed rate limit weights on various endpoints
+
 * Version 5.5.0 - 12 Aug 2026
     * Added fast parameter to SubscribeToOrderBookUpdatesAsync subscription
     * Fixed builder code logic for multi-user
