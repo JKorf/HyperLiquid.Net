@@ -1,4 +1,5 @@
 using CryptoExchange.Net.Converters.SystemTextJson;
+using HyperLiquid.Net.Enums;
 using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Models
@@ -62,6 +63,11 @@ namespace HyperLiquid.Net.Objects.Models
         /// </summary>
         [JsonPropertyName("marginTableId")]
         public int MarginTableId { get; set; }
+        /// <summary>
+        /// ["<c>marginMode</c>"] Margin mode restriction, null when the symbol has no restriction
+        /// </summary>
+        [JsonPropertyName("marginMode")]
+        public MarginMode? MarginMode { get; set; }
         /// <summary>
         /// Margin table
         /// </summary>
