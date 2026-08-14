@@ -51,7 +51,7 @@ if (!balances.Success)
     return;
 }
 
-foreach (var balance in balances.Data.Where(b => b.Total > 0))
+foreach (var balance in balances.Data.Balances.Where(b => b.Total > 0))
 {
     Console.WriteLine($"{balance.Asset}: total={balance.Total}, hold={balance.Hold}");
 }
