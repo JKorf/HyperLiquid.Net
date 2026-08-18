@@ -6,8 +6,8 @@ namespace HyperLiquid.Net.Enums
     /// <summary>
     /// Margin mode restriction on a symbol
     /// </summary>
-    [JsonConverter(typeof(EnumConverter<MarginMode>))]
-    public enum MarginMode
+    [JsonConverter(typeof(EnumConverter<MarginRestrictionMode>))]
+    public enum MarginRestrictionMode
     {
         /// <summary>
         /// Margin can not be removed

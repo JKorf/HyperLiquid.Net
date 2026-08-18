@@ -67,7 +67,7 @@ namespace HyperLiquid.Net.Objects.Models
         /// ["<c>marginMode</c>"] Margin mode restriction, null when the symbol has no restriction
         /// </summary>
         [JsonPropertyName("marginMode")]
-        public MarginMode? MarginMode { get; set; }
+        public MarginRestrictionMode? MarginRestrictionMode { get; set; }
         /// <summary>
         /// Margin table
         /// </summary>
