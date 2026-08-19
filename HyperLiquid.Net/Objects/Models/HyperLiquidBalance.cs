@@ -69,6 +69,14 @@ namespace HyperLiquid.Net.Objects.Models
         [JsonPropertyName("hold")]
         public decimal Hold { get; set; }
         /// <summary>
+        /// ["<c>spotHold</c>"] In holding, before portfolio margin borrow capacity is netted off. Null when not
+        /// sent, which has been observed for tokens carrying a zero <see cref="Hold"/>. Subtracting it from
+        /// <see cref="Total"/> leaves the balance actually owned and unencumbered, whereas subtracting
+        /// <see cref="Hold"/> leaves an amount that also includes what could be borrowed
+        /// </summary>
+        [JsonPropertyName("spotHold")]
+        public decimal? SpotHold { get; set; }
+        /// <summary>
         /// ["<c>total</c>"] Total
         /// </summary>
         [JsonPropertyName("total")]
