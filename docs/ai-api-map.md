@@ -161,13 +161,15 @@ Use SharedApis for exchange-agnostic code across HyperLiquid, Binance, OKX, Bybi
 | Shared futures ticker REST | `IFuturesTickerRestClient.GetFuturesTickerAsync(new GetTickerRequest(symbol))` |
 | Shared spot order REST | `ISpotOrderRestClient.PlaceSpotOrderAsync(...)` |
 | Shared futures order REST | `IFuturesOrderRestClient.PlaceFuturesOrderAsync(...)` |
+| Place/cancel shared spot order over WebSocket | `ISpotOrderManagementSocketClient.PlaceSpotOrderAsync(...)` / `CancelSpotOrderAsync(...)` |
+| Place/cancel shared futures order over WebSocket | `IFuturesOrderManagementSocketClient.PlaceFuturesOrderAsync(...)` / `CancelFuturesOrderAsync(...)` |
 | Shared balances REST | `IBalanceRestClient.GetBalancesAsync(new GetBalancesRequest(...))` |
 | Shared position REST | `IPositionRestClient.GetPositionsAsync(...)` |
 | Shared ticker socket | `ITickerSocketClient.SubscribeToTickerUpdatesAsync(...)` |
 | Shared order book socket | `IOrderBookSocketClient.SubscribeToOrderBookUpdatesAsync(...)` |
 | Shared trade socket | `ITradeSocketClient.SubscribeToTradeUpdatesAsync(...)` |
 
-Shared REST methods return `HttpResult<T>` / `HttpResult`; shared socket subscriptions return `WebSocketResult<UpdateSubscription>`; shared symbol/cache helpers such as `SupportsSpotSymbolAsync` and `SupportsFuturesSymbolAsync` can return `ExchangeCallResult<T>`.
+Shared REST methods return `HttpResult<T>` / `HttpResult`; shared socket subscriptions return `WebSocketResult<UpdateSubscription>`; shared socket order requests return `QueryResult<SharedId>`; shared symbol/cache helpers such as `SupportsSpotSymbolAsync` and `SupportsFuturesSymbolAsync` can return `ExchangeCallResult<T>`.
 
 For shared socket subscriptions, keep the concrete socket client and unsubscribe with `await socketClient.UnsubscribeAsync(subscription.Data)`.
 

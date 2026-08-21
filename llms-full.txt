@@ -4,8 +4,8 @@
 
 HyperLiquid.Net is a strongly typed .NET client library for the HyperLiquid DEX REST and WebSocket APIs. It is part of the CryptoExchange.Net ecosystem and uses the same result, shared API, logging, rate limiting, dependency injection, and socket patterns as the other JKorf exchange libraries.
 
-Current package version in this repository: 5.6.0.
-CryptoExchange.Net dependency: 12.2.0.
+Current package version in this repository: 5.7.0.
+CryptoExchange.Net dependency: 12.5.0.
 Target frameworks: netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0.
 Native AOT: supported on compatible .NET targets.
 
@@ -33,7 +33,7 @@ Primary documentation:
 - Do not invent endpoint names. If unsure, inspect `HyperLiquid.Net/Interfaces/Clients/**`.
 - Spot symbols are slash separated, for example `HYPE/USDC`; futures symbols are base asset only, for example `ETH`.
 - Market order examples still need a price argument because `PlaceOrderAsync` requires price for slippage calculation.
-- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features. Shared symbol clients expose catalogs and classified asset metadata, and their symbol-list requests honor filters.
+- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features.Shared symbol clients expose catalogs and classified asset metadata, and their symbol-list requests honor filters.
 
 ## Installation
 
@@ -419,6 +419,8 @@ if (!info.Success)
 var hype = info.Data.Symbols.Single(x => x.Name == "HYPE/USDC");
 Console.WriteLine(hype.BaseAsset.QuantityDecimals);
 ```
+
+CryptoExchange.Net shared market and account models represent quantities with `SharedOrderQuantity`; read the applicable `QuantityInBaseAsset`, `QuantityInQuoteAsset`, or `QuantityInContracts` value instead of assuming a bare decimal.
 
 ## Builder Fee Notes
 

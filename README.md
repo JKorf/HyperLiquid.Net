@@ -270,6 +270,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.7.0 - 21 Aug 2026
+    * Updated to CryptoExchange.Net v12.5.0
+    * Added the MarginRestrictionMode to HyperLiquidFuturesSymbol model
+    * Added SpotHold to HyperLiquidBalance model
+    * Added Shared ISpotOrderManagementSocketClient, IFuturesOrderManagementSocketClient implementations
+    * Updated some socket connection logic to make it easier to combine socket connections
+
 * Version 5.6.0 - 14 Aug 2026
     * Updated restClient.SpotApi.Account.GetBalancesAsync to return full balance response instead of only the nested Balances. Update `Data` to `Data.Balances` to maintain the exact same behavior as previous version.
     * Fixed rate limit weights on various endpoints
