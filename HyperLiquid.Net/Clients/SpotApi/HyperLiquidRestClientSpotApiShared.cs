@@ -131,7 +131,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                     if (result.Data == null)
                         return HttpResult.Fail<SharedOrderBook>(result, new ServerError(ErrorInfo.Unknown with { Message = "No response" }));
 
-                    return HttpResult.Ok(result, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
+                    return HttpResult.Ok(result, new SharedOrderBook(SharedQuantityType.BaseAsset, result.Data.Levels.Asks, result.Data.Levels.Bids));
                 
         }
 
@@ -217,9 +217,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol),
                         symbol,
                         resultTicker.Data.Levels.Asks[0].Price,
-                        resultTicker.Data.Levels.Asks[0].Quantity,
+                        new SharedOrderQuantity(resultTicker.Data.Levels.Asks[0].Quantity),
                         resultTicker.Data.Levels.Bids[0].Price,
-                        resultTicker.Data.Levels.Bids[0].Quantity));
+                        new SharedOrderQuantity(resultTicker.Data.Levels.Bids[0].Quantity)));
                 
         }
 
@@ -521,7 +521,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                         x.OrderId.ToString(),
                         x.TradeId.ToString(),
                         x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                        x.Quantity,
+                        new SharedOrderQuantity(x.Quantity),
                         x.Price,
                         x.Timestamp)
                     {
@@ -571,7 +571,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                                 x.OrderId.ToString(),
                                 x.TradeId.ToString(),
                                 x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                                x.Quantity,
+                                new SharedOrderQuantity(x.Quantity),
                                 x.Price,
                                 x.Timestamp)
                                 {

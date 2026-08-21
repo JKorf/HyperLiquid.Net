@@ -21,7 +21,7 @@ namespace HyperLiquid.Net.Converters
                 reader.Read(); // Start array
                 var token = reader.GetString();
                 reader.Read();
-                var value = JsonSerializer.Deserialize<T>(ref reader, options);
+                var value = JsonSerializer.Deserialize<T>(ref reader, (JsonTypeInfo<T>)options.GetTypeInfo(typeof(T)));
                 result.Add(token!, value!);
                 reader.Read(); // End array
             }
@@ -37,7 +37,7 @@ namespace HyperLiquid.Net.Converters
             {
                 writer.WriteStartArray();
                 writer.WriteStringValue(kvp.Key);
-                JsonSerializer.Serialize(writer, kvp.Value, options);
+                JsonSerializer.Serialize(writer, kvp.Value, (JsonTypeInfo<T>)options.GetTypeInfo(typeof(T)));
                 writer.WriteEndArray();
             }
             writer.WriteEndArray();

@@ -25,7 +25,7 @@ namespace HyperLiquid.Net.Objects.Sockets
                     Id = ExchangeHelpers.NextId(), 
                     Method = method, 
                     Request = new HyperLiquidRequestWrapper { Type = type, Payload = request } 
-                }, 
+                },
                 authenticated,
                 weight)
         {

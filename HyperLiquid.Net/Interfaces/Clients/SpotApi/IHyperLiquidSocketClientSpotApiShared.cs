@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         ISpotOrderSocketClient,
         IUserTradeSocketClient,
         IBalanceSocketClient,
-        IBookTickerSocketClient
+        IBookTickerSocketClient,
+        ISpotOrderManagementSocketClient
     {
     }
 }

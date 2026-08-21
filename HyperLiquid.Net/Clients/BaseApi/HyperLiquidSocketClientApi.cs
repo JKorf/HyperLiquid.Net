@@ -50,6 +50,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
             BaseClient = baseClient;
 
             RateLimiter = HyperLiquidExchange.RateLimiter.HyperLiquidSocket;
+            // To prevent multiple connections being created when first retrieving some public data for an authenticated request
+            UsePublicConnectionForAuth = true;
 
             RegisterPeriodicQuery(
                 "Ping",
@@ -99,5 +101,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
         /// <inheritdoc />
         public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverDate = null)
             => HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode, deliverDate);
+
+        /// <inheritdoc />
+        protected override bool ConnectionCanBeUsedFor(SocketConnection connection, string address, bool authenticated, string? topic = null)
+        {
+            // Override to allow different API sub clients to use the same connection
+            return connection.ConnectionUriString.Equals(address.TrimEnd('/'), StringComparison.Ordinal);
+        }
     }
 }

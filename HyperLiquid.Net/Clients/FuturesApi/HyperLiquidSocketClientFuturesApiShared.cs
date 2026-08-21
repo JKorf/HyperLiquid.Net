@@ -1,12 +1,13 @@
+using CryptoExchange.Net;
+using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
-using System.Threading.Tasks;
-using System.Threading;
 using System;
-using CryptoExchange.Net.Objects.Sockets;
+using System.Collections.Generic;
 using System.Linq;
-using CryptoExchange.Net.Objects;
-using CryptoExchange.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.Clients.FuturesApi
 {
@@ -129,7 +130,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 return WebSocketResult.Fail<UpdateSubscription>(_exchangeName, validationError);
 
             var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-            var result = await ExchangeData.SubscribeToOrderBookUpdatesAsync(symbol, update => handler(update.ToType(new SharedOrderBook(update.Data.Levels.Asks, update.Data.Levels.Bids))), ct: ct).ConfigureAwait(false);
+            var result = await ExchangeData.SubscribeToOrderBookUpdatesAsync(symbol, update => handler(
+                update.ToType(
+                    new SharedOrderBook(SharedQuantityType.BaseAsset, update.Data.Levels.Asks, update.Data.Levels.Bids))), ct: ct).ConfigureAwait(false);
 
             return result;
         }
@@ -161,7 +164,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                             x.OrderId.ToString(),
                             x.TradeId.ToString(),
                             x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                            x.Quantity,
+                            new SharedOrderQuantity(x.Quantity),
                             x.Price,
                             x.Timestamp)
                         {
@@ -293,7 +296,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             var result = await Account.SubscribeToUserUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedPosition[]>(update.Data.FuturesInfo.Positions.Select(x => new SharedPosition(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Position.Symbol), x.Position.Symbol, Math.Abs(x.Position.PositionQuantity ?? 0), update.DataTime ?? update.ReceiveTime)
+                update => handler(update.ToType<SharedPosition[]>(update.Data.FuturesInfo.Positions.Select(x => 
+                new SharedPosition(
+                    ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Position.Symbol),
+                    x.Position.Symbol,
+                    new SharedOrderQuantity(Math.Abs(x.Position.PositionQuantity ?? 0)),
+                    update.DataTime ?? update.ReceiveTime)
                 {
                     AverageOpenPrice = x.Position.AverageEntryPrice,
                     Leverage = x.Position.Leverage!.Value,
@@ -325,13 +333,102 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                     ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, update.Data.Symbol),
                     update.Data.Symbol,
                     update.Data.BestAsk.Price,
-                    update.Data.BestAsk.Quantity,
+                    new SharedOrderQuantity(update.Data.BestAsk.Quantity),
                     update.Data.BestBid.Price,
-                    update.Data.BestBid.Quantity))), ct).ConfigureAwait(false);
+                    new SharedOrderQuantity(update.Data.BestBid.Quantity)))), ct).ConfigureAwait(false);
 
             return result;
         }
 
+        #endregion
+
+        #region Futures Order Client
+
+        SharedFeeDeductionType IFuturesOrderManagementSocketClient.FuturesFeeDeductionType => SharedFeeDeductionType.AddToCost;
+        SharedFeeAssetType IFuturesOrderManagementSocketClient.FuturesFeeAssetType => SharedFeeAssetType.QuoteAsset;
+
+        SharedOrderType[] IFuturesOrderManagementSocketClient.FuturesSupportedOrderTypes { get; } = new[] { SharedOrderType.Limit, SharedOrderType.Market };
+        SharedTimeInForce[] IFuturesOrderManagementSocketClient.FuturesSupportedTimeInForce { get; } = new[] { SharedTimeInForce.GoodTillCanceled, SharedTimeInForce.ImmediateOrCancel };
+        SharedQuantitySupport IFuturesOrderManagementSocketClient.FuturesSupportedOrderQuantity { get; } = new SharedQuantitySupport(
+                SharedQuantityType.BaseAsset,
+                SharedQuantityType.BaseAsset,
+                SharedQuantityType.BaseAsset,
+                SharedQuantityType.BaseAsset);
+
+        string IFuturesOrderManagementSocketClient.GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
+
+        PlaceFuturesOrderSocketOptions IFuturesOrderManagementSocketClient.PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderSocketOptions(_exchangeName, false)
+        {
+            RequiredOptionalParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
+            },
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
+            }
+        };
+        async Task<QueryResult<SharedId>> IFuturesOrderManagementSocketClient.PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
+        {
+            var validationError = SharedClient.PlaceFuturesOrderOptions.ValidateRequest(request, this);
+            if (validationError != null)
+                return QueryResult.Fail<SharedId>(Exchange, validationError);
+
+            var result = await Trading.PlaceOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                request.Side == SharedOrderSide.Buy ? Enums.OrderSide.Buy : Enums.OrderSide.Sell,
+                request.OrderType == SharedOrderType.Limit || request.OrderType == SharedOrderType.LimitMaker ? Enums.OrderType.Limit : Enums.OrderType.Market,
+                quantity: request.Quantity?.QuantityInBaseAsset ?? request.Quantity?.QuantityInContracts ?? 0,
+                price: request.Price!.Value,
+                reduceOnly: request.ReduceOnly,
+                timeInForce: GetTimeInForce(request.TimeInForce, request.OrderType),
+                clientOrderId: request.ClientOrderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
+
+            if (!result.Success)
+                return QueryResult.Fail<SharedId>(result);
+
+            return QueryResult.Ok(result, new SharedId(result.Data.OrderId.ToString()));
+
+        }
+
+        CancelFuturesOrderSocketOptions IFuturesOrderManagementSocketClient.CancelFuturesOrderOptions { get; } = new CancelFuturesOrderSocketOptions(_exchangeName, true)
+        {
+            OptionalExchangeParameters = new List<ParameterDescription>
+            {
+                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
+            }
+        };
+        async Task<QueryResult<SharedId>> IFuturesOrderManagementSocketClient.CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
+        {
+            var validationError = SharedClient.CancelFuturesOrderOptions.ValidateRequest(request, this);
+            if (validationError != null)
+                return QueryResult.Fail<SharedId>(Exchange, validationError);
+
+            if (!long.TryParse(request.OrderId, out var orderId))
+                return QueryResult.Fail<SharedId>(Exchange, ArgumentError.Invalid(nameof(CancelOrderRequest.OrderId), "Invalid order id"));
+
+            var order = await Trading.CancelOrderAsync(
+                request.Symbol!.GetSymbol(FormatSymbol),
+                orderId,
+                vaultAddress: request.GetParamValue<string?>(Exchange, "vaultAddress"),
+                ct: ct).ConfigureAwait(false);
+            if (!order.Success)
+                return QueryResult.Fail<SharedId>(order);
+
+            return QueryResult.Ok(order, new SharedId(request.OrderId));
+
+        }
+
+        private Enums.TimeInForce? GetTimeInForce(SharedTimeInForce? tif, SharedOrderType type)
+        {
+            if (tif == SharedTimeInForce.ImmediateOrCancel) return Enums.TimeInForce.ImmediateOrCancel;
+            if (tif == SharedTimeInForce.GoodTillCanceled) return Enums.TimeInForce.GoodTillCanceled;
+            if (type == SharedOrderType.LimitMaker) return Enums.TimeInForce.PostOnly;
+
+            return null;
+        }
         #endregion
     }
 }

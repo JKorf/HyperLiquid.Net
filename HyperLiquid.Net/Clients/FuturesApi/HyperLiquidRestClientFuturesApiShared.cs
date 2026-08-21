@@ -138,7 +138,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (!result.Success)
                 return HttpResult.Fail<SharedOrderBook>(result);
 
-            return HttpResult.Ok(result, new SharedOrderBook(result.Data.Levels.Asks, result.Data.Levels.Bids));
+            return HttpResult.Ok(result, new SharedOrderBook(SharedQuantityType.BaseAsset, result.Data.Levels.Asks, result.Data.Levels.Bids));
                                 
         }
 
@@ -224,9 +224,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, symbol),
                 symbol,
                 resultTicker.Data.Levels.Asks[0].Price,
-                resultTicker.Data.Levels.Asks[0].Quantity,
+                new SharedOrderQuantity(resultTicker.Data.Levels.Asks[0].Quantity),
                 resultTicker.Data.Levels.Bids[0].Price,
-                resultTicker.Data.Levels.Bids[0].Quantity));
+                new SharedOrderQuantity(resultTicker.Data.Levels.Bids[0].Quantity)));
                                 
         }
 
@@ -524,7 +524,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (ticker == null)
                 return HttpResult.Fail<SharedOpenInterest>(result, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Symbol not found")));
 
-            return HttpResult.Ok(result, new SharedOpenInterest(ticker.OpenInterest ?? 0));
+            return HttpResult.Ok(result, new SharedOpenInterest(new SharedOrderQuantity(ticker.OpenInterest)));
                                 
         }
 
@@ -737,7 +737,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 x.OrderId.ToString(),
                 x.TradeId.ToString(),
                 x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                x.Quantity,
+                new SharedOrderQuantity(x.Quantity),
                 x.Price,
                 x.Timestamp)
             {
@@ -784,7 +784,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                             x.OrderId.ToString(),
                             x.TradeId.ToString(),
                             x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                            x.Quantity,
+                            new SharedOrderQuantity(x.Quantity),
                             x.Price,
                             x.Timestamp)
                         {
@@ -847,7 +847,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 data = data.Where(x => x.Position.Symbol == request.Symbol.GetSymbol(FormatSymbol));
 
             var resultTypes = request.Symbol == null && request.TradingMode == null ? SupportedTradingModes : request.Symbol != null ? new[] { request.Symbol.TradingMode } : new[] { request.TradingMode!.Value };
-            return HttpResult.Ok(result, data.Select(x => new SharedPosition(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Position.Symbol), x.Position.Symbol, Math.Abs(x.Position.PositionQuantity ?? 0), null)
+            return HttpResult.Ok(result, data.Select(x => 
+            new SharedPosition(
+                ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, x.Position.Symbol), 
+                x.Position.Symbol, 
+                new SharedOrderQuantity(Math.Abs(x.Position.PositionQuantity ?? 0)),
+                null)
             {
                 UnrealizedPnl = x.Position.UnrealizedPnl,
                 LiquidationPrice = x.Position.LiquidationPrice == 0 ? null : x.Position.LiquidationPrice,
