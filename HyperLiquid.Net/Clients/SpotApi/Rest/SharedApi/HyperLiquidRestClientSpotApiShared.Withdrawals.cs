@@ -15,7 +15,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
 {
     internal partial class HyperLiquidRestClientSpotSharedApi
     {
-        #region Withdraw client
+        #region Withdraw
+
+        async Task<ICallResult<SharedId>> IWithdraw.WithdrawAsync(WithdrawRequest request, CancellationToken ct)
+            => await WithdrawAsync(request, ct).ConfigureAwait(false);
 
         public WithdrawOptions WithdrawOptions { get; } = new WithdrawOptions(_exchangeName);
         public async Task<HttpResult<SharedId>> WithdrawAsync(WithdrawRequest request, CancellationToken ct)

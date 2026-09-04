@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
 {
     internal partial class HyperLiquidSocketClientSpotSharedApi
     {
-        #region Ticker client
+        #region Subscribe Ticker
+
         async Task<WebSocketResult<UpdateSubscription>> ISubscribeTickerSocket.SubscribeToTickerUpdatesAsync(SubscribeTickerRequest request, Action<DataEvent<SharedTicker>> handler, CancellationToken ct)
             => await SubscribeToTickerUpdatesAsync(request, x => handler(x.ToType<SharedTicker>(x.Data)), ct).ConfigureAwait(false);
 
@@ -40,6 +41,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             return result;
         }
+
         #endregion
     }
 }

@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 {
     internal partial class HyperLiquidSocketClientFuturesSharedApi
     {
-        #region Futures Order client
+
+        #region Subscribe Futures Orders
 
         async Task<WebSocketResult<UpdateSubscription>> IFuturesOrderSocketClient.SubscribeToFuturesOrderUpdatesAsync(SubscribeFuturesOrderRequest request, Action<DataEvent<SharedFuturesOrder[]>> handler, CancellationToken ct)
             => await SubscribeToFuturesOrderUpdatesAsync(request, x => handler(x.ToType<SharedFuturesOrder[]>(x.Data)), ct).ConfigureAwait(false);
@@ -61,6 +62,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return result;
         }
 
+        #endregion
+
         private SharedOrderStatus ParseOrderStatus(Enums.OrderStatus status)
         {
             if (status == Enums.OrderStatus.Open) return SharedOrderStatus.Open;
@@ -96,9 +99,6 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             return SharedOrderStatus.Unknown;
         }
-        #endregion
-
-        #region Futures Order Client
 
         public SharedFeeDeductionType FuturesFeeDeductionType => SharedFeeDeductionType.AddToCost;
         public SharedFeeAssetType FuturesFeeAssetType => SharedFeeAssetType.QuoteAsset;
@@ -112,6 +112,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 SharedQuantityType.BaseAsset);
 
         public string GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
+        #region Place Futures Order
+
+        PlaceFuturesOrderOptions IPlaceFuturesOrder.PlaceFuturesOrderOptions => PlaceFuturesOrderOptions;
+        async Task<ICallResult<SharedId>> IPlaceFuturesOrder.PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
+            => await PlaceFuturesOrderAsync(request, ct).ConfigureAwait(false);
 
         public PlaceFuturesOrderSocketOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderSocketOptions(_exchangeName, false)
         {
@@ -149,6 +154,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         }
 
+        #endregion
+        #region Cancel Futures Order
+
+        CancelFuturesOrderOptions ICancelFuturesOrder.CancelFuturesOrderOptions => CancelFuturesOrderOptions;
+        async Task<ICallResult<SharedId>> ICancelFuturesOrder.CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
+            => await CancelFuturesOrderAsync(request, ct).ConfigureAwait(false);
+
         public CancelFuturesOrderSocketOptions CancelFuturesOrderOptions { get; } = new CancelFuturesOrderSocketOptions(_exchangeName, true)
         {
             OptionalExchangeParameters = new List<ParameterDescription>
@@ -177,6 +189,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         }
 
+        #endregion
+
         private Enums.TimeInForce? GetTimeInForce(SharedTimeInForce? tif, SharedOrderType type)
         {
             if (tif == SharedTimeInForce.ImmediateOrCancel) return Enums.TimeInForce.ImmediateOrCancel;
@@ -185,6 +199,5 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             return null;
         }
-        #endregion
     }
 }

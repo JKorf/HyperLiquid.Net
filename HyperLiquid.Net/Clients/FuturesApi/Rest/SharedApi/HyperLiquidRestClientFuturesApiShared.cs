@@ -28,6 +28,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public HyperLiquidRestClientFuturesSharedApi(HyperLiquidRestClientFuturesApi api)
            : base(
+                 SharedTransport.Rest,
                  api.Exchange,
                  [TradingMode.PerpetualLinear],
                  () => api.Authenticated,

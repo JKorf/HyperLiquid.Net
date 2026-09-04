@@ -15,7 +15,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 {
     internal partial class HyperLiquidRestClientFuturesSharedApi
     {
-        #region Funding Rate client
+        #region Get Funding Rate History
+
+        async Task<ICallResult<SharedFundingRate[]>> IGetFundingRateHistory.GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, PageRequest? pageToken, CancellationToken ct)
+            => await GetFundingRateHistoryAsync(request, pageToken, ct).ConfigureAwait(false);
+
         public GetFundingRateHistoryOptions GetFundingRateHistoryOptions { get; } = new GetFundingRateHistoryOptions(_exchangeName, true, false, true, 500, false);
 
         public async Task<HttpResult<SharedFundingRate[]>> GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, PageRequest? pageToken, CancellationToken ct)
@@ -45,6 +49,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return HttpResult.Ok(result, result.Data.Select(x => new SharedFundingRate(x.FundingRate, x.Timestamp)).ToArray()/*, nextToken*/);
                                 
         }
+
         #endregion
     }
 }

@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 {
     internal partial class HyperLiquidSocketClientFuturesSharedApi
     {
-        #region Kline client
+        #region Subscribe Klines
+
         public SubscribeKlineOptions SubscribeKlineOptions { get; } = new SubscribeKlineOptions(_exchangeName, false,
             SharedKlineInterval.OneMinute,
             SharedKlineInterval.ThreeMinutes,
@@ -56,6 +57,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
             return result;
         }
+
         #endregion
     }
 }

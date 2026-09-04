@@ -15,7 +15,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
 {
     internal partial class HyperLiquidRestClientSpotSharedApi
     {
-        #region Transfer client
+        #region Transfer
+
+        async Task<ICallResult<SharedId>> ITransfer.TransferAsync(TransferRequest request, CancellationToken ct)
+            => await TransferAsync(request, ct).ConfigureAwait(false);
 
         public TransferOptions TransferOptions { get; } = new TransferOptions(_exchangeName, [
             SharedAccountType.PerpetualLinearFutures,
@@ -52,13 +55,13 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 
         }
 
+        #endregion
+
         private TransferDirection? GetTransferType(TransferRequest request)
         {
             if (request.FromAccountType == SharedAccountType.Spot && request.ToAccountType.IsFuturesAccount()) return TransferDirection.SpotToFutures;
             if (request.FromAccountType.IsFuturesAccount() && request.ToAccountType == SharedAccountType.Spot) return TransferDirection.FuturesToSpot;
             return null;
         }
-
-        #endregion
     }
 }

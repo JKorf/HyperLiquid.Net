@@ -13,7 +13,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
 {
     internal partial class HyperLiquidSocketClientSpotSharedApi
     {
-        #region Spot Order client
+        #region Subscribe Spot Orders
+
         async Task<WebSocketResult<UpdateSubscription>> ISpotOrderSocketClient.SubscribeToSpotOrderUpdatesAsync(SubscribeSpotOrderRequest request, Action<DataEvent<SharedSpotOrder[]>> handler, CancellationToken ct)
             => await SubscribeToSpotOrderUpdatesAsync(request, x => handler(x.ToType<SharedSpotOrder[]>(x.Data)), ct).ConfigureAwait(false);
 
@@ -59,6 +60,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
             return result;
         }
 
+        #endregion
+
         private SharedOrderStatus ParseOrderStatus(Enums.OrderStatus status)
         {
             if (status == Enums.OrderStatus.Open) return SharedOrderStatus.Open;
@@ -94,9 +97,6 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             return SharedOrderStatus.Unknown;
         }
-        #endregion
-
-        #region Spot Order Management Client
 
         public SharedFeeDeductionType SpotFeeDeductionType => SharedFeeDeductionType.DeductFromOutput;
         public SharedFeeAssetType SpotFeeAssetType => SharedFeeAssetType.OutputAsset;
@@ -109,6 +109,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
                 SharedQuantityType.BaseAsset);
 
         public string GenerateClientOrderId() => ExchangeHelpers.RandomHexString(16)!.ToLowerInvariant();
+        #region Place Spot Order
+
+        PlaceSpotOrderOptions IPlaceSpotOrder.PlaceSpotOrderOptions => PlaceSpotOrderOptions;
+        async Task<ICallResult<SharedId>> IPlaceSpotOrder.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
+            => await PlaceSpotOrderAsync(request, ct).ConfigureAwait(false);
 
         public PlaceSpotOrderSocketOptions PlaceSpotOrderOptions { get; } = new PlaceSpotOrderSocketOptions(_exchangeName)
         {
@@ -146,6 +151,13 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         }
 
+        #endregion
+        #region Cancel Spot Order
+
+        CancelSpotOrderOptions ICancelSpotOrder.CancelSpotOrderOptions => CancelSpotOrderOptions;
+        async Task<ICallResult<SharedId>> ICancelSpotOrder.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
+            => await CancelSpotOrderAsync(request, ct).ConfigureAwait(false);
+
         public CancelSpotOrderSocketOptions CancelSpotOrderOptions { get; } = new CancelSpotOrderSocketOptions(_exchangeName, true)
         {
             OptionalExchangeParameters = new List<ParameterDescription>
@@ -174,6 +186,8 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         }
 
+        #endregion
+
         private Enums.TimeInForce? GetTimeInForce(SharedTimeInForce? tif, SharedOrderType type)
         {
             if (tif == SharedTimeInForce.ImmediateOrCancel) return Enums.TimeInForce.ImmediateOrCancel;
@@ -182,6 +196,5 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
             return null;
         }
-        #endregion
     }
 }

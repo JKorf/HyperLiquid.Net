@@ -15,7 +15,11 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 {
     internal partial class HyperLiquidRestClientFuturesSharedApi
     {
-        #region Tp/SL Client
+        #region Set Futures Tp Sl
+
+        async Task<ICallResult<SharedId>> ISetFuturesTpSl.SetFuturesTpSlAsync(SetTpSlRequest request, CancellationToken ct)
+            => await SetFuturesTpSlAsync(request, ct).ConfigureAwait(false);
+
         public SetFuturesTpSlOptions SetFuturesTpSlOptions { get; } = new SetFuturesTpSlOptions(_exchangeName, true)
         {
             RequestNotes = "API doesn't return an id for trigger orders",
@@ -50,6 +54,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             return HttpResult.Ok(result, new SharedId(result.Data.OrderId.ToString()));
                                 
         }
+
+        #endregion
+        #region Cancel Futures Tp Sl
+
+        async Task<ICallResult<bool>> ICancelFuturesTpSl.CancelFuturesTpSlAsync(CancelTpSlRequest request, CancellationToken ct)
+            => await CancelFuturesTpSlAsync(request, ct).ConfigureAwait(false);
 
         public CancelFuturesTpSlOptions CancelFuturesTpSlOptions { get; } = new CancelFuturesTpSlOptions(_exchangeName, true)
         {
