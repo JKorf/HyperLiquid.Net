@@ -120,14 +120,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public PlaceFuturesOrderSocketOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderSocketOptions(_exchangeName, false)
         {
-            RequiredRequestParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
-            },
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
-            }
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
+            ],
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to place the order on behalf of", "0x123...")
+            ]
         };
         public async Task<QueryResult<SharedId>> PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
         {
@@ -163,10 +161,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public CancelFuturesOrderSocketOptions CancelFuturesOrderOptions { get; } = new CancelFuturesOrderSocketOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to cancel the order on behalf of", "0x123...")
+            ]
         };
         public async Task<QueryResult<SharedId>> CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
         {

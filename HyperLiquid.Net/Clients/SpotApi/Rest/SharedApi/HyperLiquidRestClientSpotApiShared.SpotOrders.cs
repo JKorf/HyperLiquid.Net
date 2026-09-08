@@ -34,14 +34,12 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public PlaceSpotOrderOptions PlaceSpotOrderOptions { get; } = new PlaceSpotOrderOptions(_exchangeName)
         {
-            RequiredRequestParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
-            },
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
-            }
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
+            ],
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to use for the order", "0x123...")
+            ]
         };
 
         public async Task<HttpResult<SharedId>> PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
@@ -318,10 +316,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public CancelSpotOrderOptions CancelSpotOrderOptions { get; } = new CancelSpotOrderOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to use for the order", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
         {
@@ -451,10 +448,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public CancelSpotOrderByClientOrderIdOptions CancelSpotOrderByClientOrderIdOptions { get; } = new CancelSpotOrderByClientOrderIdOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to use for the order", "0x123...")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to use for the order", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
         {

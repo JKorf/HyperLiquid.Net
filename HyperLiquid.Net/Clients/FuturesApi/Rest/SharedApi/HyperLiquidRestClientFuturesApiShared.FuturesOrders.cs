@@ -35,14 +35,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public PlaceFuturesOrderOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderOptions(_exchangeName, false)
         {
-            RequiredRequestParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription(nameof(PlaceSpotOrderRequest.Price), typeof(decimal), "Price for the order. For market orders this should be the current symbol price", 21.5m)
-            },
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
-            }
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
+            ],
+
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to place the order on behalf of", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
         {
@@ -119,10 +118,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetOpenFuturesOrdersOptions GetOpenFuturesOrdersOptions { get; } = new GetOpenFuturesOrdersOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("dex", typeof(string), "DEX to retrieve open orders for", "xyz")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("dex", "DEX to retrieve open orders for", "xyz")
+            ]
         };
         public async Task<HttpResult<SharedFuturesOrder[]>> GetOpenFuturesOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
         {
@@ -326,10 +324,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public CancelFuturesOrderOptions CancelFuturesOrderOptions { get; } = new CancelFuturesOrderOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to cancel the order on behalf of", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
         {
@@ -360,10 +357,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetPositionsOptions GetPositionsOptions { get; } = new GetPositionsOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("dex", typeof(string), "DEX to retrieve leverage for", "xyz")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("dex", "DEX to retrieve leverage for", "xyz")
+            ]
         };
         public async Task<HttpResult<SharedPosition[]>> GetPositionsAsync(GetPositionsRequest request, CancellationToken ct)
         {
@@ -401,24 +397,16 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #endregion
         #region Close Position
 
-        async Task<ICallResult<SharedId>> IClosePosition.ClosePositionAsync(ClosePositionRequest request, CancellationToken ct)
-            => await ClosePositionAsync(request, ct).ConfigureAwait(false);
-
         public ClosePositionOptions ClosePositionOptions { get; } = new ClosePositionOptions(_exchangeName, true)
         {
-            RequiredRequestParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription(nameof(ClosePositionRequest.PositionSide), typeof(SharedPositionSide), "The position side to close", SharedPositionSide.Long),
-                new ParameterDescription(nameof(ClosePositionRequest.Quantity), typeof(decimal), "Quantity of the position is required", 0.1m)
-            },
-            RequiredExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("Price", typeof(decimal), "The current price of the symbol. Required to calculate max slippage.", 21.5m)
-            },
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to place the order on behalf of", "0x123...")
-            }
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<ClosePositionRequest>.Required(x => x.PositionSide),
+                RequestParameterRuleOverride<ClosePositionRequest>.Required(x => x.Quantity)
+            ],
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Required("Price", "The current price of the symbol. Required to calculate max slippage.", 21.5m),
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to place the order on behalf of", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> ClosePositionAsync(ClosePositionRequest request, CancellationToken ct)
         {
@@ -551,10 +539,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public CancelFuturesOrderByClientOrderIdOptions CancelFuturesOrderByClientOrderIdOptions { get; } = new CancelFuturesOrderByClientOrderIdOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("vaultAddress", typeof(string), "Vault address to cancel the order on behalf of", "0x123...")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("vaultAddress", "Vault address to cancel the order on behalf of", "0x123...")
+            ]
         };
         public async Task<HttpResult<SharedId>> CancelFuturesOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
         {

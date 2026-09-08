@@ -25,10 +25,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetFuturesSymbolsOptions GetFuturesSymbolsOptions { get; } = new GetFuturesSymbolsOptions(_exchangeName, false)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("dex", typeof(string), "DEX to retrieve symbols for", "xyz")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("dex", "DEX to retrieve symbols for", "xyz")
+            ]
         };
 
         public async Task<HttpResult<SharedFuturesSymbol[]>> GetFuturesSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)

@@ -22,10 +22,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetBalancesOptions GetBalancesOptions { get; } = new GetBalancesOptions(_exchangeName, AccountTypeFilter.Futures)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("dex", typeof(string), "DEX to retrieve balances for", "xyz")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("dex", "DEX to retrieve balances for", "xyz")
+            ]
         };
 
         public async Task<HttpResult<SharedBalance[]>> GetBalancesAsync(GetBalancesRequest request, CancellationToken ct)

@@ -23,10 +23,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetLeverageOptions GetLeverageOptions { get; } = new GetLeverageOptions(_exchangeName, true)
         {
-            OptionalExchangeParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription("dex", typeof(string), "DEX to retrieve leverage for", "xyz")
-            }
+            ExchangeParameterRules = [
+                ExchangeParameterRule.Optional("dex", "DEX to retrieve leverage for", "xyz")
+            ]
         };
         public async Task<HttpResult<SharedLeverage>> GetLeverageAsync(GetLeverageRequest request, CancellationToken ct)
         {
@@ -55,10 +54,9 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public SetLeverageOptions SetLeverageOptions { get; } = new SetLeverageOptions(_exchangeName)
         {
-            RequiredRequestParameters = new List<ParameterDescription>
-            {
-                new ParameterDescription(nameof(SetLeverageRequest.MarginMode), typeof(SharedMarginMode), "Margin mode", SharedMarginMode.Isolated)
-            }
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<SetLeverageRequest>.Required(x => x.MarginMode)
+            ]
         };
         public async Task<HttpResult<SharedLeverage>> SetLeverageAsync(SetLeverageRequest request, CancellationToken ct)
         {
