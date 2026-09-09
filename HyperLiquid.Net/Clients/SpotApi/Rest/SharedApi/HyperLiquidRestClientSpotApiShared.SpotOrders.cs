@@ -113,40 +113,45 @@ namespace HyperLiquid.Net.Clients.SpotApi
         async Task<ICallResult<SharedSpotOrder[]>> IGetOpenSpotOrders.GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
             => await GetOpenSpotOrdersAsync(request, ct).ConfigureAwait(false);
 
-        public GetOpenSpotOrdersOptions GetOpenSpotOrdersOptions { get; } = new GetOpenSpotOrdersOptions(_exchangeName, true);
+        public GetOpenSpotOrdersOptions GetOpenSpotOrdersOptions { get; } = new GetOpenSpotOrdersOptions(_exchangeName, true)
+        {
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<GetOpenOrdersRequest>.NotSupported(x => x.Symbol),
+                ]
+        };
         public async Task<HttpResult<SharedSpotOrder[]>> GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
         {
             var validationError = GetOpenSpotOrdersOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedSpotOrder[]>(Exchange, validationError);
 
-                    var symbol = request.Symbol?.GetSymbol(FormatSymbol);
-                    var orders = await _api.Trading.GetOpenOrdersExtendedAsync(ct: ct).ConfigureAwait(false);
-                    if (!orders.Success)
-                        return HttpResult.Fail<SharedSpotOrder[]>(orders);
+            var symbol = request.Symbol?.GetSymbol(FormatSymbol);
+            var orders = await _api.Trading.GetOpenOrdersExtendedAsync(ct: ct).ConfigureAwait(false);
+            if (!orders.Success)
+                return HttpResult.Fail<SharedSpotOrder[]>(orders);
 
-                    var data = orders.Data.Where(x => x.SymbolType == Enums.SymbolType.Spot);
-                    if (symbol != null)
-                        data = data.Where(x => x.Symbol == symbol);
+            var data = orders.Data.Where(x => x.SymbolType == Enums.SymbolType.Spot);
+            if (symbol != null)
+                data = data.Where(x => x.Symbol == symbol);
 
-                    return HttpResult.Ok(orders, data.Select(x => new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, _api.EnvironmentName, null, x.Symbol),
-                        x.Symbol!,
-                        x.OrderId.ToString(),
-                        ParseOrderType(x.OrderType),
-                        x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
-                        SharedOrderStatus.Open,
-                        x.Timestamp)
-                    {
-                        TimeInForce = ParseTimeInForce(x.TimeInForce),
-                        ClientOrderId = x.ClientOrderId,
-                        OrderPrice = x.Price,
-                        OrderQuantity = new SharedOrderQuantity(x.Quantity),
-                        QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
-                        UpdateTime = x.Timestamp,
-                        TriggerPrice = x.TriggerPrice,
-                        IsTriggerOrder = x.TriggerPrice > 0
-                    }).ToArray());
+            return HttpResult.Ok(orders, data.Select(x => new SharedSpotOrder(
+                ExchangeSymbolCache.ParseSymbol(_topicId, _api.EnvironmentName, null, x.Symbol),
+                x.Symbol!,
+                x.OrderId.ToString(),
+                ParseOrderType(x.OrderType),
+                x.OrderSide == Enums.OrderSide.Buy ? SharedOrderSide.Buy : SharedOrderSide.Sell,
+                SharedOrderStatus.Open,
+                x.Timestamp)
+            {
+                TimeInForce = ParseTimeInForce(x.TimeInForce),
+                ClientOrderId = x.ClientOrderId,
+                OrderPrice = x.Price,
+                OrderQuantity = new SharedOrderQuantity(x.Quantity),
+                QuantityFilled = new SharedOrderQuantity(x.Quantity - x.QuantityRemaining),
+                UpdateTime = x.Timestamp,
+                TriggerPrice = x.TriggerPrice,
+                IsTriggerOrder = x.TriggerPrice > 0
+            }).ToArray());
                 
         }
 
@@ -158,7 +163,11 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public GetSpotClosedOrdersOptions GetClosedSpotOrdersOptions { get; } = new GetSpotClosedOrdersOptions(_exchangeName, true, true, false, 2000)
         {
-            RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 results are returned from the API"
+            RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 results are returned from the API",
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.StartTime),
+                RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.EndTime)
+            ]
         };
         public async Task<HttpResult<SharedSpotOrder[]>> GetClosedSpotOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
         {

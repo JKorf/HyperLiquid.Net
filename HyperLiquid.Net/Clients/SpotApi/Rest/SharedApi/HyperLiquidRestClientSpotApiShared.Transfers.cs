@@ -26,32 +26,38 @@ namespace HyperLiquid.Net.Clients.SpotApi
             SharedAccountType.DeliveryLinearFutures,
             SharedAccountType.DeliveryInverseFutures,
             SharedAccountType.Spot
-            ]);
+            ])
+        {
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<TransferRequest>.NotSupported(x => x.FromSymbol),
+                RequestParameterRuleOverride<TransferRequest>.NotSupported(x => x.ToSymbol),
+                ]
+        };
         public async Task<HttpResult<SharedId>> TransferAsync(TransferRequest request, CancellationToken ct)
         {
             var validationError = TransferOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-                    if (!request.Asset.Equals("USDC", StringComparison.InvariantCultureIgnoreCase)
-                        && !request.Asset.Equals("USD", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("Asset", "invalid asset, only USD is supported"));
-                    }
+            if (!request.Asset.Equals("USDC", StringComparison.InvariantCultureIgnoreCase)
+                && !request.Asset.Equals("USD", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("Asset", "invalid asset, only USD is supported"));
+            }
 
-                    var type = GetTransferType(request);
-                    if (type == null)
-                        return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("To/From AccountType", "invalid to/from account combination"));
+            var type = GetTransferType(request);
+            if (type == null)
+                return HttpResult.Fail<SharedId>(Exchange, ArgumentError.Invalid("To/From AccountType", "invalid to/from account combination"));
 
-                    // Get data
-                    var transfer = await _api.Account.TransferInternalAsync(
-                        type.Value,
-                        request.Quantity,
-                        ct: ct).ConfigureAwait(false);
-                    if (!transfer.Success)
-                        return HttpResult.Fail<SharedId>(transfer);
+            // Get data
+            var transfer = await _api.Account.TransferInternalAsync(
+                type.Value,
+                request.Quantity,
+                ct: ct).ConfigureAwait(false);
+            if (!transfer.Success)
+                return HttpResult.Fail<SharedId>(transfer);
 
-                    return HttpResult.Ok(transfer, new SharedId(""));
+            return HttpResult.Ok(transfer, new SharedId(""));
                 
         }
 

@@ -20,24 +20,29 @@ namespace HyperLiquid.Net.Clients.SpotApi
         async Task<ICallResult<SharedId>> IWithdraw.WithdrawAsync(WithdrawRequest request, CancellationToken ct)
             => await WithdrawAsync(request, ct).ConfigureAwait(false);
 
-        public WithdrawOptions WithdrawOptions { get; } = new WithdrawOptions(_exchangeName);
+        public WithdrawOptions WithdrawOptions { get; } = new WithdrawOptions(_exchangeName)
+        {
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<WithdrawRequest>.NotSupported(x => x.AddressTag),
+                RequestParameterRuleOverride<WithdrawRequest>.NotSupported(x => x.Network)
+                ]
+        };
         public async Task<HttpResult<SharedId>> WithdrawAsync(WithdrawRequest request, CancellationToken ct)
         {
             var validationError = WithdrawOptions.ValidateRequest(request, this);
             if (validationError != null)
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-                    // Get data
-                    var withdrawal = await _api.Account.TransferSpotAsync(
-                        request.Address,
-                        HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset),
-                        request.Quantity,
-                        ct: ct).ConfigureAwait(false);
-                    if (!withdrawal.Success)
-                        return HttpResult.Fail<SharedId>(withdrawal);
+            // Get data
+            var withdrawal = await _api.Account.TransferSpotAsync(
+                request.Address,
+                HyperLiquidExchange.AssetAliases.CommonToExchangeName(request.Asset),
+                request.Quantity,
+                ct: ct).ConfigureAwait(false);
+            if (!withdrawal.Success)
+                return HttpResult.Fail<SharedId>(withdrawal);
 
-                    return HttpResult.Ok(withdrawal, new SharedId(string.Empty));
-                
+            return HttpResult.Ok(withdrawal, new SharedId(string.Empty));
         }
 
         #endregion

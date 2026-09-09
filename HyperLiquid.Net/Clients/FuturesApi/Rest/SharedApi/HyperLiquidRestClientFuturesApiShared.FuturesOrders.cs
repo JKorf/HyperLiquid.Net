@@ -36,7 +36,12 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public PlaceFuturesOrderOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderOptions(_exchangeName, false)
         {
             ParameterRuleOverwrites = [
-                RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.Required(x => x.Price),
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.Leverage),
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.StopLossPrice),
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.TakeProfitPrice),
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.MarginMode),
+                RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.PositionSide),
             ],
 
             ExchangeParameterRules = [
@@ -120,7 +125,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         {
             ExchangeParameterRules = [
                 ExchangeParameterRule.Optional("dex", "DEX to retrieve open orders for", "xyz")
-            ]
+            ],
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<GetOpenOrdersRequest>.NotSupported(x => x.Symbol),
+                ]
         };
         public async Task<HttpResult<SharedFuturesOrder[]>> GetOpenFuturesOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
         {
@@ -175,7 +183,13 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         async Task<ICallResult<SharedFuturesOrder[]>> IGetClosedFuturesOrders.GetClosedFuturesOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
             => await GetClosedFuturesOrdersAsync(request, pageToken, ct).ConfigureAwait(false);
 
-        public GetFuturesClosedOrdersOptions GetClosedFuturesOrdersOptions { get; } = new GetFuturesClosedOrdersOptions(_exchangeName, true, true, false, 2000);
+        public GetFuturesClosedOrdersOptions GetClosedFuturesOrdersOptions { get; } = new GetFuturesClosedOrdersOptions(_exchangeName, true, true, false, 2000)
+        {
+            ParameterRuleOverwrites = [
+                RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.StartTime),
+                RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.EndTime)
+            ]
+        };
         public async Task<HttpResult<SharedFuturesOrder[]>> GetClosedFuturesOrdersAsync(GetClosedOrdersRequest request, PageRequest? pageToken, CancellationToken ct)
         {
             var validationError = GetClosedFuturesOrdersOptions.ValidateRequest(request, this);

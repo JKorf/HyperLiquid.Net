@@ -1,6 +1,7 @@
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Testing;
 using HyperLiquid.Net.Clients;
@@ -130,6 +131,38 @@ namespace HyperLiquid.Net.UnitTests
 
             Assert.That(missingOptions, Is.Empty);
             Assert.That(missingInterfaces, Is.Empty);
+        }
+
+        [Test]
+        public void TestSpotRestSharedApiDoesntHaveUnsupportedCapabilities()
+        {
+            var unsupported = TestHelpers.ValidateUnsupportedCapabilities(new HyperLiquidRestClient().SpotApi.SharedApi);
+
+            Assert.That(unsupported, Is.Empty);
+        }
+
+        [Test]
+        public void TestSpotSocketSharedApiDoesntHaveUnsupportedCapabilities()
+        {
+            var unsupported = TestHelpers.ValidateUnsupportedCapabilities(new HyperLiquidSocketClient().SpotApi.SharedApi);
+
+            Assert.That(unsupported, Is.Empty);
+        }
+
+        [Test]
+        public void TestFuturesRestSharedApiDoesntHaveUnsupportedCapabilities()
+        {
+            var unsupported = TestHelpers.ValidateUnsupportedCapabilities(new HyperLiquidRestClient().FuturesApi.SharedApi);
+
+            Assert.That(unsupported, Is.Empty);
+        }
+
+        [Test]
+        public void TestFuturesSocketSharedApiDoesntHaveUnsupportedCapabilities()
+        {
+            var unsupported = TestHelpers.ValidateUnsupportedCapabilities(new HyperLiquidSocketClient().FuturesApi.SharedApi);
+
+            Assert.That(unsupported, Is.Empty);
         }
     }
 }
