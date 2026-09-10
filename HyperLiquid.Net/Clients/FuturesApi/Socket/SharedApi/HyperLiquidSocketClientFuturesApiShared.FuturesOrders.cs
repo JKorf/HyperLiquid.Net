@@ -120,7 +120,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public PlaceFuturesOrderSocketOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderSocketOptions(_exchangeName, false)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
             ],
             ExchangeParameterRules = [

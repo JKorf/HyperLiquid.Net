@@ -34,7 +34,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public PlaceSpotOrderOptions PlaceSpotOrderOptions { get; } = new PlaceSpotOrderOptions(_exchangeName)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
             ],
             ExchangeParameterRules = [
@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public GetOpenSpotOrdersOptions GetOpenSpotOrdersOptions { get; } = new GetOpenSpotOrdersOptions(_exchangeName, true)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<GetOpenOrdersRequest>.NotSupported(x => x.Symbol),
                 ]
         };
@@ -164,7 +164,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         public GetSpotClosedOrdersOptions GetClosedSpotOrdersOptions { get; } = new GetSpotClosedOrdersOptions(_exchangeName, true, true, false, 2000)
         {
             RequestNotes = "API request doesn't allow filtering, so filtering is done client side. This might result in missing historical data as only up to 2000 results are returned from the API",
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.StartTime),
                 RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.EndTime)
             ]

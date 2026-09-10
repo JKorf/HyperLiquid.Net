@@ -117,7 +117,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
 
         public PlaceSpotOrderSocketOptions PlaceSpotOrderOptions { get; } = new PlaceSpotOrderSocketOptions(_exchangeName)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<PlaceSpotOrderRequest>.Required(x => x.Price)
             ],
             ExchangeParameterRules = [

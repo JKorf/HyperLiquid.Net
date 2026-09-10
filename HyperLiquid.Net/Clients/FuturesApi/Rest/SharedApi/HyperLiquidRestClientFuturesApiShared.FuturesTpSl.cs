@@ -23,7 +23,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public SetFuturesTpSlOptions SetFuturesTpSlOptions { get; } = new SetFuturesTpSlOptions(_exchangeName, true)
         {
             RequestNotes = "API doesn't return an id for trigger orders",
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<SetTpSlRequest>.Required(x => x.Quantity)
             ]
         };
@@ -62,7 +62,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public CancelFuturesTpSlOptions CancelFuturesTpSlOptions { get; } = new CancelFuturesTpSlOptions(_exchangeName, true)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<CancelTpSlRequest>.Required(x => x.OrderId)
             ]
         };

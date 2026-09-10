@@ -35,7 +35,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public PlaceFuturesOrderOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderOptions(_exchangeName, false)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<PlaceFuturesOrderRequest>.Required(x => x.Price),
                 RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.Leverage),
                 RequestParameterRuleOverride<PlaceFuturesOrderRequest>.NotSupported(x => x.StopLossPrice),
@@ -126,7 +126,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             ExchangeParameterRules = [
                 ExchangeParameterRule.Optional("dex", "DEX to retrieve open orders for", "xyz")
             ],
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<GetOpenOrdersRequest>.NotSupported(x => x.Symbol),
                 ]
         };
@@ -185,7 +185,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public GetFuturesClosedOrdersOptions GetClosedFuturesOrdersOptions { get; } = new GetFuturesClosedOrdersOptions(_exchangeName, true, true, false, 2000)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.StartTime),
                 RequestParameterRuleOverride<GetClosedOrdersRequest>.NotSupported(x => x.EndTime)
             ]
@@ -413,7 +413,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
 
         public ClosePositionOptions ClosePositionOptions { get; } = new ClosePositionOptions(_exchangeName, true)
         {
-            ParameterRuleOverwrites = [
+            ParameterRuleOverrides = [
                 RequestParameterRuleOverride<ClosePositionRequest>.Required(x => x.PositionSide),
                 RequestParameterRuleOverride<ClosePositionRequest>.Required(x => x.Quantity)
             ],
