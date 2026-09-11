@@ -58,8 +58,9 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Socket.Environment = HyperLiquidEnvironment.GetEnvironmentByName(socketEnvName) ?? options.Socket.Environment!;
             options.Socket.ApiCredentials = options.Socket.ApiCredentials ?? options.ApiCredentials;
 
-            services.AddSingleton(x => Options.Options.Create(options.Rest));
-            services.AddSingleton(x => Options.Options.Create(options.Socket));
+            services.AddSingleton(Options.Options.Create(options.Rest));
+            services.AddSingleton(Options.Options.Create(options.Socket));
+            services.AddSingleton(Options.Options.Create(options));
 
             return AddHyperLiquidCore(services, options.SocketClientLifeTime);
         }
@@ -87,8 +88,9 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Socket.Environment = options.Socket.Environment ?? options.Environment ?? HyperLiquidEnvironment.Live;
             options.Socket.ApiCredentials = options.Socket.ApiCredentials ?? options.ApiCredentials;
 
-            services.AddSingleton(x => Options.Options.Create(options.Rest));
-            services.AddSingleton(x => Options.Options.Create(options.Socket));
+            services.AddSingleton(Options.Options.Create(options.Rest));
+            services.AddSingleton(Options.Options.Create(options.Socket));
+            services.AddSingleton(Options.Options.Create(options));
 
             return AddHyperLiquidCore(services, options.SocketClientLifeTime);
         }
@@ -124,6 +126,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidRestClient>().FuturesApi.SharedApi);
             services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidSocketClient>().SpotApi.SharedApi);
             services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidSocketClient>().FuturesApi.SharedApi);
+
+            services.RegisterSharedApiClientCapabilities<IHyperLiquidSharedApiClient>();
 
             services.RegisterSharedRestInterfaces(x => x.GetRequiredService<IHyperLiquidRestClient>().SpotApi.SharedClient);
             services.RegisterSharedRestInterfaces(x => x.GetRequiredService<IHyperLiquidRestClient>().FuturesApi.SharedClient);

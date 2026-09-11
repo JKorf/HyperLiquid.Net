@@ -1,3 +1,4 @@
+using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Interfaces.Clients.FuturesApi;
 using HyperLiquid.Net.Interfaces.Clients.SpotApi;
 
@@ -6,7 +7,7 @@ namespace HyperLiquid.Net.Interfaces.Clients
     /// <summary>
     /// Client for the shared REST and WebSocket API implementations of HyperLiquid
     /// </summary>
-    public interface IHyperLiquidSharedApiClient
+    public interface IHyperLiquidSharedApiClient : ISharedApiClientBase
     {
         /// <summary>
         /// Spot REST shared API implementations
