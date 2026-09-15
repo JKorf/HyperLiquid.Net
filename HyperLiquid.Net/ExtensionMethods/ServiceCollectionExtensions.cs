@@ -1,18 +1,19 @@
 using CryptoExchange.Net;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Net.Http;
+using CryptoExchange.Net.Interfaces.Clients;
+using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Interfaces;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.SymbolOrderBooks;
-using CryptoExchange.Net.Interfaces.Clients;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Net.Http;
 using System.Threading;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -120,19 +121,19 @@ namespace Microsoft.Extensions.DependencyInjection
                 x.GetRequiredService<IOptions<HyperLiquidRestOptions>>(),
                 x.GetRequiredService<IOptions<HyperLiquidSocketOptions>>()));
 
-            services.AddTransient<IHyperLiquidSharedApiClient, HyperLiquidSharedApiClient>();
-
-            services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidRestClient>().SpotApi.SharedApi);
-            services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidRestClient>().FuturesApi.SharedApi);
-            services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidSocketClient>().SpotApi.SharedApi);
-            services.RegisterSharedApi(x => x.GetRequiredService<IHyperLiquidSocketClient>().FuturesApi.SharedApi);
-
-            services.RegisterSharedApiClientCapabilities<IHyperLiquidSharedApiClient>();
-
             services.RegisterSharedRestInterfaces(x => x.GetRequiredService<IHyperLiquidRestClient>().SpotApi.SharedClient);
             services.RegisterSharedRestInterfaces(x => x.GetRequiredService<IHyperLiquidRestClient>().FuturesApi.SharedClient);
             services.RegisterSharedSocketInterfaces(x => x.GetRequiredService<IHyperLiquidSocketClient>().SpotApi.SharedClient);
             services.RegisterSharedSocketInterfaces(x => x.GetRequiredService<IHyperLiquidSocketClient>().FuturesApi.SharedClient);
+
+            services.RegisterSharedApiClient<
+                IHyperLiquidSharedApiClient,
+                HyperLiquidSharedApiClient>(sharedApis => sharedApis
+                    .Add(client => client.SpotRest)
+                    .Add(client => client.SpotSocket)
+                    .Add(client => client.FuturesRest)
+                    .Add(client => client.FuturesSocket)
+                    );
 
             return services;
         }
