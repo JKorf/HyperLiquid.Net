@@ -1,4 +1,5 @@
 ﻿using CryptoExchange.Net;
+using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Errors;
 using HyperLiquid.Net.Clients;
@@ -35,7 +36,45 @@ namespace HyperLiquid.Net.Utils
         private static readonly SemaphoreSlim _semaphoreSpot = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim _semaphoreFutures = new SemaphoreSlim(1, 1);
         internal static readonly ConcurrentDictionary<string, BuilderFeeStatus> _builderFeeStatus = new ConcurrentDictionary<string, BuilderFeeStatus>();
-        
+
+        /// <summary>
+        /// Builds the agentName field for an approveAgent action, which is where an API wallet's expiration is
+        /// carried: "A custom expiration can be set by appending valid_until {timestamp} after the name."
+        ///
+        /// The expiration is part of the name rather than a field of its own, so it has to be composed before the
+        /// action is signed - the name is in the EIP-712 type list, and appending to it afterwards would sign one
+        /// string and send another.
+        ///
+        /// Shared by the REST and socket clients so the two cannot drift: the same account sees agents approved
+        /// through either, and an expiry that only one of them applied would look like the exchange behaving
+        /// inconsistently.
+        /// </summary>
+        /// <param name="agentName">The name, or null for the unnamed API wallet.</param>
+        /// <param name="validUntil">
+        /// When the wallet stops working, at most 180 days ahead. Null leaves the expiration out entirely, which
+        /// gives whatever default HyperLiquid applies rather than no expiry at all.
+        /// </param>
+        internal static string BuildAgentName(string? agentName, DateTime? validUntil)
+        {
+            if (validUntil == null)
+                return agentName ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(agentName))
+            {
+                //an expiration is documented as going AFTER the name, and there is no documented way to give one
+                //for the unnamed wallet. Sending "valid_until 123" on its own would more likely be read as the
+                //name than as an expiry, which is a silent wrong result rather than a rejected request.
+                throw new ArgumentException(
+                    "An expiration can only be set on a named API wallet, because HyperLiquid carries it as a suffix on the name.",
+                    nameof(agentName));
+            }
+
+            var timestamp = DateTimeConverter.ConvertToMilliseconds(validUntil.Value)!.Value;
+
+            return agentName + " valid_until " + timestamp.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+
         internal static async Task<ICallResult> CheckBuilderFeeAsync(HyperLiquidSocketClient client)
         {
             if (!client.SpotApi.Authenticated)

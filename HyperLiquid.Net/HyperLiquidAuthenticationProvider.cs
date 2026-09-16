@@ -160,6 +160,21 @@ namespace HyperLiquid.Net
             return signature;
         }
 
+        /// <summary>
+        /// Fields whose EIP-712 type is address rather than the type inferred from the CLR value.
+        ///
+        /// Hyperliquid is not consistent about this: destination on a withdraw is typed string while agentAddress
+        /// on an approveAgent is typed address, even though both carry an 0x address. The type name is part of the
+        /// struct hash, so getting it wrong produces a perfectly valid signature over the wrong hash - which the
+        /// exchange rejects without saying why.
+        /// </summary>
+        private static readonly HashSet<string> _addressTypedFields = new HashSet<string>
+        {
+            "builder",
+            "user",
+            "agentAddress"
+        };
+
         private List<(string Name, string Type, object Value)> GetMessageFields(Dictionary<string, object> parameters)
         {
             var result = new List<(string, string, object)>();
@@ -168,7 +183,7 @@ namespace HyperLiquid.Net
             {
                 result.Add(
                     (parameter.Key,
-                    ((parameter.Key == "builder" || parameter.Key == "user") ? "address" : _typeMapping[parameter.Value.GetType()]),
+                    _addressTypedFields.Contains(parameter.Key) ? "address" : _typeMapping[parameter.Value.GetType()],
                     parameter.Key == "type" ? ((string)parameter.Value).Substring(0, 1).ToUpper() + ((string)parameter.Value).Substring(1) : parameter.Value));
             }
 
