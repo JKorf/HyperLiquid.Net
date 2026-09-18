@@ -17,7 +17,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     {
         #region Get Funding Rate History
 
-        async Task<ICallResult<SharedFundingRate[]>> IGetFundingRateHistory.GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, PageRequest? pageToken, CancellationToken ct)
+        async Task<IExchangeCallResult<SharedFundingRate[]>> IGetFundingRateHistory.GetFundingRateHistoryAsync(GetFundingRateHistoryRequest request, PageRequest? pageToken, CancellationToken ct)
             => await GetFundingRateHistoryAsync(request, pageToken, ct).ConfigureAwait(false);
 
         public GetFundingRateHistoryOptions GetFundingRateHistoryOptions { get; } = new GetFundingRateHistoryOptions(_exchangeName, true, false, true, 500, false);

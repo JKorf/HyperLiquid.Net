@@ -115,7 +115,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Place Futures Order
 
         PlaceFuturesOrderOptions IPlaceFuturesOrder.PlaceFuturesOrderOptions => PlaceFuturesOrderOptions;
-        async Task<ICallResult<SharedId>> IPlaceFuturesOrder.PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
+        async Task<IExchangeCallResult<SharedId>> IPlaceFuturesOrder.PlaceFuturesOrderAsync(PlaceFuturesOrderRequest request, CancellationToken ct)
             => await PlaceFuturesOrderAsync(request, ct).ConfigureAwait(false);
 
         public PlaceFuturesOrderSocketOptions PlaceFuturesOrderOptions { get; } = new PlaceFuturesOrderSocketOptions(_exchangeName, false)
@@ -156,7 +156,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         #region Cancel Futures Order
 
         CancelFuturesOrderOptions ICancelFuturesOrder.CancelFuturesOrderOptions => CancelFuturesOrderOptions;
-        async Task<ICallResult<SharedId>> ICancelFuturesOrder.CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
+        async Task<IExchangeCallResult<SharedId>> ICancelFuturesOrder.CancelFuturesOrderAsync(CancelOrderRequest request, CancellationToken ct)
             => await CancelFuturesOrderAsync(request, ct).ConfigureAwait(false);
 
         public CancelFuturesOrderSocketOptions CancelFuturesOrderOptions { get; } = new CancelFuturesOrderSocketOptions(_exchangeName, true)

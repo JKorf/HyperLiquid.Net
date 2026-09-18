@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         public HyperLiquidSocketClientFuturesSharedApi(HyperLiquidSocketClientFuturesApi api)
             : base(
                   SharedTransport.Socket,
-                  api.Exchange,
+                  api,
                   [TradingMode.PerpetualLinear],
                   () => api.Authenticated,
                   api.FormatSymbol)

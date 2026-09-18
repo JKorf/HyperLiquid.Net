@@ -26,7 +26,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         public HyperLiquidSocketClientSpotSharedApi(HyperLiquidSocketClientSpotApi api)
             : base(
                   SharedTransport.Socket,
-                  api.Exchange,
+                  api,
                   [TradingMode.Spot],
                   () => api.Authenticated,
                   api.FormatSymbol)

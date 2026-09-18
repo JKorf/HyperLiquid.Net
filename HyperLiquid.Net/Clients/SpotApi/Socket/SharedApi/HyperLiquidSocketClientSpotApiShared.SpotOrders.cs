@@ -112,7 +112,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Place Spot Order
 
         PlaceSpotOrderOptions IPlaceSpotOrder.PlaceSpotOrderOptions => PlaceSpotOrderOptions;
-        async Task<ICallResult<SharedId>> IPlaceSpotOrder.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
+        async Task<IExchangeCallResult<SharedId>> IPlaceSpotOrder.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
             => await PlaceSpotOrderAsync(request, ct).ConfigureAwait(false);
 
         public PlaceSpotOrderSocketOptions PlaceSpotOrderOptions { get; } = new PlaceSpotOrderSocketOptions(_exchangeName)
@@ -153,7 +153,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         #region Cancel Spot Order
 
         CancelSpotOrderOptions ICancelSpotOrder.CancelSpotOrderOptions => CancelSpotOrderOptions;
-        async Task<ICallResult<SharedId>> ICancelSpotOrder.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
+        async Task<IExchangeCallResult<SharedId>> ICancelSpotOrder.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
             => await CancelSpotOrderAsync(request, ct).ConfigureAwait(false);
 
         public CancelSpotOrderSocketOptions CancelSpotOrderOptions { get; } = new CancelSpotOrderSocketOptions(_exchangeName, true)
