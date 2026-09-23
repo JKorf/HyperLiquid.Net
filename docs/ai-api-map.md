@@ -150,24 +150,24 @@ Use SharedApis for exchange-agnostic code across HyperLiquid, Binance, OKX, Bybi
 
 | User intent | HyperLiquid.Net member or interface |
 |---|---|
-| Shared spot REST client | `new HyperLiquidRestClient().SpotApi.SharedClient` |
-| Shared futures REST client | `new HyperLiquidRestClient().FuturesApi.SharedClient` |
-| Shared spot socket client | `new HyperLiquidSocketClient().SpotApi.SharedClient` |
-| Shared futures socket client | `new HyperLiquidSocketClient().FuturesApi.SharedClient` |
-| Discover shared capabilities | `client.SpotApi.SharedClient.Discover()` |
-| Get shared spot symbols with catalog, filters, and asset classifications | `ISpotSymbolRestClient.GetSpotSymbolsAsync(new GetSymbolsRequest(...))` |
-| Get shared futures symbols with catalog, filters, and asset classifications | `IFuturesSymbolRestClient.GetFuturesSymbolsAsync(new GetSymbolsRequest(...))` |
-| Shared spot ticker REST | `ISpotTickerRestClient.GetSpotTickerAsync(new GetTickerRequest(symbol))` |
-| Shared futures ticker REST | `IFuturesTickerRestClient.GetFuturesTickerAsync(new GetTickerRequest(symbol))` |
-| Shared spot order REST | `ISpotOrderRestClient.PlaceSpotOrderAsync(...)` |
-| Shared futures order REST | `IFuturesOrderRestClient.PlaceFuturesOrderAsync(...)` |
-| Place/cancel shared spot order over WebSocket | `ISpotOrderManagementSocketClient.PlaceSpotOrderAsync(...)` / `CancelSpotOrderAsync(...)` |
-| Place/cancel shared futures order over WebSocket | `IFuturesOrderManagementSocketClient.PlaceFuturesOrderAsync(...)` / `CancelFuturesOrderAsync(...)` |
-| Shared balances REST | `IBalanceRestClient.GetBalancesAsync(new GetBalancesRequest(...))` |
-| Shared position REST | `IPositionRestClient.GetPositionsAsync(...)` |
-| Shared ticker socket | `ITickerSocketClient.SubscribeToTickerUpdatesAsync(...)` |
-| Shared order book socket | `IOrderBookSocketClient.SubscribeToOrderBookUpdatesAsync(...)` |
-| Shared trade socket | `ITradeSocketClient.SubscribeToTradeUpdatesAsync(...)` |
+| Shared spot REST client | `new HyperLiquidRestClient().SpotApi.SharedApi` |
+| Shared futures REST client | `new HyperLiquidRestClient().FuturesApi.SharedApi` |
+| Shared spot socket client | `new HyperLiquidSocketClient().SpotApi.SharedApi` |
+| Shared futures socket client | `new HyperLiquidSocketClient().FuturesApi.SharedApi` |
+| Resolve a runtime-selected Shared API capability | `IHyperLiquidSharedApiClient.GetCapability(...)` |
+| Get shared spot symbols with catalog, filters, and asset classifications | `IGetSpotSymbolsRest.GetSpotSymbolsAsync(new GetSymbolsRequest(...))` |
+| Get shared futures symbols with catalog, filters, and asset classifications | `IGetFuturesSymbolsRest.GetFuturesSymbolsAsync(new GetSymbolsRequest(...))` |
+| Shared spot ticker REST | `IGetTickerRest.GetTickerAsync(new GetTickerRequest(symbol))` |
+| Shared futures ticker REST | `IGetTickerRest.GetTickerAsync(new GetTickerRequest(symbol))` |
+| Shared spot order REST | `IPlaceSpotOrderRest.PlaceSpotOrderAsync(...)` |
+| Shared futures order REST | `IPlaceFuturesOrderRest.PlaceFuturesOrderAsync(...)` |
+| Place/cancel shared spot order over WebSocket | `IPlaceSpotOrderSocket.PlaceSpotOrderAsync(...)` / `ICancelSpotOrderSocket.CancelSpotOrderAsync(...)` |
+| Place/cancel shared futures order over WebSocket | `IPlaceFuturesOrderSocket.PlaceFuturesOrderAsync(...)` / `ICancelFuturesOrderSocket.CancelFuturesOrderAsync(...)` |
+| Shared balances REST | `IGetBalancesRest.GetBalancesAsync(new GetBalancesRequest(...))` |
+| Shared position REST | `IGetPositionsRest.GetPositionsAsync(...)` |
+| Shared ticker socket | `ISubscribeTickerSocket.SubscribeToTickerUpdatesAsync(...)` |
+| Shared order book socket | `ISubscribeOrderBookSocket.SubscribeToOrderBookUpdatesAsync(...)` |
+| Shared trade socket | `ISubscribeTradesSocket.SubscribeToTradeUpdatesAsync(...)` |
 
 Shared REST methods return `HttpResult<T>` / `HttpResult`; shared socket subscriptions return `WebSocketResult<UpdateSubscription>`; shared socket order requests return `QueryResult<SharedId>`; shared symbol/cache helpers such as `SupportsSpotSymbolAsync` and `SupportsFuturesSymbolAsync` can return `ExchangeCallResult<T>`.
 
@@ -197,5 +197,5 @@ For shared socket subscriptions, keep the concrete socket client and unsubscribe
 | Market order without price | Pass `price` to `PlaceOrderAsync` |
 | Separate margin client | `FuturesApi.Trading.SetLeverageAsync` / `UpdateIsolatedMarginAsync` |
 | Separate staking client | `SpotApi.Account.GetStaking*` and staking action methods |
-| `ITickerSocketClient.UnsubscribeAsync(...)` | Keep the concrete socket client and call `socketClient.UnsubscribeAsync(subscription.Data)` |
+| Unsubscribe from a shared subscription | Keep the concrete socket client and call `socketClient.UnsubscribeAsync(subscription.Data)` |
 | Invented `GetServerTimeAsync()` | Inspect interfaces; HyperLiquid.Net does not expose that method |

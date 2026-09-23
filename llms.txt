@@ -32,7 +32,7 @@ HyperLiquid.Net is the C# client for HyperLiquid in the CryptoExchange.Net ecosy
 - Use `reduceOnly: true` when closing futures exposure.
 - Store `UpdateSubscription` values and unsubscribe on shutdown.
 - Inspect `HyperLiquid.Net/Interfaces/Clients/**` before generating uncertain endpoint names.
-- For multi-exchange code, use `.SharedClient.Discover()` to inspect supported shared features.
+- Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
 
 ## Reference
 

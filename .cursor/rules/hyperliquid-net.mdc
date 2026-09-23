@@ -36,10 +36,10 @@ Console.WriteLine(prices.Data["HYPE/USDC"]);
 
 ## API surface
 
-- `restClient.SpotApi.{ExchangeData|Account|Trading|SharedClient}`
-- `restClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
-- `socketClient.SpotApi.{ExchangeData|Account|Trading|SharedClient}`
-- `socketClient.FuturesApi.{ExchangeData|Account|Trading|SharedClient}`
+- `restClient.SpotApi.{ExchangeData|Account|Trading|SharedApi}`
+- `restClient.FuturesApi.{ExchangeData|Account|Trading|SharedApi}`
+- `socketClient.SpotApi.{ExchangeData|Account|Trading|SharedApi}`
+- `socketClient.FuturesApi.{ExchangeData|Account|Trading|SharedApi}`
 
 Spot `ExchangeData` also includes HIP-4 outcome metadata via `GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, and `SubscribeToOutcomeInfoUpdatesAsync(...)`.
 
@@ -80,8 +80,8 @@ For exchange-agnostic code, use `CryptoExchange.Net.SharedApis`:
 ```csharp
 using CryptoExchange.Net.SharedApis;
 
-var shared = new HyperLiquidRestClient().SpotApi.SharedClient;
-var ticker = await shared.GetSpotTickerAsync(
+var shared = new HyperLiquidRestClient().SpotApi.SharedApi;
+var ticker = await shared.GetTickerAsync(
     new GetTickerRequest(new SharedSymbol(TradingMode.Spot, "HYPE", "USDC")));
 ```
 

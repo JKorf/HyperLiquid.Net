@@ -20,4 +20,34 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
         ITransferRestClient
     {
     }
+
+    /// <summary>
+    /// Shared API interface. Shared APIs provide a common,
+    /// exchange-independent contract for accessing functionality across different
+    /// exchange client libraries.
+    /// </summary>
+    public interface IHyperLiquidRestClientSpotSharedApi :
+        IGetBalancesRest,
+        IGetKlinesRest,
+        IGetOrderBookRest,
+        IGetTickerRest,
+        IGetAllTickersRest,
+        IGetSpotSymbolsRest,
+        IPlaceSpotOrderRest,
+        IGetSpotOrderRest,
+        IGetOpenSpotOrdersRest,
+        IGetClosedSpotOrdersRest,
+        IGetSpotOrderTradesRest,
+        IGetSpotUserTradeHistoryRest,
+        ICancelSpotOrderRest,
+        IGetAssetRest,
+        IGetAllAssetsRest,
+        IGetFeesRest,
+        IWithdrawRest,
+        IGetSpotOrderByClientOrderIdRest,
+        ICancelSpotOrderByClientOrderIdRest,
+        IGetBookTickerRest,
+        ITransferRest
+    {
+    }
 }

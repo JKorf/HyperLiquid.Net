@@ -15,6 +15,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
     /// </summary>
     internal partial class HyperLiquidSocketClientFuturesApi : HyperLiquidSocketClientApi, IHyperLiquidSocketClientFuturesApi
     {
+        private readonly HyperLiquidSocketClientFuturesSharedApi _sharedApi;
+
         public IHyperLiquidSocketClientFuturesApiAccount Account { get; }
         public IHyperLiquidSocketClientFuturesApiExchangeData ExchangeData { get; }
         public IHyperLiquidSocketClientFuturesApiTrading Trading { get; }
@@ -27,14 +29,17 @@ namespace HyperLiquid.Net.Clients.FuturesApi
         internal HyperLiquidSocketClientFuturesApi(ILoggerFactory? loggerFactory, HyperLiquidSocketClient baseClient, HyperLiquidSocketOptions options) :
             base(loggerFactory, baseClient, options, options.FuturesOptions)
         {
-
             Account = new HyperLiquidSocketClientFuturesApiAccount(_logger, this);
             ExchangeData = new HyperLiquidSocketClientFuturesApiExchangeData(_logger, this);
             Trading = new HyperLiquidSocketClientFuturesApiTrading(_logger, this);
+
+            _sharedApi = new HyperLiquidSocketClientFuturesSharedApi(this);
         }
         #endregion
 
         /// <inheritdoc />
-        public IHyperLiquidSocketClientFuturesApiShared SharedClient => this;
+        public IHyperLiquidSocketClientFuturesApiShared SharedClient => _sharedApi;
+        /// <inheritdoc />
+        public IHyperLiquidSocketClientFuturesSharedApi SharedApi => _sharedApi;
     }
 }

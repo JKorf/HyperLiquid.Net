@@ -1,4 +1,4 @@
-﻿using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Objects;
 using HyperLiquid.Net.Enums;
 using HyperLiquid.Net.Interfaces.Clients.BaseApi;
