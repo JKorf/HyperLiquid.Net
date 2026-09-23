@@ -10,6 +10,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
     /// </summary>
     internal partial class HyperLiquidSocketClientSpotApi : HyperLiquidSocketClientApi, IHyperLiquidSocketClientSpotApi
     {
+        private readonly HyperLiquidSocketClientSpotSharedApi _sharedApi;
         public IHyperLiquidSocketClientSpotApiAccount Account { get; }
         public IHyperLiquidSocketClientSpotApiExchangeData ExchangeData { get; }
         public IHyperLiquidSocketClientSpotApiTrading Trading { get; }
@@ -25,10 +26,14 @@ namespace HyperLiquid.Net.Clients.SpotApi
             Account = new HyperLiquidSocketClientSpotApiAccount(_logger, this);
             ExchangeData = new HyperLiquidSocketClientSpotApiExchangeData(_logger, this);
             Trading = new HyperLiquidSocketClientSpotApiTrading(_logger, this);
+
+            _sharedApi = new HyperLiquidSocketClientSpotSharedApi(this);
         }
         #endregion
 
         /// <inheritdoc />
-        public IHyperLiquidSocketClientSpotApiShared SharedClient => this;
+        public IHyperLiquidSocketClientSpotApiShared SharedClient => _sharedApi;
+        /// <inheritdoc />
+        public IHyperLiquidSocketClientSpotSharedApi SharedApi => _sharedApi;
     }
 }
