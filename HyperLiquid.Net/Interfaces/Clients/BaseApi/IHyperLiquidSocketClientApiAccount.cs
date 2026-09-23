@@ -115,6 +115,51 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
             CancellationToken ct = default);
 
         /// <summary>
+        /// Approve an API wallet (also called an agent wallet) to act on this account. The approving signature must
+        /// come from the account's master key. An unnamed agent replaces the previous unnamed one; a named agent is
+        /// kept separately, and the name may carry an expiry as "name valid_until &lt;timestamp&gt;".
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#approve-an-api-wallet" /><br />
+        /// Endpoint:<br />
+        /// POST /exchange (type: approveAgent)
+        /// </para>
+        /// </summary>
+        /// <param name="agentAddress">["<c>agentAddress</c>"] Address of the API wallet in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+        /// <param name="agentName">["<c>agentName</c>"] Optional name for the API wallet</param>
+        /// <param name="validUntil">
+        /// Optional expiration for the API wallet, at most 180 days ahead. Null leaves it out and takes whatever
+        /// default HyperLiquid applies, which is not the maximum. HyperLiquid has no field for this - it is sent
+        /// as a "valid_until {timestamp}" suffix on the name - so it requires <paramref name="agentName"/> and
+        /// does not apply to the unnamed API wallet.
+        /// </param>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult> ApproveAgentAsync(
+            string agentAddress,
+            string? agentName = null,
+            DateTime? validUntil = null,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Remove a previously approved API wallet (agent wallet) from this account.
+        /// <para>
+        /// Hyperliquid publishes no removal action - approveAgent is the only agent action in its API - so this
+        /// sends an approveAgent naming the agent with the zero address, which is what the Hyperliquid web
+        /// interface itself sends when Remove is pressed. Being undocumented, it is worth reading the agents back
+        /// with GetExtraAgentsAsync afterwards rather than relying on the reply.
+        /// </para>
+        /// <para>
+        /// Endpoint:<br />
+        /// POST /exchange (type: approveAgent, agentAddress: 0x0000000000000000000000000000000000000000)
+        /// </para>
+        /// </summary>
+        /// <param name="agentName">["<c>agentName</c>"] Name of the API wallet to remove, or null for the unnamed one</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult> RemoveAgentAsync(
+            string? agentName = null,
+            CancellationToken ct = default);
+
+        /// <summary>
         /// Transfer USD between Spot and Futures account
         /// <para>
         /// Docs:<br />

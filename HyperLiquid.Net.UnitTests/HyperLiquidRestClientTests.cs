@@ -12,7 +12,14 @@ using Nethereum.Signer.Crypto;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
+using HyperLiquid.Net.Clients;
+using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Converters.SystemTextJson;
+using Nethereum.Signer;
 using System.Net.Sockets;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Signer.Crypto;
+using HyperLiquid.Net.Objects;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -96,7 +103,7 @@ namespace HyperLiquid.Net.UnitTests
             //CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<HyperLiquidSocketClient>(
             //    ["IHyperLiquidSocketClientApiAccount", "IHyperLiquidSocketClientApiExchangeData", "IHyperLiquidSocketClientApiTrading"]);
         }
-
+		
         [Test]
         public void TestFuturesRestSharedApiDiscoveryMatchesAggregate()
         {

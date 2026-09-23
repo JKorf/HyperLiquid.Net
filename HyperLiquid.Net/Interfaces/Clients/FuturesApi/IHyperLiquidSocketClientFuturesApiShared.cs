@@ -18,24 +18,4 @@ namespace HyperLiquid.Net.Interfaces.Clients.FuturesApi
         IFuturesOrderManagementSocketClient
     {
     }
-
-    /// <summary>
-    /// Shared API interface. Shared APIs provide a common,
-    /// exchange-independent contract for accessing functionality across different
-    /// exchange client libraries.
-    /// </summary>
-    public interface IHyperLiquidSocketClientFuturesSharedApi :
-        ISubscribeTickerSocket,
-        ISubscribeTradesSocket,
-        ISubscribeKlinesSocket,
-        ISubscribeOrderBookSocket,
-        ISubscribeUserTradesSocket,
-        ISubscribeFuturesOrdersSocket,
-        ISubscribeBalancesSocket,
-        ISubscribePositionsSocket,
-        ISubscribeBookTickerSocket,
-        IPlaceFuturesOrderSocket,
-        ICancelFuturesOrderSocket
-    {
-    }
 }

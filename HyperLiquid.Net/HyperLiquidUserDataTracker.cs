@@ -18,17 +18,12 @@ namespace HyperLiquid.Net
             string? userIdentifier,
             SpotUserDataTrackerConfig? config) : base(
                 logger,
-                restClient.SpotApi.SharedApi,
-
-                restClient.SpotApi.SharedApi,
-                socketClient.SpotApi.SharedApi,
-
-                restClient.SpotApi.SharedApi,
-                restClient.SpotApi.SharedApi,
-                socketClient.SpotApi.SharedApi,
-
-                restClient.SpotApi.SharedApi,
-                socketClient.SpotApi.SharedApi,
+                restClient.SpotApi.SharedClient,
+                restClient.SpotApi.SharedClient,
+                socketClient.SpotApi.SharedClient,
+                restClient.SpotApi.SharedClient,
+                socketClient.SpotApi.SharedClient,
+                socketClient.SpotApi.SharedClient,
                 userIdentifier,
                 config ?? new SpotUserDataTrackerConfig())
         {
@@ -50,20 +45,13 @@ namespace HyperLiquid.Net
             IHyperLiquidSocketClient socketClient,
             string? userIdentifier,
             FuturesUserDataTrackerConfig? config) : base(logger,
-                restClient.FuturesApi.SharedApi,
-
-                restClient.FuturesApi.SharedApi,
-                socketClient.FuturesApi.SharedApi,
-
-                restClient.FuturesApi.SharedApi,
-                restClient.FuturesApi.SharedApi,
-                socketClient.FuturesApi.SharedApi,
-
-                restClient.FuturesApi.SharedApi,
-                socketClient.FuturesApi.SharedApi,
-
-                restClient.FuturesApi.SharedApi,
-                socketClient.FuturesApi.SharedApi,
+                restClient.FuturesApi.SharedClient,
+                restClient.FuturesApi.SharedClient,
+                socketClient.FuturesApi.SharedClient,
+                restClient.FuturesApi.SharedClient,
+                socketClient.FuturesApi.SharedClient,
+                socketClient.FuturesApi.SharedClient,
+                socketClient.FuturesApi.SharedClient,
                 userIdentifier,
                 config ?? new FuturesUserDataTrackerConfig())
         {
