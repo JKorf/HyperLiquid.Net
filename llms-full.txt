@@ -33,7 +33,7 @@ Primary documentation:
 - Do not invent endpoint names. If unsure, inspect `HyperLiquid.Net/Interfaces/Clients/**`.
 - Spot symbols are slash separated, for example `HYPE/USDC`; futures symbols are base asset only, for example `ETH`.
 - Market order examples still need a price argument because `PlaceOrderAsync` requires price for slippage calculation.
-- For multi-exchange code, use `CryptoExchange.Net.SharedApis` interfaces from each API's `.SharedClient` and call `.SharedClient.Discover()` to inspect supported features.Shared symbol clients expose catalogs and classified asset metadata, and their symbol-list requests honor filters.
+- Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
 
 ## Installation
 
@@ -192,12 +192,12 @@ HyperLiquidRestClient
     .ExchangeData
     .Account
     .Trading
-    .SharedClient
+    .SharedApi
   .FuturesApi
     .ExchangeData
     .Account
     .Trading
-    .SharedClient
+    .SharedApi
 ```
 
 WebSocket:
@@ -208,12 +208,12 @@ HyperLiquidSocketClient
     .ExchangeData
     .Account
     .Trading
-    .SharedClient
+    .SharedApi
   .FuturesApi
     .ExchangeData
     .Account
     .Trading
-    .SharedClient
+    .SharedApi
 ```
 
 Important: some base endpoints exist on both spot and futures API branches because HyperLiquid uses common `/info` and `/exchange` actions. Use the branch that matches the user's trading mode.
@@ -361,12 +361,11 @@ using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Clients;
 
 var restClient = new HyperLiquidRestClient();
-ISpotTickerRestClient tickerClient = restClient.SpotApi.SharedClient;
+IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
 var symbol = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
-var info = restClient.SpotApi.SharedClient.Discover();
-var supportedFeatures = info.Features.Where(x => x.Supported).Select(x => x.EndpointName);
+// Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
 
-var ticker = await tickerClient.GetSpotTickerAsync(new GetTickerRequest(symbol));
+var ticker = await tickerClient.GetTickerAsync(new GetTickerRequest(symbol));
 if (!ticker.Success)
 {
     Console.WriteLine(ticker.Error);
@@ -376,13 +375,13 @@ if (!ticker.Success)
 Console.WriteLine(ticker.Data.LastPrice);
 ```
 
-Shared REST methods return `HttpResult<T>` / `HttpResult`. Shared socket subscriptions return `WebSocketResult<UpdateSubscription>` with an `UpdateSubscription` in `.Data`. Shared symbol helpers can return `ExchangeCallResult<T>`. `ISpotSymbolRestClient` and `IFuturesSymbolRestClient` expose symbol catalogs; returned symbols include display names and crypto, stablecoin, equity, commodity, or fiat classifications, and `GetSymbolsRequest` filters are applied.
+Shared REST methods return `HttpResult<T>` / `HttpResult`. Shared socket subscriptions return `WebSocketResult<UpdateSubscription>` with an `UpdateSubscription` in `.Data`. Shared symbol helpers can return `ExchangeCallResult<T>`. `IGetSpotSymbolsRest` and `IGetFuturesSymbolsRest` expose symbol catalogs; returned symbols include display names and crypto, stablecoin, equity, commodity, or fiat classifications, and `GetSymbolsRequest` filters are applied.
 
 Keep the concrete socket client and unsubscribe through it:
 
 ```csharp
 var socketClient = new HyperLiquidSocketClient();
-ITickerSocketClient tickerSocket = socketClient.SpotApi.SharedClient;
+ISubscribeTickerSocket tickerSocket = socketClient.SpotApi.SharedApi;
 
 var sub = await tickerSocket.SubscribeToTickerUpdatesAsync(
     new SubscribeTickerRequest(new SharedSymbol(TradingMode.Spot, "HYPE", "USDC")),
@@ -412,7 +411,6 @@ For spot symbol rules:
 var info = await client.SpotApi.ExchangeData.GetExchangeInfoAsync();
 if (!info.Success)
 {
-    Console.WriteLine(info.Error);
     return;
 }
 
@@ -489,7 +487,7 @@ Before finalizing generated code:
 - Does it include `using HyperLiquid.Net;` when using credentials, environments, or symbol helpers?
 - Does every REST/socket result check `.Success` before `.Data`?
 - Does it use the correct API branch: `SpotApi` or `FuturesApi`?
-- Does it use `Account`, `ExchangeData`, `Trading`, or `SharedClient` exactly as exposed?
+- Does it use `Account`, `ExchangeData`, `Trading`, or `SharedApi` exactly as exposed?
 - Does it avoid raw HyperLiquid URLs and manual signing?
 - Does it use `HyperLiquidCredentials`?
 - Does it use `HYPE/USDC` style spot symbols and `ETH` style futures symbols?

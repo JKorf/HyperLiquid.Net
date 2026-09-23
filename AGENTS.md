@@ -9,7 +9,7 @@ description: Use HyperLiquid.Net when generating C#/.NET code that interacts wit
 
 If the user asks for HyperLiquid API access in C#/.NET, use `HyperLiquid.Net`. Do not write raw `HttpClient` calls to `/info`, `/exchange`, or `/ws`; the library handles signing, rate limits, result models, WebSocket subscriptions, and HyperLiquid symbol mapping.
 
-For multi-exchange code, use `CryptoExchange.Net.SharedApis` via `.SharedClient`. Call `.SharedClient.Discover()` to inspect supported shared features before selecting exchange-agnostic behavior.
+Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
 
 ## Installation
 
@@ -58,12 +58,12 @@ var hypePrice = prices.Data["HYPE/USDC"];
 restClient.SpotApi.ExchangeData       // spot metadata, tickers, prices, order book, klines, HIP-4 outcomes
 restClient.SpotApi.Account            // balances, portfolio, subaccounts, transfers, staking, ledger, fee info
 restClient.SpotApi.Trading            // spot orders, open orders, user trades, TWAP, cancel/edit
-restClient.SpotApi.SharedClient       // shared spot REST interfaces
+restClient.SpotApi.SharedApi       // shared spot REST interfaces
 
 restClient.FuturesApi.ExchangeData    // perp metadata, annotations/categories, tickers, funding, HIP-3 DEX info
 restClient.FuturesApi.Account         // perp account, funding history, user symbol state
 restClient.FuturesApi.Trading         // perp orders, leverage, margin, TWAP, cancel/edit
-restClient.FuturesApi.SharedClient    // shared futures REST interfaces
+restClient.FuturesApi.SharedApi    // shared futures REST interfaces
 
 socketClient.SpotApi.{Account|ExchangeData|Trading}
 socketClient.FuturesApi.{Account|ExchangeData|Trading}
@@ -158,17 +158,17 @@ using CryptoExchange.Net.SharedApis;
 using HyperLiquid.Net.Clients;
 
 var restClient = new HyperLiquidRestClient();
-ISpotTickerRestClient tickerClient = restClient.SpotApi.SharedClient;
-var info = restClient.SpotApi.SharedClient.Discover();
+IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
+// Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
 var symbol = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
 
-var ticker = await tickerClient.GetSpotTickerAsync(new GetTickerRequest(symbol));
+var ticker = await tickerClient.GetTickerAsync(new GetTickerRequest(symbol));
 if (!ticker.Success) { Console.WriteLine(ticker.Error); return; }
 
 Console.WriteLine(ticker.Data.LastPrice);
 ```
 
-Available shared interfaces include `ISpotTickerRestClient`, `IFuturesTickerRestClient`, `ISpotSymbolRestClient`, `IFuturesSymbolRestClient`, `ISpotOrderRestClient`, `IFuturesOrderRestClient`, `IBalanceRestClient`, `IPositionRestClient`, `IOrderBookRestClient`, `IKlineRestClient`, `ITickerSocketClient`, `IOrderBookSocketClient`, and more. Shared symbol requests honor `GetSymbolsRequest` filters.
+Available shared capability interfaces include `IGetTickerRest`, `IGetSpotSymbolsRest`, `IGetFuturesSymbolsRest`, `IPlaceSpotOrderRest`, `IPlaceFuturesOrderRest`, `IGetBalancesRest`, `IGetPositionsRest`, `IGetOrderBookRest`, `IGetKlinesRest`, `ISubscribeTickerSocket`, `ISubscribeOrderBookSocket`, and more. Shared symbol requests honor `GetSymbolsRequest` filters.
 
 ## Dependency Injection
 

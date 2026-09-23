@@ -49,11 +49,11 @@ Use `PlaceOrderAsync(symbol, side, orderType, quantity, price, ...)`. Market ord
 
 ## Cross-exchange
 
-Use `CryptoExchange.Net.SharedApis` from `.SharedClient` for exchange-agnostic code:
+Use `CryptoExchange.Net.SharedApis` from `.SharedApi` for exchange-agnostic code:
 
 ```csharp
-var shared = new HyperLiquidRestClient().SpotApi.SharedClient;
-var ticker = await shared.GetSpotTickerAsync(
+var shared = new HyperLiquidRestClient().SpotApi.SharedApi;
+var ticker = await shared.GetTickerAsync(
     new GetTickerRequest(new SharedSymbol(TradingMode.Spot, "HYPE", "USDC")));
 ```
 
