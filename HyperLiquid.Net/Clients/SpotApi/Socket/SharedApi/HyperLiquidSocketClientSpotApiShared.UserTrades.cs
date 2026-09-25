@@ -43,6 +43,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
                             x.Price,
                             x.Timestamp)
                         {
+                            ClientOrderId = x.ClientOrderId,
                             Fee = x.Fee,
                             FeeAsset = HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.FeeToken),
                             Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker,

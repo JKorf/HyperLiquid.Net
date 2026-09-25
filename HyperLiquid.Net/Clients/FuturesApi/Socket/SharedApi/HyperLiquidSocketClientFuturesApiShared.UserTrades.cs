@@ -43,6 +43,7 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                             x.Price,
                             x.Timestamp)
                         {
+                            ClientOrderId = x.ClientOrderId,
                             Fee = x.Fee,
                             FeeAsset = x.FeeToken,
                             Role = x.Crossed ? SharedRole.Taker : SharedRole.Maker,
