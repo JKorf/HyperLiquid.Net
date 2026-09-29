@@ -47,5 +47,8 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 CancelFuturesOrderOptions
                 );
         }
+
+        /// <inheritdoc />
+        public Task UnsubscribeAllAsync() => _api.UnsubscribeAllAsync();
     }
 }
