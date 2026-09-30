@@ -253,6 +253,10 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.9.0 - 30 Sep 2026
+    * Updated CryptoExchange.Net to V13.1.0
+    * Added ClientOrderId mapping to Shared API SubscribeToUserTradeUpdatesAsync updates
+
 * Version 5.8.0 - 24 Sep 2026
     * Updated CryptoExchange.Net to v13.0.0
     * Shared APIs
