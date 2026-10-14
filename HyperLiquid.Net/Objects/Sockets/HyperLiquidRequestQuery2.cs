@@ -1,14 +1,15 @@
+using CryptoExchange.Net;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Errors;
 using CryptoExchange.Net.Sockets;
-using HyperLiquid.Net.Objects.Internal;
-using System;
 using CryptoExchange.Net.Sockets.Default;
 using CryptoExchange.Net.Sockets.Default.Routing;
-using CryptoExchange.Net;
 using HyperLiquid.Net.Clients.BaseApi;
-using CryptoExchange.Net.Objects.Errors;
-using System.Text.Json.Serialization;
+using HyperLiquid.Net.Objects.Internal;
 using HyperLiquid.Net.Objects.Models;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Objects.Sockets
 {
@@ -36,12 +37,12 @@ namespace HyperLiquid.Net.Objects.Sockets
         public T Payload { get; set; } = default!;
     }
 
-    internal record HyperLiquidSocketPayload2<T>
+    internal record HyperLiquidSocketPayload2
     {
         [JsonPropertyName("status")]
         public string Status { get; set; } = string.Empty;
         [JsonPropertyName("response")]
-        public T Response { get; set; } = default!;
+        public JsonElement Response { get; set; }
     }
 
 
@@ -66,24 +67,52 @@ namespace HyperLiquid.Net.Objects.Sockets
             client.AuthenticationProvider!.ProcessRequest(client, request);
 
             MessageRouter = MessageRouter.Create([
-                MessageRoute.CreateForQuery<HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2<TResponse>>>>, TResponse>(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
+                MessageRoute.CreateForQuery<HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2>>>, TResponse>(((HyperLiquidRequest)Request).Id.ToString(), HandleMessage),
             ]);            
         }
 
-        public CallResult<TResponse> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2<TResponse>>>> message)
+        public CallResult<TResponse> HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, HyperLiquidSocketMessage2<HyperLiquidSocketEnvelope2<HyperLiquidSocketResponse2<HyperLiquidSocketPayload2>>> message)
         {
-            if (!message.Data.Response.Payload.Status.Equals("ok"))
+            // Responses
+            // Generic error message:
+            // {"channel":"post","data":{"id":7,"response":{"type":"action","payload":{"status":"err","response":"User or API Wallet does not exist."}}}}
+            // Failed single operation:
+            // {"channel":"post","data":{"id":7,"response":{"type":"action","payload":{"status":"err","response":"Order has zero size."}}}}
+            // Failed multi operation:
+            // {"channel":"post","data":{"id":7,"response":{"type":"action","payload":{"status":"ok","response":{"type":"cancel","data":{"statuses":[{"error":"Order was never placed, already canceled, or filled. asset=1"}]}}}}}}
+            // Success single operation:
+            // {"channel":"post","data":{"id":7,"response":{"type":"action","payload":{"status":"ok","response":{"type":"default"}}}}}
+            // Success multi operation:
+            // {"channel":"post","data":{"id":7,"response":{"type":"action","payload":{"status":"ok","response":{"type":"order","data":{"statuses":[{"resting":{"oid":123}}]}}}}}}
+
+            var payload = message.Data.Response.Payload;
+            if (!payload.Status.Equals("ok"))
             {
-                if (message.Data.Response.Payload.Status.Equals("err")
-                    && message.Data.Response.Payload.Response is HyperLiquidDefault hlDefault)
+                string errorMsg;
+                if (payload.Response.ValueKind == JsonValueKind.String)
                 {
-                    return CallResult<TResponse>.Fail(new ServerError(ErrorInfo.Unknown with { Message = hlDefault.Type }), originalData);
+                    errorMsg = payload.Response.GetString()!;
+                }
+                else if (payload.Response.ValueKind == JsonValueKind.Object
+                    && payload.Response.TryGetProperty("type", out var type)
+                    && type.ValueKind == JsonValueKind.String)
+                {
+                    errorMsg = type.GetString()!;
+                }
+                else
+                {
+                    errorMsg = payload.Response.GetRawText();
                 }
 
-                return CallResult<TResponse>.Fail(new ServerError(ErrorInfo.Unknown with { Message = message.Data.Response.Payload.Status }), originalData);
+                return CallResult<TResponse>.Fail(new ServerError(ErrorInfo.Unknown with { Message = errorMsg }), originalData);
             }
-            return CallResult<TResponse>.Ok(message.Data.Response.Payload.Response, originalData);
-        }
 
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+            var response = payload.Response.Deserialize<TResponse>(HyperLiquidExchange._serializerContext);
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+            return CallResult<TResponse>.Ok(response!, originalData);
+        }
     }
 }

@@ -459,12 +459,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
 
             var intResult = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidOrderResultIntWrapper>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!intResult.Success)
                 return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult);
 
             var result = new List<CallResult<HyperLiquidOrderResult>>();
-            foreach (var order in intResult.Data.Statuses)
+            foreach (var order in intResult.Data.Data.Statuses)
             {
                 if (order.Error != null)
                     result.Add(CallResult.Fail<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
@@ -478,7 +478,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     result.Add(CallResult.Ok<HyperLiquidOrderResult>(order.WaitingForTrigger! with { Status = OrderStatus.WaitingTrigger }));
             }
 
-            if (result.Count > 1 && result.All(x => !x.Success))
+            if (orderRequests.Count > 1 && result.All(x => !x.Success))
                 return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult, new ServerError(new ErrorInfo(ErrorType.AllOrdersFailed, "All orders failed")), result.ToArray());
 
             return QueryResult.Ok(intResult, result.ToArray());
@@ -553,12 +553,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var resultInt = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidCancelResult>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!resultInt.Success)
                 return QueryResult.Fail<CallResult[]>(resultInt);
 
             var result = new List<CallResult>();
-            foreach (var order in resultInt.Data.Statuses)
+            foreach (var order in resultInt.Data.Data.Statuses)
             {
                 if (order.Equals("success"))
                     result.Add(CallResult.Ok());
@@ -638,12 +638,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var resultInt = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidCancelResult>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!resultInt.Success)
                 return QueryResult.Fail<CallResult[]>(_baseClient.Exchange, resultInt.Error!);
 
             var result = new List<CallResult>();
-            foreach (var order in resultInt.Data.Statuses)
+            foreach (var order in resultInt.Data.Data.Statuses)
             {
                 if (order.Equals("success"))
                     result.Add(CallResult.Ok());
@@ -861,12 +861,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
             var weight = 1 + (int)Math.Floor(orderRequests.Count / 40m);
             var intResult = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidOrderResultIntWrapper>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!intResult.Success)
                 return QueryResult.Fail<CallResult<HyperLiquidOrderResult>[]>(intResult);
 
             var result = new List<CallResult<HyperLiquidOrderResult>>();
-            foreach (var order in intResult.Data.Statuses)
+            foreach (var order in intResult.Data.Data.Statuses)
             {
                 if (order.Error != null)
                     result.Add(CallResult.Fail<HyperLiquidOrderResult>(new ServerError(_baseClient.GetErrorInfo("Order", order.Error))));
@@ -925,14 +925,15 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
             var result = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidTwapOrderResultIntWrapper>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidTwapOrderResultIntWrapper>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!result.Success)
                 return QueryResult.Fail<HyperLiquidTwapOrderResult>(result);
 
-            if (result.Data.Status.Error != null)
-                return QueryResult.Fail<HyperLiquidTwapOrderResult>(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status.Error)));
+            if (result.Data.Data.Status.Error != null)
+                return QueryResult.Fail<HyperLiquidTwapOrderResult>(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Data.Status.Error)));
 
-            return QueryResult.Ok(result, result.Data.Status.ResultRunning!);
+            return QueryResult.Ok(result, result.Data.Data.Status.ResultRunning!);
         }
 
         #endregion
@@ -971,12 +972,12 @@ namespace HyperLiquid.Net.Clients.BaseApi
             _baseClient.AddExpiresAfter(parameters, expiresAfter);
 
             var result = await _baseClient.QueryInternalAsync(
-                new HyperLiquidRequestQuery<HyperLiquidTwapCancelResult>(_baseClient, "post", "action", parameters, true), ct).ConfigureAwait(false);
+                new HyperLiquidRequestQuery2<HyperLiquidSocketResponseWrapper2<HyperLiquidTwapCancelResult>>(_baseClient, "post", "action", parameters), ct).ConfigureAwait(false);
             if (!result.Success)
                 return result;
 
-            if (result.Data.Status != "success")
-                return QueryResult.Fail(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Status)));
+            if (result.Data.Data.Status != "success")
+                return QueryResult.Fail(result, new ServerError(_baseClient.GetErrorInfo("Order", result.Data.Data.Status)));
 
             return result;
         }
