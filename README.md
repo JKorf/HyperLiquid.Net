@@ -253,6 +253,9 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.9.1 - 14 Oct 2026
+    * Updated websocket error message handling, fixing not recognized error message on invalid credentials
+
 * Version 5.9.0 - 30 Sep 2026
     * Updated CryptoExchange.Net to V13.1.0
     * Added ClientOrderId mapping to Shared API SubscribeToUserTradeUpdatesAsync updates
