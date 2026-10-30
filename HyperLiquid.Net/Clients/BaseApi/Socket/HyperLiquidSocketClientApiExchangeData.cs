@@ -242,7 +242,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             
             parameters.AddOptionalParameter("nSigFigs", nSigFigs);
             parameters.AddOptionalParameter("mantissa", mantissa);
-            parameters.AddOptionalParameter("fast", fast);
+            parameters.AddOptionalParameter("fast", fast == true ? fast : null);
 
             var subscription = new HyperLiquidSubscription<HyperLiquidOrderBook>(_logger, _baseClient, "l2Book", coin, parameters, internalHandler, false);
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);

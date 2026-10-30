@@ -30,7 +30,10 @@ namespace HyperLiquid.Net.Clients.MessageHandlers
                 x.Data.Subscription.TryGetValue("nSigFigs", out var nSigFigs);
                 x.Data.Subscription.TryGetValue("mantissa", out var mantissa);
                 x.Data.Subscription.TryGetValue("dex", out var dex);
-                return type?.ToString() + coin?.ToString() + interval?.ToString() + user?.ToString() + nSigFigs + mantissa + dex;
+                x.Data.Subscription.TryGetValue("fast", out var fast);
+                if (fast is JsonElement fastValue && fastValue.ValueKind == JsonValueKind.False)
+                    fast = null;
+                return type?.ToString() + coin?.ToString() + interval?.ToString() + user?.ToString() + nSigFigs + mantissa + dex + fast;
             });
             AddTopicMapping<HyperLiquidSocketUpdate<string>>(x =>
             {
