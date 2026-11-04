@@ -1,5 +1,5 @@
 > {"subscription":{"type":"l2Book","coin":"HYPE"},"method":"subscribe"}
-< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"l2Book","coin":"HYPE","nSigFigs":null,"mantissa":null}}}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"l2Book","coin":"HYPE","nSigFigs":null,"mantissa":null,"fast":false}}}
 = 
 {
 	"channel":"l2Book",
