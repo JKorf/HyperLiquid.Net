@@ -251,6 +251,14 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.10.0 - 06 Nov 2026
+    * Updated CryptoExchange.Net to v13.2.3
+    * Added CryptoExchange.Net.Web3 dependency
+    * Updated HyperLiquidCredentials to use EthKey credentials instead of ECDsaCredential
+      * EthKey passing: new HyperLiquidCredential(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>"))
+    * Added SubscribeToAllDexTickerUpdatesAsync ExchangeData subscription
+    * Fixed fast order book subscription acknowledgement matching
+
 * Version 5.9.1 - 14 Oct 2026
     * Updated websocket error message handling, fixing not recognized error message on invalid credentials
 
