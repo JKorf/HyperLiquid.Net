@@ -1,5 +1,5 @@
-> {"subscription":{"type":"orderUpdates","user":"mtiz"},"method":"subscribe"}
-< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"orderUpdates","user":"mtiz"}}}
+> {"subscription":{"type":"orderUpdates","user":"0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"},"method":"subscribe"}
+< {"channel":"subscriptionResponse","data":{"method":"subscribe","subscription":{"type":"orderUpdates","user":"0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"}}}
 = 
 {
 	"channel":"orderUpdates",

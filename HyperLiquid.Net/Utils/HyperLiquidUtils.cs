@@ -87,7 +87,7 @@ namespace HyperLiquid.Net.Utils
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
-                client.SpotApi.ApiCredentials!.Key,
+                client.SpotApi.ApiCredentials!.Credential.Wallet.PublicAddress,
                 options.BuilderFeePercentage,
                 async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
                 async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace HyperLiquid.Net.Utils
 
             var options = client.ClientOptions;
             var result = await CheckBuilderFeeAsync(
-                client.SpotApi.ApiCredentials!.Key,
+                client.SpotApi.ApiCredentials!.Credential.Wallet.PublicAddress,
                 options.BuilderFeePercentage,
                 async () => await client.SpotApi.Account.GetApprovedBuilderFeeAsync().ConfigureAwait(false),
                 async () => await client.SpotApi.Account.ApproveBuilderFeeAsync().ConfigureAwait(false)).ConfigureAwait(false);

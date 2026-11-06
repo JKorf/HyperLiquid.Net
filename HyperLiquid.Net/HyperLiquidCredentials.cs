@@ -1,4 +1,5 @@
 ﻿using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Web3;
 using System;
 
 namespace HyperLiquid.Net
@@ -6,46 +7,54 @@ namespace HyperLiquid.Net
     /// <summary>
     /// HyperLiquid API credentials
     /// </summary>
-    public class HyperLiquidCredentials : ECDsaCredential
+    public class HyperLiquidCredentials : ApiCredentials
     {
+        /// <summary>
+        /// API credentials
+        /// </summary>
+        public HyperLiquidCredential Credential { get; set; }
+
         /// <summary>
         /// Create new credentials
         /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public HyperLiquidCredentials() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 
         /// <summary>
-        /// Create new credentials providing only credentials in ECDsa format
+        /// Create new credentials
         /// </summary>
-        /// <param name="key">API key</param>
-        /// <param name="privateKey">Private key</param>
-        public HyperLiquidCredentials(string key, string privateKey) : base(key, privateKey)
+        /// <param name="credential">Credentials</param>
+        public HyperLiquidCredentials(HyperLiquidCredential credential)
         {
+            Credential = credential ?? throw new ArgumentNullException(nameof(credential));
         }
 
         /// <summary>
-        /// Create new credentials providing ECDsa credentials
+        /// Specify the HyperLiquid credentials
         /// </summary>
-        /// <param name="credential">ECDsa credentials</param>
-        public HyperLiquidCredentials(ECDsaCredential credential) : base(credential.Key, credential.PrivateKey)
+        /// <param name="wallet">The wallet to connect to HyperLiquid</param>
+        /// <param name="signer">Optional signing key</param>
+        public HyperLiquidCredentials With(EthKey wallet, EthKey? signer = null)
         {
-        }
+            if (Credential != null) throw new InvalidOperationException("Credentials already set");
 
-        /// <summary>
-        /// Specify the ECDsa credentials
-        /// </summary>
-        /// <param name="key">API key</param>
-        /// <param name="privateKey">Private key</param>
-        public HyperLiquidCredentials WithECDsa(string key, string privateKey)
-        {
-            if (!string.IsNullOrEmpty(Key)) throw new InvalidOperationException("Credentials already set");
-
-            Key = key;
-            PrivateKey = privateKey;
+            Credential = new HyperLiquidCredential(wallet, signer);
             return this;
         }
 
         /// <inheritdoc />
-        public override ApiCredentials Copy() => new HyperLiquidCredentials(this);
+        public override ApiCredentials Copy() => 
+            new HyperLiquidCredentials(new HyperLiquidCredential(Credential.Wallet, Credential.Signer));
+
+        /// <inheritdoc />
+        public override void Validate()
+        {
+            if (Credential == null)
+                throw new ArgumentException("Credential not set");
+
+            Credential.Validate();
+        }
     }
 }

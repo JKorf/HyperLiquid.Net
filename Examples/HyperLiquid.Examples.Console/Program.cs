@@ -12,7 +12,7 @@ Console.ReadLine();
 
 // Websocket
 var socketClient = new HyperLiquidSocketClient();
-var subscription = await socketClient.SpotApi.SubscribeToSymbolUpdatesAsync("HYPE/USDC", update =>
+var subscription = await socketClient.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync("HYPE/USDC", update =>
 {
     Console.WriteLine($"Websocket client ticker price for HYPEUSDC: {update.Data.MidPrice}");
 });

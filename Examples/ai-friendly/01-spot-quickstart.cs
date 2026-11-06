@@ -13,6 +13,7 @@
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Web3;
 
 // ---- 1. PUBLIC CLIENT (no credentials needed for market data) ----
 // Reuse this client across the application; do not create per request.
@@ -41,7 +42,7 @@ Console.WriteLine($"HYPE/USDC quote volume: {hypeTicker.QuoteVolume}");
 // ---- 2. AUTHENTICATED CLIENT (for account / trading) ----
 var tradingClient = new HyperLiquidRestClient(options =>
 {
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
 
 var balances = await tradingClient.SpotApi.Account.GetBalancesAsync();

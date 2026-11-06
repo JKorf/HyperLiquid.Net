@@ -7,6 +7,7 @@
 
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
+using CryptoExchange.Net.Web3;
 
 // ---- 1. PUBLIC SOCKET CLIENT ----
 // Reuse a single socket client instance across subscriptions.
@@ -61,7 +62,7 @@ if (!orderBookSub.Success)
 // Authenticated streams use the address from credentials when address is null.
 var authSocket = new HyperLiquidSocketClient(options =>
 {
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
 
 var orderSub = await authSocket.FuturesApi.Trading.SubscribeToOrderUpdatesAsync(

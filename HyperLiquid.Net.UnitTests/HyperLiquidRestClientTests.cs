@@ -20,6 +20,7 @@ using System.Net.Sockets;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Signer.Crypto;
 using HyperLiquid.Net.Objects;
+using CryptoExchange.Net.Web3;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -31,7 +32,7 @@ namespace HyperLiquid.Net.UnitTests
         {
             const string hash = "FACE28327892D757909E0DB4B499EC67D51AD9127BFBC53B96CCB173155D7B94";
             const string secret = "0x00000000000000000000000000000000000000000000000000000000000000bb";
-            var authProvider = new HyperLiquidAuthenticationProvider(new HyperLiquidCredentials("0xaa", secret));
+            var authProvider = new HyperLiquidAuthenticationProvider(new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey(secret))));
             var client = (RestApiClient)new HyperLiquidRestClient().SpotApi;
 
             CryptoExchange.Net.Testing.TestHelpers.CheckSignature(

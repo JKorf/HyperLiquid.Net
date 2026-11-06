@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace HyperLiquid.Net
 {
-    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, HyperLiquidCredentials>
+    internal class HyperLiquidAuthenticationProvider : AuthenticationProvider<HyperLiquidCredentials, HyperLiquidCredential>
     {
         private static readonly object _nonceLock = new object();
         private static long? _lastNonce;
@@ -43,7 +43,7 @@ namespace HyperLiquid.Net
             { typeof(byte[]), "bytes32" }
         };
 
-        public HyperLiquidAuthenticationProvider(HyperLiquidCredentials credentials) : base(credentials, credentials)
+        public HyperLiquidAuthenticationProvider(HyperLiquidCredentials credentials) : base(credentials, credentials.Credential)
         {
         }
 
@@ -153,9 +153,17 @@ namespace HyperLiquid.Net
             Dictionary<string, object> signature;
             var effectiveDelegate = HyperLiquidExchange.SignRequestDelegate;
             if (effectiveDelegate != null)
-                signature = effectiveDelegate(BytesToHexString(keccakSigned), Credential.PrivateKey);
+            {
+                var signKey = Credential.Signer?.PrivateKey ?? Credential.Wallet.PrivateKey!;
+                signature = effectiveDelegate(BytesToHexString(keccakSigned), signKey);
+            }
             else
-                signature = SignRequest(keccakSigned, Credential.PrivateKey);
+            {
+                if (Credential.Signer != null)
+                    signature = Credential.Signer.SignHashRsv(keccakSigned);
+                else
+                    signature = Credential.Wallet.SignHashRsv(keccakSigned);
+            }
 
             return signature;
         }

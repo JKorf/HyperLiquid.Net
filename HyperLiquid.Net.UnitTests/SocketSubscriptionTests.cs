@@ -1,6 +1,7 @@
 ﻿using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Testing;
+using CryptoExchange.Net.Web3;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Objects;
 using HyperLiquid.Net.Objects.Models;
@@ -44,7 +45,7 @@ namespace HyperLiquid.Net.UnitTests
             {
                 OutputOriginalData = true,
                 Environment = HyperLiquidEnvironment.CreateCustom("UnitTest", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"),
-                ApiCredentials = new HyperLiquidCredentials("MTIz", "MTIz")
+                ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("0x0000000000000000000000000000000000000000000000000000000000000001")))
             }), loggerFactory);
             var tester = new SocketSubscriptionValidator<HyperLiquidSocketClient>(client, "Subscriptions", "wss://api.hyperliquid.xyz", "data");
             await tester.ValidateAsync<HyperLiquidTrade[]>((client, handler) => client.SpotApi.ExchangeData.SubscribeToTradeUpdatesAsync("HYPE", handler), "Trades");

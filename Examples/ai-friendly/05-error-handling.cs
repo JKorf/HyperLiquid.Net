@@ -7,13 +7,14 @@
 
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.SharedApis;
+using CryptoExchange.Net.Web3;
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Enums;
 
 var client = new HyperLiquidRestClient(options =>
 {
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
 
 // ---- 1. THE BASIC PATTERN ----
@@ -89,7 +90,7 @@ else
 // To disable builder fee for a client:
 var noBuilderFeeClient = new HyperLiquidRestClient(options =>
 {
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
     options.BuilderFeePercentage = 0;
 });
 

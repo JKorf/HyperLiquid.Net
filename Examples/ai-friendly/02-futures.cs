@@ -9,10 +9,11 @@
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Enums;
+using CryptoExchange.Net.Web3;
 
 var client = new HyperLiquidRestClient(options =>
 {
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
+    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
 
 const string symbol = "ETH"; // Perp symbols are base asset only. Do not use ETH/USDC here.

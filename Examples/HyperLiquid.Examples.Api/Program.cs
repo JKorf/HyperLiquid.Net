@@ -1,3 +1,5 @@
+using CryptoExchange.Net.Web3;
+using HyperLiquid.Net;
 using HyperLiquid.Net.Interfaces.Clients;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
@@ -11,13 +13,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHyperLiquid();
 
 // OR to provide API credentials for accessing private endpoints, or setting other options:
-/*
-builder.Services.AddHyperLiquid(options =>
-{
-    options.ApiCredentials = new ApiCredentials("<ADDRESS>", "<PRIVATEKEY>");
-    options.Rest.RequestTimeout = TimeSpan.FromSeconds(5);
-});
-*/
+
+//builder.Services.AddHyperLiquid(options =>
+//{
+//    options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<PRIVATEKEY>")));
+//    options.Rest.RequestTimeout = TimeSpan.FromSeconds(5);
+//});
+
 
 var app = builder.Build();
 app.UseSwagger();

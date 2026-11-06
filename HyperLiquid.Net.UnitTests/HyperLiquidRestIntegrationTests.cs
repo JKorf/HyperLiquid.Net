@@ -1,15 +1,17 @@
+using CryptoExchange.Net.Objects.Errors;
 using CryptoExchange.Net.Testing;
+using CryptoExchange.Net.Web3;
+using HyperLiquid.Net.Clients;
+using HyperLiquid.Net.Objects;
+using HyperLiquid.Net.Objects.Options;
+using HyperLiquid.Net.SymbolOrderBooks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
-using System.Threading.Tasks;
-using HyperLiquid.Net.Clients;
-using HyperLiquid.Net.Objects.Options;
-using HyperLiquid.Net.SymbolOrderBooks;
-using CryptoExchange.Net.Objects.Errors;
-using HyperLiquid.Net.Objects;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace HyperLiquid.Net.UnitTests
 {
@@ -28,7 +30,7 @@ namespace HyperLiquid.Net.UnitTests
             {
                 AutoTimestamp = false,
                 OutputOriginalData = true,
-                ApiCredentials = Authenticated ? new HyperLiquidCredentials(key, sec) : null
+                ApiCredentials = Authenticated ? new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey(sec))) : null
             }));
         }
 

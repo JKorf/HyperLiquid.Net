@@ -3,8 +3,9 @@
 	"HyperLiquid": {
 		// API credentials for both REST and Websocket client
 		"ApiCredentials": {
-			"Key": "PUBLICKEY",
-			"PrivateKey": "PRIVATEKEY"
+			"Credential":{
+				"Wallet": { "PrivateKey": "<private key>" }
+			}
 		},
 		// Set the environment by name
 		"Environment": {
