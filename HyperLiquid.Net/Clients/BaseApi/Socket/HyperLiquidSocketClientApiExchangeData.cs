@@ -324,5 +324,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
             internalHandler, false);
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToAllDexTickerUpdatesAsync(Action<DataEvent<HyperLiquidFuturesAllDexesTickerUpdate>> onMessage, CancellationToken ct = default)
+        {
+            
+            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidFuturesAllDexesTickerUpdate>>((receiveTime, originalData, invocation, data) =>
+            {
+                onMessage(
+                    new DataEvent<HyperLiquidFuturesAllDexesTickerUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId(data.Channel)
+                    );
+            });
+
+            var subscription = new HyperLiquidSubscription<HyperLiquidFuturesAllDexesTickerUpdate>(_logger, _baseClient, "allDexsAssetCtxs", null, new Dictionary<string, object>
+            {
+            },
+            internalHandler, false);
+            return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
+        }
     }
 }

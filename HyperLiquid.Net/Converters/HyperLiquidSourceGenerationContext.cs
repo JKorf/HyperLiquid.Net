@@ -9,6 +9,8 @@ using System.Text.Json.Serialization;
 
 namespace HyperLiquid.Net.Converters
 {
+    
+    [JsonSerializable(typeof(HyperLiquidSocketUpdate<HyperLiquidFuturesAllDexesTickerUpdate>))]
     [JsonSerializable(typeof(HyperLiquidCategory[]))]
     [JsonSerializable(typeof(HyperLiquidPerpAnnotation[]))]
     [JsonSerializable(typeof(HyperLiquidPerpAnnotationDetails))]
