@@ -1,0 +1,18 @@
+{
+  "baseBranch": "main",
+  "sdk": "10.0.401",
+  "packages": [
+    {
+      "key": "hyperliquid",
+      "project": "HyperLiquid.Net/HyperLiquid.Net.csproj",
+      "testProjects": [
+        "HyperLiquid.Net.UnitTests/HyperLiquid.Net.UnitTests.csproj"
+      ],
+      "packageId": "HyperLiquid.Net",
+      "readme": "README.md",
+      "tagPrefix": "HyperLiquid.Net.",
+      "releaseIntegrationTests": false,
+      "publishToGitHubPackages": true
+    }
+  ]
+}

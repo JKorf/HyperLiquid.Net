@@ -1,0 +1,212 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package key from release-config.json; optional for a single-package repository'
+        required: false
+        type: string
+      version:
+        description: 'Next stable version, for example 4.6.1'
+        required: true
+        type: string
+      notes:
+        description: 'Markdown notes with actual newlines and indentation (CLI supports notes=@file)'
+        required: true
+        type: string
+      override_reason:
+        description: 'Reason for a major release or unusual version jump; requires approval'
+        required: false
+        type: string
+      integration_tests:
+        description: 'Also run public integration tests'
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      requires_approval: ${{ steps.plan.outputs.requires_approval }}
+      sdk: ${{ steps.plan.outputs.sdk }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate release and show approval preview
+        id: plan
+        env:
+          SELECTED_REF: ${{ github.ref }}
+          RELEASE_PACKAGE: ${{ inputs.package }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_NOTES: ${{ inputs.notes }}
+          OVERRIDE_REASON: ${{ inputs.override_reason }}
+        run: |
+          $config = Get-Content .github/release-config.json -Raw | ConvertFrom-Json
+          if ($env:SELECTED_REF -ne "refs/heads/$($config.baseBranch)") { throw "Run this workflow from $($config.baseBranch)." }
+          ./scripts/Prepare-Release.ps1 -Package $env:RELEASE_PACKAGE -Version $env:RELEASE_VERSION -Notes $env:RELEASE_NOTES -OverrideReason $env:OVERRIDE_REASON -BodyPath "$env:RUNNER_TEMP/release-pr.md" -ResultPath "$env:RUNNER_TEMP/plan.json" -ValidateOnly
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          "requires_approval=$($plan.requires_approval.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "sdk=$($plan.sdk)" >> $env:GITHUB_OUTPUT
+          Get-Content "$env:RUNNER_TEMP/release-pr.md" -Raw >> $env:GITHUB_STEP_SUMMARY
+          "`nSource commit: $env:GITHUB_SHA" >> $env:GITHUB_STEP_SUMMARY
+          if ((git tag --list $plan.tag)) { throw "Release tag already exists: $($plan.tag)" }
+          if ((git branch --remotes --list "origin/$($plan.branch)")) { throw "Release branch already exists: $($plan.branch)" }
+
+      - name: Verify required version reviewers are configured
+        if: steps.plan.outputs.requires_approval == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $json = gh api "repos/$env:GITHUB_REPOSITORY/environments/version-approval"
+          if ($LASTEXITCODE -ne 0) { throw 'Create the version-approval environment with required reviewers before preparing exceptional versions.' }
+          $environment = $json | ConvertFrom-Json
+          $rules = @($environment.protection_rules | Where-Object { $_.type -eq 'required_reviewers' })
+          if ($rules.Count -ne 1 -or @($rules[0].reviewers).Count -eq 0) { throw 'version-approval must have at least one required reviewer. Configure it under Settings > Environments.' }
+
+  version_approval:
+    needs: validate
+    if: needs.validate.outputs.requires_approval == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: version-approval
+    steps:
+      - name: Record version approval
+        run: echo 'Version approval gate passed. See the validate job summary for package, version, reason, and release notes.'
+
+  prepare:
+    needs: [validate, version_approval]
+    if: ${{ always() && !cancelled() && needs.validate.result == 'success' && (needs.version_approval.result == 'success' || needs.version_approval.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: ${{ needs.validate.outputs.sdk }}
+
+      - name: Prepare selected package
+        env:
+          RELEASE_PACKAGE: ${{ inputs.package }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_NOTES: ${{ inputs.notes }}
+          OVERRIDE_REASON: ${{ inputs.override_reason }}
+        run: |
+          ./scripts/Prepare-Release.ps1 -Package $env:RELEASE_PACKAGE -Version $env:RELEASE_VERSION -Notes $env:RELEASE_NOTES -OverrideReason $env:OVERRIDE_REASON -BodyPath "$env:RUNNER_TEMP/release-pr.md" -ResultPath "$env:RUNNER_TEMP/plan.json"
+
+      - name: Check release references
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          $refs = git ls-remote origin "refs/tags/$($plan.tag)" "refs/heads/$($plan.branch)"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot check remote release references.' }
+          if ($refs) { throw "Tag or branch already exists. Inspect it before retrying: $refs" }
+
+      - name: Restore and build selected package and its tests
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          $projects = @(@($plan.project) + @($plan.test_projects) | Select-Object -Unique)
+          foreach ($project in $projects) {
+            dotnet restore $project
+            if ($LASTEXITCODE -ne 0) { throw "Restore failed: $project" }
+            dotnet build $project --configuration Release --no-restore -p:GeneratePackageOnBuild=false
+            if ($LASTEXITCODE -ne 0) { throw "Build failed: $project" }
+          }
+
+      - name: Test
+        env:
+          INTEGRATION: ${{ inputs.integration_tests && '1' || '0' }}
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          $resultsRoot = "$env:RUNNER_TEMP/release-test-results"
+          New-Item -ItemType Directory -Path $resultsRoot -Force | Out-Null
+          if (@($plan.test_projects).Count -eq 0) { 'No test projects are configured for this package.' >> $env:GITHUB_STEP_SUMMARY }
+          $index = 0
+          foreach ($project in @($plan.test_projects)) {
+            $index++
+            $results = Join-Path $resultsRoot "project-$index"
+            New-Item -ItemType Directory -Path $results -Force | Out-Null
+            dotnet test $project --configuration Release --no-build --no-restore --verbosity normal --results-directory $results --logger trx -- "NUnit.TestOutputXml=$results" NUnit.NewOutputXmlFileForEachRun=true NUnit.MapWarningTo=Passed
+            if ($LASTEXITCODE -ne 0) { throw "Tests failed: $project" }
+          }
+
+      - name: Include test warnings in release PR
+        env:
+          PREPARATION_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          $expectResults = @($plan.test_projects).Count -gt 0
+          ./scripts/Add-TestWarnings.ps1 -ResultsDirectory "$env:RUNNER_TEMP/release-test-results" -BodyPath "$env:RUNNER_TEMP/release-pr.md" -SummaryPath "$env:RUNNER_TEMP/test-warnings.md" -RunUrl $env:PREPARATION_RUN_URL -ExpectResults:$expectResults
+          Get-Content "$env:RUNNER_TEMP/test-warnings.md" -Raw >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Retain test reports
+        if: ${{ always() && !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-preparation-test-results
+          path: ${{ runner.temp }}/release-test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Create release automation token
+        if: vars.RELEASE_APP_ID != ''
+        id: release-app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Commit release changes and open PR
+        env:
+          GH_TOKEN: ${{ steps.release-app.outputs.token || github.token }}
+          RELEASE_APP_CONFIGURED: ${{ vars.RELEASE_APP_ID != '' }}
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/plan.json" -Raw | ConvertFrom-Json
+          gh auth setup-git
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot configure GitHub credentials for the release branch.' }
+          git switch --create $plan.branch
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot create release branch.' }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- $plan.project $plan.readme
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot stage release changes.' }
+          git commit -m "Prepare $($plan.package_id) release $($plan.version)"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot commit release changes.' }
+          git push origin "HEAD:refs/heads/$($plan.branch)"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot push release branch.' }
+          $url = gh pr create --base $plan.base_branch --head $plan.branch --title "Release $($plan.package_id) $($plan.version)" --body-file "$env:RUNNER_TEMP/release-pr.md"
+          if ($LASTEXITCODE -ne 0) { throw 'Branch was pushed, but PR creation failed. Open a PR from that branch manually.' }
+          "Release PR: $url" >> $env:GITHUB_STEP_SUMMARY
+          if ($env:RELEASE_APP_CONFIGURED -ne 'true') { 'GitHub App is not configured. PR checks may require manual workflow approval with GITHUB_TOKEN.' >> $env:GITHUB_STEP_SUMMARY }

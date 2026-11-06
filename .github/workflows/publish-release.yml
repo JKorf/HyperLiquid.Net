@@ -1,0 +1,248 @@
+name: Publish release
+run-name: '${{ github.event_name == ''workflow_dispatch'' && format(''Recover release from run #{0}'', inputs.original_run_id) || format(''Publish release PR #{0}'', github.event.pull_request.number) }}'
+
+on:
+  workflow_dispatch:
+    inputs:
+      original_run_id:
+        description: Original failed publish workflow run ID
+        required: true
+        type: string
+      artifact_id:
+        description: Original release-pr artifact ID (not the test results artifact)
+        required: true
+        type: string
+  pull_request:
+    types: [closed]
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.repository }}-${{ github.event.pull_request.head.ref || inputs.original_run_id }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sdk: ${{ steps.plan.outputs.sdk }}
+      commit: ${{ github.event.pull_request.merge_commit_sha }}
+      pull_request: ${{ github.event.pull_request.number }}
+      artifact_id: ${{ steps.artifacts.outputs.artifact-id }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate merged preparation PR
+        id: plan
+        run: |
+          ./scripts/Get-PublishPlan.ps1 -EventPath $env:GITHUB_EVENT_PATH -Repository $env:GITHUB_REPOSITORY -OutputDirectory "$env:RUNNER_TEMP/release"
+          $plan = Get-Content "$env:RUNNER_TEMP/release/manifest.json" -Raw | ConvertFrom-Json
+          "sdk=$($plan.sdk)" >> $env:GITHUB_OUTPUT
+
+      - name: Verify publication approval configuration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_USER)) { throw 'Set repository variable NUGET_USER to your NuGet.org profile username.' }
+          $json = gh api "repos/$env:GITHUB_REPOSITORY/environments/release"
+          if ($LASTEXITCODE -ne 0) { throw 'Create the release environment with required reviewers before publishing.' }
+          $environment = $json | ConvertFrom-Json
+          $rules = @($environment.protection_rules | Where-Object { $_.type -eq 'required_reviewers' })
+          if ($rules.Count -ne 1 -or @($rules[0].reviewers).Count -eq 0) { throw 'The release environment must have at least one required reviewer.' }
+
+      - uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: ${{ steps.plan.outputs.sdk }}
+
+      - name: Build final package and tests
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/release/manifest.json" -Raw | ConvertFrom-Json
+          $projects = @(@($plan.project) + @($plan.testProjects) | Select-Object -Unique)
+          foreach ($project in $projects) {
+            dotnet restore $project
+            if ($LASTEXITCODE -ne 0) { throw "Restore failed: $project" }
+            dotnet build $project --configuration Release --no-restore -m:1 -p:GeneratePackageOnBuild=false "-p:RepositoryCommit=$($plan.commit)" "-p:SourceRevisionId=$($plan.commit)"
+            if ($LASTEXITCODE -ne 0) { throw "Build failed: $project" }
+          }
+
+      - name: Run final tests
+        run: |
+          $plan = Get-Content "$env:RUNNER_TEMP/release/manifest.json" -Raw | ConvertFrom-Json
+          $env:INTEGRATION = if ($plan.integrationTests) { '1' } else { '0' }
+          $root = "$env:RUNNER_TEMP/release-test-results"
+          New-Item -ItemType Directory -Path $root -Force | Out-Null
+          $index = 0
+          foreach ($project in @($plan.testProjects)) {
+            $index++
+            $results = Join-Path $root "project-$index"
+            New-Item -ItemType Directory -Path $results -Force | Out-Null
+            dotnet test $project --configuration Release --no-build --no-restore --verbosity normal --results-directory $results --logger trx -- "NUnit.TestOutputXml=$results" NUnit.NewOutputXmlFileForEachRun=true NUnit.MapWarningTo=Passed
+            if ($LASTEXITCODE -ne 0) { throw "Tests failed: $project" }
+          }
+
+      - name: Pack and verify final artifacts
+        run: |
+          $directory = "$env:RUNNER_TEMP/release"
+          $plan = Get-Content "$directory/manifest.json" -Raw | ConvertFrom-Json
+          dotnet pack $plan.project --configuration Release --no-build --no-restore --output $directory -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg "-p:RepositoryCommit=$($plan.commit)" "-p:SourceRevisionId=$($plan.commit)"
+          if ($LASTEXITCODE -ne 0) { throw 'Packing failed.' }
+          $files = @($plan.packageFile, $plan.symbolFile, 'release-notes.md') | ForEach-Object {
+            @{ name = $_; sha256 = (Get-FileHash -LiteralPath (Join-Path $directory $_) -Algorithm SHA256).Hash }
+          }
+          $plan | Add-Member -NotePropertyName files -NotePropertyValue @($files)
+          $plan | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath "$directory/manifest.json" -Encoding utf8NoBOM
+          ./scripts/Publish-Release.ps1 -ArtifactDirectory $directory -Repository $env:GITHUB_REPOSITORY -Commit $plan.commit -PullRequest $plan.pullRequest -ValidateOnly
+
+      - name: Produce publication review summary
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          $directory = "$env:RUNNER_TEMP/release"
+          $plan = Get-Content "$directory/manifest.json" -Raw | ConvertFrom-Json
+          $summary = "# Publication review`n`nPackage: $($plan.packageId) $($plan.version)`n`nPR: #$($plan.pullRequest)`n`nCommit: $($plan.commit)`n`nTag: $($plan.tag)`n`nIntegration tests enabled: $($plan.integrationTests)`n`nGitHub Packages enabled: $($plan.publishToGitHubPackages)`n`n## Release notes`n`n"
+          $summary += Get-Content "$directory/release-notes.md" -Raw
+          $summary += "`n## Artifact SHA256 checksums`n`n"
+          foreach ($file in $plan.files) { $summary += "$($file.name): $($file.sha256)`n`n" }
+          $summary | Set-Content "$directory/release-summary.md" -Encoding utf8NoBOM
+          $expectResults = @($plan.testProjects).Count -gt 0
+          ./scripts/Add-TestWarnings.ps1 -ResultsDirectory "$env:RUNNER_TEMP/release-test-results" -BodyPath "$directory/release-summary.md" -SummaryPath "$env:RUNNER_TEMP/test-warnings.md" -RunUrl $env:RUN_URL -Stage Publication -ExpectResults:$expectResults
+          Get-Content "$directory/release-summary.md" -Raw >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Retain final test reports
+        if: ${{ always() && !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: publication-test-results-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-test-results/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Retain approved artifact candidates
+        id: artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-pr-${{ github.event.pull_request.number }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release/
+          retention-days: 30
+          if-no-files-found: error
+
+  recover:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sdk: ${{ steps.plan.outputs.sdk }}
+      commit: ${{ steps.plan.outputs.commit }}
+      pull_request: ${{ steps.plan.outputs.pull_request }}
+      artifact_id: ${{ steps.plan.outputs.artifact_id }}
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.original_run_id }}
+          artifact-ids: ${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/original-release
+          merge-multiple: true
+      - name: Validate original run and release artifacts
+        id: plan
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ORIGINAL_RUN_ID: ${{ inputs.original_run_id }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+        run: |
+          ./scripts/Get-RecoveryPlan.ps1 -Repository $env:GITHUB_REPOSITORY -OriginalRunId ([long]$env:ORIGINAL_RUN_ID) -ArtifactId ([long]$env:ARTIFACT_ID) -ArtifactDirectory "$env:RUNNER_TEMP/original-release"
+
+  publish:
+    needs: [build, recover]
+    if: ${{ !cancelled() && (needs.build.result == 'success' || needs.recover.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: release
+    permissions:
+      contents: write
+      actions: read
+      packages: write
+      id-token: write
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.pull_request.merge_commit_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: ${{ needs.build.outputs.sdk || needs.recover.outputs.sdk }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.artifact_id || needs.recover.outputs.artifact_id }}
+          path: ${{ runner.temp }}/approved-release
+          merge-multiple: true
+
+      - name: Verify approved artifacts
+        env:
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit || needs.recover.outputs.commit }}
+          PR_NUMBER: ${{ needs.build.outputs.pull_request || needs.recover.outputs.pull_request }}
+        run: |
+          ./scripts/Publish-Release.ps1 -ArtifactDirectory "$env:RUNNER_TEMP/approved-release" -Repository $env:GITHUB_REPOSITORY -Commit $env:SOURCE_COMMIT -PullRequest ([int]$env:PR_NUMBER) -ValidateOnly
+
+      - name: Create GitHub tag and release token
+        if: vars.RELEASE_APP_ID != ''
+        id: release-app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-workflows: write
+
+      - name: Obtain short-lived NuGet publishing credential
+        id: nuget
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Publish approved packages and GitHub release
+        env:
+          GH_TOKEN: ${{ steps.release-app.outputs.token || github.token }}
+          GITHUB_PACKAGES_TOKEN: ${{ github.token }}
+          NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit || needs.recover.outputs.commit }}
+          PR_NUMBER: ${{ needs.build.outputs.pull_request || needs.recover.outputs.pull_request }}
+        run: |
+          ./scripts/Publish-Release.ps1 -ArtifactDirectory "$env:RUNNER_TEMP/approved-release" -Repository $env:GITHUB_REPOSITORY -Commit $env:SOURCE_COMMIT -PullRequest ([int]$env:PR_NUMBER)
