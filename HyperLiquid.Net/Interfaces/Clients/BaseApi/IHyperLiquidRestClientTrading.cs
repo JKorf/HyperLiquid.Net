@@ -116,8 +116,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="orderId">Order id</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="fast">["<c>fast</c>"] Fast flag, prioritized the request but can not be used for trigger orders</param>
         /// <param name="ct">Cancellation token</param>
-        Task<HttpResult> CancelOrderAsync(string symbol, long orderId, string? vaultAddress = null, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<HttpResult> CancelOrderAsync(string symbol, long orderId, string? vaultAddress = null, DateTime? expireAfter = null, bool? fast = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel multiple orders
@@ -131,8 +132,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="requests">Cancel requests</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="fast">["<c>fast</c>"] Fast flag, prioritized the request but can not be used for trigger orders</param>
         /// <param name="ct">Cancellation token</param>
-        Task<HttpResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, string? vaultAddress = null, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<HttpResult<CallResult[]>> CancelOrdersAsync(IEnumerable<HyperLiquidCancelRequest> requests, string? vaultAddress = null, DateTime? expireAfter = null, bool? fast = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel order by client order id
@@ -147,8 +149,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="clientOrderId">Client order id</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="fast">["<c>fast</c>"] Fast flag, prioritized the request but can not be used for trigger orders</param>
         /// <param name="ct">Cancellation token</param>
-        Task<HttpResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, string? vaultAddress = null, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<HttpResult> CancelOrderByClientOrderIdAsync(string symbol, string clientOrderId, string? vaultAddress = null, DateTime? expireAfter = null, bool? fast = null, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel multiple orders by client order id
@@ -162,8 +165,9 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         /// <param name="requests">Cancel requests</param>
         /// <param name="vaultAddress">["<c>vaultAddress</c>"] Vault address</param>
         /// <param name="expireAfter">["<c>expiresAfter</c>"] Timestamp after which the request expires and is rejected by the server</param>
+        /// <param name="fast">["<c>fast</c>"] Fast flag, prioritized the request but can not be used for trigger orders</param>
         /// <param name="ct">Cancellation token</param>
-        Task<HttpResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, string? vaultAddress = null, DateTime? expireAfter = null, CancellationToken ct = default);
+        Task<HttpResult<CallResult[]>> CancelOrdersByClientOrderIdAsync(IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests, string? vaultAddress = null, DateTime? expireAfter = null, bool? fast = null, CancellationToken ct = default);
 
         /// <summary>
         /// Place a new order

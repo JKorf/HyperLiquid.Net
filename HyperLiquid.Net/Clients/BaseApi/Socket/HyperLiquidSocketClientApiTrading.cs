@@ -493,9 +493,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             long orderId,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? fast = null,
             CancellationToken ct = default)
         {
-            var result = await CancelOrdersAsync([new HyperLiquidCancelRequest(symbol, orderId)], vaultAddress, expiresAfter, ct).ConfigureAwait(false);
+            var result = await CancelOrdersAsync([new HyperLiquidCancelRequest(symbol, orderId)], vaultAddress, expiresAfter, fast, ct).ConfigureAwait(false);
             if (!result.Success)
                 return result;
 
@@ -515,6 +516,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             IEnumerable<HyperLiquidCancelRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? fast = null,
             CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
@@ -540,8 +542,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancel" },
-                        { "cancels", orderRequests
-                        }
+                        { "cancels", orderRequests },
+                        { "f", fast == true ? true: null }
                     }
                 }
             };
@@ -578,9 +580,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             string clientOrderId,
             string? vaultAddress,
             DateTime? expiresAfter = null,
+            bool? fast = null,
             CancellationToken ct = default)
         {
-            var result = await CancelOrdersByClientOrderIdAsync([new HyperLiquidCancelByClientOrderIdRequest(symbol, clientOrderId)], vaultAddress, expiresAfter, ct).ConfigureAwait(false);
+            var result = await CancelOrdersByClientOrderIdAsync([new HyperLiquidCancelByClientOrderIdRequest(symbol, clientOrderId)], vaultAddress, expiresAfter, fast, ct).ConfigureAwait(false);
             if (!result.Success)
                 return result;
 
@@ -600,6 +603,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
             IEnumerable<HyperLiquidCancelByClientOrderIdRequest> requests,
             string? vaultAddress = null,
             DateTime? expiresAfter = null,
+            bool? fast = null,
             CancellationToken ct = default)
         {
             await HyperLiquidUtils.CheckBuilderFeeAsync(_baseClient.BaseClient).ConfigureAwait(false);
@@ -625,8 +629,8 @@ namespace HyperLiquid.Net.Clients.BaseApi
                     "action", new Parameters(HyperLiquidExchange._parameterSerializationSettings)
                     {
                         { "type", "cancelByCloid" },
-                        { "cancels", orderRequests
-                        }
+                        { "cancels", orderRequests },
+                        { "f", fast == true ? true: null }
                     }
                 }
             };
