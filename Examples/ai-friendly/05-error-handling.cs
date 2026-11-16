@@ -12,7 +12,7 @@ using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Enums;
 
-var client = new HyperLiquidRestClient(options =>
+using var client = new HyperLiquidRestClient(options =>
 {
     options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
@@ -39,7 +39,8 @@ else
 }
 
 // ---- 2. SIMPLE RETRY WITH BACKOFF ----
-// Retry only on transient errors. Do not retry validation or credential failures blindly.
+// This helper is for public reads only. Retry transient read errors with bounded backoff.
+// For uncertain account changes, reconcile order/trade/ledger state before resubmitting.
 
 async Task<HttpResult<T>> WithRetry<T>(
     Func<Task<HttpResult<T>>> call,
@@ -88,7 +89,7 @@ else
 }
 
 // To disable builder fee for a client:
-var noBuilderFeeClient = new HyperLiquidRestClient(options =>
+using var noBuilderFeeClient = new HyperLiquidRestClient(options =>
 {
     options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
     options.BuilderFeePercentage = 0;
@@ -115,15 +116,15 @@ var order = await noBuilderFeeClient.FuturesApi.Trading.PlaceOrderAsync(
 if (!order.Success)
 {
     var category = order.Error?.IsTransient == true
-        ? "Transient - retry with backoff may be appropriate"
-        : "Permanent - fix inputs, credentials, symbol, or account state";
+        ? "Transient submission failure - reconcile order and trade state before resubmitting"
+        : "Submission failed - inspect error and acceptance before deciding next action";
 
     Console.WriteLine($"{category}: {order.Error}");
 }
 
 // Common error scenarios:
 //   Unknown symbol:    use HYPE/USDC for spot and ETH for futures
-//   Credential error:  verify HyperLiquidCredentials public address/private key
+//   Credential error:  verify HyperLiquidCredential wallet and optional approved signer
 //   Order rejected:    check quantity, price, timeInForce, reduceOnly, trigger parameters
 //   Builder approval:  approve builder fee or set BuilderFeePercentage to 0 when intended
-//   Rate limit/server: retry only if result.Error?.IsTransient == true
+//   Rate limit/server: transient public reads can retry; uncertain writes require reconciliation

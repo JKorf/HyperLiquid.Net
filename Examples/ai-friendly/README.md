@@ -1,37 +1,15 @@
-# HyperLiquid.Net AI-Friendly Examples
+# HyperLiquid.Net examples
 
-These examples are compact single-file console programs for AI assistants, documentation snippets, and quick onboarding. They are written to compile independently when copied into a new console project with `HyperLiquid.Net` installed.
+Each file is an independent console program. Install `HyperLiquid.Net` in a console project and copy one file to `Program.cs`.
 
-## Files
+| Program | Workflow |
+|---|---|
+| [01-spot-quickstart.cs](01-spot-quickstart.cs) | Public prices, wallet balances, spot order/status/cancellation |
+| [02-futures.cs](02-futures.cs) | Perpetual metadata, leverage, positions, market orders and reduce-only close |
+| [03-websocket.cs](03-websocket.cs) | Public and account subscriptions with cleanup |
+| [04-multi-exchange.cs](04-multi-exchange.cs) | Shared API V2 ticker capabilities, symbol catalog, and subscription |
+| [05-error-handling.cs](05-error-handling.cs) | Results, bounded public-read retries, formatting and builder fee reads |
 
-|File|Demonstrates|
-|--|--|
-|`01-spot-quickstart.cs`|Public prices, spot ticker metadata, authenticated balances, spot limit order pattern, order status, cancellation|
-|`02-futures.cs`|Perpetual futures ticker data, leverage, account positions, market order pattern, reduce-only close pattern|
-|`03-websocket.cs`|Spot/futures ticker subscriptions, order book subscription, authenticated order updates, unsubscribe cleanup|
-|`04-multi-exchange.cs`|CryptoExchange.Net SharedApis for exchange-agnostic REST/WebSocket code and capability discovery|
-|`05-error-handling.cs`|`HttpResult<T>`, `QueryResult<T>`, `WebSocketResult<UpdateSubscription>`, and `ExchangeCallResult<T>` handling, retry decisions, symbol formatting, builder fee checks, validation categories|
+Replace `<private key>` only for the intended account operations. Several examples submit orders or change leverage when executed; compilation does not execute them. Read [operational considerations](../../.claude/skills/hyperliquid-net/references/safety.md) before running account-changing examples. Limit orders can fill before cancellation.
 
-## Setup
-
-```bash
-dotnet new console -n HyperLiquidExample
-cd HyperLiquidExample
-dotnet add package HyperLiquid.Net
-```
-
-Copy one example into `Program.cs`, replace `PUBLIC_ADDRESS` and `PRIVATE_KEY` where authenticated actions are used, and run:
-
-```bash
-dotnet run
-```
-
-## Rules These Examples Follow
-
-- Use `HyperLiquidRestClient` and `HyperLiquidSocketClient`; no raw HTTP.
-- Use `HyperLiquidCredentials`, not generic `ApiCredentials`.
-- Check `.Success` before reading `.Data`.
-- Use `HYPE/USDC` style spot symbols and `ETH` style futures symbols.
-- Pass `price` to market orders because HyperLiquid uses it for max slippage calculation.
-- Store WebSocket subscriptions and unsubscribe on shutdown.
-- Use SharedApis for exchange-agnostic code.
+See the [consumer skill](../../.claude/skills/hyperliquid-net/SKILL.md) and [usage snippets](../../.claude/skills/hyperliquid-net/references/usage.md) for wallet/signer setup. The repository's `AiExampleCompileTests` compiles these programs without running them.

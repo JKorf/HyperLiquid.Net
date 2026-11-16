@@ -1,0 +1,4 @@
+interface:
+  display_name: "HyperLiquid.Net"
+  short_description: "Build C# HyperLiquid spot and futures integrations."
+  default_prompt: "Use $hyperliquid-net to implement a HyperLiquid.Net REST, websocket, account, or trading workflow."

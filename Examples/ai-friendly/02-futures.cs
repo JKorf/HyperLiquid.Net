@@ -4,14 +4,14 @@
 // market order pattern, reduce-only close pattern.
 //
 // Setup: dotnet add package HyperLiquid.Net
-// Substitute PUBLIC_ADDRESS / PRIVATE_KEY. The key must be able to sign HyperLiquid actions.
+// Substitute <private key> with a wallet signing key. The key must be able to sign HyperLiquid actions.
 
 using HyperLiquid.Net;
 using HyperLiquid.Net.Clients;
 using HyperLiquid.Net.Enums;
 using CryptoExchange.Net.Web3;
 
-var client = new HyperLiquidRestClient(options =>
+using var client = new HyperLiquidRestClient(options =>
 {
     options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
@@ -43,6 +43,12 @@ if (!leverage.Success)
 
 Console.WriteLine($"Leverage updated for {symbol}");
 
+if (ethTicker.MidPrice is not decimal referencePrice || referencePrice <= 0)
+{
+    Console.WriteLine("No usable reference price");
+    return;
+}
+
 // ---- 3. PLACE MARKET ORDER (open long position) ----
 // Market orders still require a price. HyperLiquid uses it for max slippage calculation.
 var openOrder = await client.FuturesApi.Trading.PlaceOrderAsync(
@@ -50,7 +56,7 @@ var openOrder = await client.FuturesApi.Trading.PlaceOrderAsync(
     side: OrderSide.Buy,
     orderType: OrderType.Market,
     quantity: 0.01m,
-    price: ethTicker.MidPrice ?? 3000m);
+    price: referencePrice);
 
 if (!openOrder.Success)
 {
@@ -83,18 +89,27 @@ Console.WriteLine($"Unrealized PnL: {position.UnrealizedPnl}");
 Console.WriteLine($"Liquidation price: {position.LiquidationPrice}");
 
 // ---- 5. CLOSE THE POSITION ----
+var closePrices = await client.FuturesApi.ExchangeData.GetPricesAsync();
+if (!closePrices.Success)
+{
+    Console.WriteLine(closePrices.Error);
+    return;
+}
+if (!closePrices.Data.TryGetValue(symbol, out var closePrice) || closePrice <= 0)
+    return;
+
 var closeSide = position.PositionQuantity > 0 ? OrderSide.Sell : OrderSide.Buy;
 var closeOrder = await client.FuturesApi.Trading.PlaceOrderAsync(
     symbol: symbol,
     side: closeSide,
     orderType: OrderType.Market,
     quantity: Math.Abs(position.PositionQuantity ?? 0),
-    price: ethTicker.MidPrice ?? position.AverageEntryPrice ?? 3000m,
+    price: closePrice,
     reduceOnly: true);
 
 if (closeOrder.Success)
 {
-    Console.WriteLine($"Closed position via order {closeOrder.Data.OrderId}");
+    Console.WriteLine($"Submitted reduce-only close order {closeOrder.Data.OrderId}; verify fills and remaining position.");
 }
 
 // Common variations:

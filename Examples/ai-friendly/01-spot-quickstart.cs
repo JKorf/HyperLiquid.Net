@@ -7,7 +7,7 @@
 //   dotnet new console -n HyperLiquidSpotQuickstart && cd HyperLiquidSpotQuickstart
 //   dotnet add package HyperLiquid.Net
 //   Copy this file content into Program.cs
-//   Substitute PUBLIC_ADDRESS / PRIVATE_KEY below
+//   Substitute <private key> with the intended wallet signing key
 //   dotnet run
 
 using HyperLiquid.Net;
@@ -40,7 +40,7 @@ Console.WriteLine($"HYPE/USDC base volume: {hypeTicker.BaseVolume}");
 Console.WriteLine($"HYPE/USDC quote volume: {hypeTicker.QuoteVolume}");
 
 // ---- 2. AUTHENTICATED CLIENT (for account / trading) ----
-var tradingClient = new HyperLiquidRestClient(options =>
+using var tradingClient = new HyperLiquidRestClient(options =>
 {
     options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
@@ -93,4 +93,4 @@ if (cancel.Success)
 //   Market order:  orderType: OrderType.Market, still pass price for slippage calculation
 //   Trigger order: add triggerPrice and tpSlType
 //   Client order id: pass a 128-bit hex string via clientOrderId when external correlation is needed
-//   Shared API:    use new HyperLiquidRestClient().SpotApi.SharedClient for exchange-agnostic code
+//   Shared API:    use new HyperLiquidRestClient().SpotApi.SharedApi with narrow V2 capabilities for exchange-agnostic code

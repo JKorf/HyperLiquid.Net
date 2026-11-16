@@ -1,258 +1,51 @@
----
-name: hyperliquid-net
-description: Use HyperLiquid.Net when generating C#/.NET code that interacts with the HyperLiquid DEX REST or WebSocket API, including spot, perpetual futures, account state, staking, vault, HIP-3 DEX, HIP-4 outcomes, market data, order placement, or CryptoExchange.Net SharedApis. Triggers on requests mentioning HyperLiquid integration in C#, .NET, dotnet, F#, or VB.NET context.
----
+# Working on HyperLiquid.Net
 
-# HyperLiquid.Net Skill
+For library development, use this file. For code that consumes the library, read the [HyperLiquid.Net skill](.claude/skills/hyperliquid-net/SKILL.md). [llms.txt](llms.txt) indexes the remaining documentation.
 
-## Quick Decision
+## Repository layout
 
-If the user asks for HyperLiquid API access in C#/.NET, use `HyperLiquid.Net`. Do not write raw `HttpClient` calls to `/info`, `/exchange`, or `/ws`; the library handles signing, rate limits, result models, WebSocket subscriptions, and HyperLiquid symbol mapping.
+- [Client interfaces](HyperLiquid.Net/Interfaces/Clients/): public endpoint signatures and XML documentation.
+- [Clients](HyperLiquid.Net/Clients/): REST, WebSocket, and Shared API implementations, grouped by API and transport.
+- [Models](HyperLiquid.Net/Objects/Models/), [options](HyperLiquid.Net/Objects/Options/), and [enums](HyperLiquid.Net/Enums/): wire models and configuration.
+- [Unit tests](HyperLiquid.Net.UnitTests/): request/response fixtures, subscription validation, and example compilation.
+- [AI-friendly examples](Examples/ai-friendly/): complete consumer programs.
 
-Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
+## Build and validation
 
-## Installation
+Run commands from the repository root. Use the SDK configured in the [build workflow](.github/workflows/dotnet.yml); targets and dependencies are defined in the [library project](HyperLiquid.Net/HyperLiquid.Net.csproj).
 
-```bash
-dotnet add package HyperLiquid.Net
+```sh
+dotnet restore HyperLiquid.Net.sln
+dotnet build HyperLiquid.Net.sln --no-restore
+dotnet test HyperLiquid.Net.UnitTests/HyperLiquid.Net.UnitTests.csproj --no-build --filter "FullyQualifiedName!~IntegrationTests"
 ```
 
-Targets: netstandard2.0, netstandard2.1, net8.0, net9.0, net10.0. Native AOT is supported.
+Debug builds select a subset of frameworks. To check every supported target:
 
-## Core Pattern: REST Client Setup
-
-```csharp
-using HyperLiquid.Net;
-using HyperLiquid.Net.Clients;
-
-var restClient = new HyperLiquidRestClient(options =>
-{
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
-});
+```sh
+dotnet build HyperLiquid.Net/HyperLiquid.Net.csproj -p:BuildAllFrameworks=true
 ```
 
-Public market data does not require credentials:
+Run focused tests for the change. For edits to consumer examples:
 
-```csharp
-var publicClient = new HyperLiquidRestClient();
+```sh
+dotnet test HyperLiquid.Net.UnitTests/HyperLiquid.Net.UnitTests.csproj --filter FullyQualifiedName~AiExampleCompileTests
 ```
 
-## Core Pattern: Result Handling
+That test compiles the examples; it does not execute their exchange operations or validate Markdown snippets. The normal test command above excludes integration fixtures. Native REST integration has `Run = false`, but native socket integration has `Run = true`; Shared REST integration can be enabled with `INTEGRATION=1`. Inspect integration fixtures before running the unfiltered CI test command; they can contact the exchange. Do not enable authenticated exchange calls as part of routine validation.
 
-REST methods return `HttpResult<T>` or `HttpResult`; WebSocket subscriptions return `WebSocketResult<UpdateSubscription>`; WebSocket request API calls return `QueryResult<T>` or `QueryResult`; shared symbol/cache helpers can return `ExchangeCallResult<T>`. Always check `.Success` before reading `.Data`.
+## Implementation conventions
 
-```csharp
-var prices = await restClient.SpotApi.ExchangeData.GetPricesAsync();
-if (!prices.Success)
-{
-    Console.WriteLine(prices.Error);
-    return;
-}
+- Use the matching client interface and a neighboring endpoint implementation as the starting point. Preserve endpoint metadata, serialization, signing, rate limits, and cancellation behavior.
+- Update public interfaces and XML documentation together with implementations. Add meaningful request/response or subscription coverage when behavior changes.
+- Keep Shared API adapters consistent with native endpoint behavior; verify capability support and trading modes against the implemented surface.
+- Preserve serialization compatibility and source-generated JSON metadata when changing models.
+- Keep changes compatible with every target in the library project; gate framework-specific APIs where required.
 
-var hypePrice = prices.Data["HYPE/USDC"];
-```
+## AI documentation ownership
 
-## Core Pattern: API Surface
-
-```csharp
-restClient.SpotApi.ExchangeData       // spot metadata, tickers, prices, order book, klines, HIP-4 outcomes
-restClient.SpotApi.Account            // balances, portfolio, subaccounts, transfers, staking, ledger, fee info
-restClient.SpotApi.Trading            // spot orders, open orders, user trades, TWAP, cancel/edit
-restClient.SpotApi.SharedApi       // shared spot REST interfaces
-
-restClient.FuturesApi.ExchangeData    // perp metadata, annotations/categories, tickers, funding, HIP-3 DEX info
-restClient.FuturesApi.Account         // perp account, funding history, user symbol state
-restClient.FuturesApi.Trading         // perp orders, leverage, margin, TWAP, cancel/edit
-restClient.FuturesApi.SharedApi    // shared futures REST interfaces
-
-socketClient.SpotApi.{Account|ExchangeData|Trading}
-socketClient.FuturesApi.{Account|ExchangeData|Trading}
-```
-
-## Symbols
-
-HyperLiquid.Net uses `[BaseAsset]/[QuoteAsset]` notation for spot and `[BaseAsset]` for perpetual futures:
-
-```text
-Spot:    HYPE/USDC
-Futures: ETH
-```
-
-Use `HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode)` or `SharedSymbol` instead of ad hoc string formatting when building reusable code. In SharedApis, HyperLiquid maps spot aliases such as `UBTC`/`UETH`, handles stable quotes, exposes spot/futures symbol catalogs, and populates shared display names plus crypto, stablecoin, equity, commodity, and fiat asset classifications.
-
-## Core Pattern: Spot Order
-
-HyperLiquid spot and futures trading share `PlaceOrderAsync`. For a market order, still pass a current or acceptable price; HyperLiquid uses it for max slippage calculation.
-
-```csharp
-using HyperLiquid.Net.Enums;
-
-var order = await restClient.SpotApi.Trading.PlaceOrderAsync(
-    symbol: "HYPE/USDC",
-    side: OrderSide.Buy,
-    orderType: OrderType.Limit,
-    quantity: 1m,
-    price: 20m,
-    timeInForce: TimeInForce.GoodTillCanceled);
-
-if (!order.Success) { Console.WriteLine(order.Error); return; }
-Console.WriteLine(order.Data.OrderId);
-```
-
-## Core Pattern: Futures Order
-
-```csharp
-using HyperLiquid.Net.Enums;
-
-var leverage = await restClient.FuturesApi.Trading.SetLeverageAsync(
-    symbol: "ETH",
-    leverage: 5,
-    marginType: MarginType.Cross);
-if (!leverage.Success) { Console.WriteLine(leverage.Error); return; }
-
-var order = await restClient.FuturesApi.Trading.PlaceOrderAsync(
-    symbol: "ETH",
-    side: OrderSide.Buy,
-    orderType: OrderType.Market,
-    quantity: 0.01m,
-    price: 3000m);
-```
-
-Use `reduceOnly: true` when closing a futures position and you want to avoid increasing or flipping exposure.
-
-## Core Pattern: WebSocket Subscriptions
-
-Use `HyperLiquidSocketClient`. Store the returned `UpdateSubscription` and unsubscribe when done.
-
-```csharp
-using HyperLiquid.Net.Clients;
-
-var socketClient = new HyperLiquidSocketClient();
-
-var sub = await socketClient.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync(
-    "HYPE/USDC",
-    update => Console.WriteLine(update.Data.MidPrice));
-
-if (!sub.Success) { Console.WriteLine(sub.Error); return; }
-
-await socketClient.UnsubscribeAsync(sub.Data);
-```
-
-Authenticated streams use credentials and account/trading members:
-
-```csharp
-var authSocket = new HyperLiquidSocketClient(options =>
-{
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
-});
-
-var orders = await authSocket.FuturesApi.Trading.SubscribeToOrderUpdatesAsync(
-    address: null,
-    onMessage: update => Console.WriteLine(update.Data.Length));
-```
-
-## Multi-Exchange via SharedApis
-
-```csharp
-using CryptoExchange.Net.SharedApis;
-using HyperLiquid.Net.Clients;
-
-var restClient = new HyperLiquidRestClient();
-IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
-// Use the exchange-level `IHyperLiquidSharedApiClient` aggregate's `GetCapability(...)` or `GetCapabilities(...)` methods for runtime capability lookup; use an API surface's `.SharedApi` property when the transport and API are known.
-var symbol = new SharedSymbol(TradingMode.Spot, "HYPE", "USDC");
-
-var ticker = await tickerClient.GetTickerAsync(new GetTickerRequest(symbol));
-if (!ticker.Success) { Console.WriteLine(ticker.Error); return; }
-
-Console.WriteLine(ticker.Data.LastPrice);
-```
-
-Available shared capability interfaces include `IGetTickerRest`, `IGetSpotSymbolsRest`, `IGetFuturesSymbolsRest`, `IPlaceSpotOrderRest`, `IPlaceFuturesOrderRest`, `IGetBalancesRest`, `IGetPositionsRest`, `IGetOrderBookRest`, `IGetKlinesRest`, `ISubscribeTickerSocket`, `ISubscribeOrderBookSocket`, and more. Shared symbol requests honor `GetSymbolsRequest` filters.
-
-## Dependency Injection
-
-```csharp
-using HyperLiquid.Net;
-
-services.AddHyperLiquid(options =>
-{
-    options.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
-});
-
-// Inject IHyperLiquidRestClient and IHyperLiquidSocketClient.
-```
-
-Configure REST and socket credentials separately when needed:
-
-```csharp
-services.AddHyperLiquid(options =>
-{
-    options.Rest.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
-    options.Socket.ApiCredentials = new HyperLiquidCredentials("PUBLIC_ADDRESS", "PRIVATE_KEY");
-});
-```
-
-## Environments
-
-```csharp
-var live = new HyperLiquidRestClient(o => o.Environment = HyperLiquidEnvironment.Live);
-var testnet = new HyperLiquidRestClient(o => o.Environment = HyperLiquidEnvironment.Testnet);
-```
-
-## Builder Fee
-
-HyperLiquid.Net enables HyperLiquid builder code by default. The default `BuilderFeePercentage` is `0.01m` (1 bps / 0.01%). Disable it only when the user explicitly wants to:
-
-```csharp
-var client = new HyperLiquidRestClient(options =>
-{
-    options.BuilderFeePercentage = 0;
-});
-```
-
-Trading clients may need builder fee approval. Use `GetApprovedBuilderFeeAsync()` and `ApproveBuilderFeeAsync()` when handling this explicitly.
-
-## Common Pitfalls - Avoid
-
-- Do not use raw HTTP to `/info` or `/exchange`; use `HyperLiquidRestClient`.
-- Do not use generic `ApiCredentials`; use `HyperLiquidCredentials("public address", "private key")`.
-- Do not use Binance-style symbols such as `HYPEUSDC`; use `HYPE/USDC` for spot and `HYPE` or `ETH` for perps.
-- Do not assume futures symbols include `USDC`; futures symbols are base asset only.
-- Do not read `.Data` without checking `.Success`.
-- Do not instantiate clients per request. Reuse clients or use DI.
-- Do not block on async calls with `.Result` or `.Wait()`.
-- Do not forget to unsubscribe WebSocket subscriptions.
-- Do not omit `price` for market orders; `PlaceOrderAsync` requires it and HyperLiquid uses it for slippage calculation.
-- Do not invent separate margin or portfolio clients; use `SpotApi` and `FuturesApi` members that exist in the interfaces.
-- Do not invent server time endpoints; inspect interfaces when unsure.
-
-## When the User Wants Other HyperLiquid Features
-
-- Spot balances: `restClient.SpotApi.Account.GetBalancesAsync()`
-- User portfolio history: `restClient.SpotApi.Account.GetUserPortfolioAsync()` or `restClient.FuturesApi.Account.GetUserPortfolioAsync()`
-- Subaccounts with spot balances and per-DEX futures state: `restClient.SpotApi.Account.GetSubAccounts2Async()`
-- User abstraction state: `restClient.SpotApi.Account.GetUserAbstractionStateAsync()` or `restClient.FuturesApi.Account.GetUserAbstractionStateAsync()`
-- Futures account and positions: `restClient.FuturesApi.Account.GetAccountInfoAsync()`
-- Mid prices: `restClient.SpotApi.ExchangeData.GetPricesAsync()` or `restClient.FuturesApi.ExchangeData.GetPricesAsync()`
-- Order book: `ExchangeData.GetOrderBookAsync(symbol)`
-- Klines: `ExchangeData.GetKlinesAsync(symbol, KlineInterval.OneMinute, start, end)`
-- Funding rates: `restClient.FuturesApi.ExchangeData.GetFundingRateHistoryAsync(symbol, start, end)`
-- Set leverage: `restClient.FuturesApi.Trading.SetLeverageAsync(symbol, leverage, MarginType.Cross)`
-- TWAP: `Trading.PlaceTwapOrderAsync(...)` and `CancelTwapOrderAsync(...)`
-- Dead man's switch: `Trading.CancelAfterAsync(timeout)`
-- Staking: `Account.GetStaking*`, `DepositIntoStakingAsync`, `WithdrawFromStakingAsync`, `DelegateOrUndelegateStakeFromValidatorAsync`
-- Vaults: `Account.DepositOrWithdrawFromVaultAsync(...)`
-- HIP-3 DEX: `FuturesApi.ExchangeData.GetPerpDexesAsync()`, `GetExchangeInfoAllDexesAsync()`, `FuturesApi.Account.GetHip3DexAbstractionAsync()`
-- Perp annotations and categories: `FuturesApi.ExchangeData.GetPerpAnnotationAsync(asset)`, `GetPerpCategoriesAsync()`, `GetPerpConciseAnnotationsAsync()`
-- HIP-4 outcomes: `SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()`, `GetSettledOutcomeAsync(outcomeId)`, `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)`, `socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)`
-
-## Reference
-
-- Full client reference: https://cryptoexchange.jkorf.dev/HyperLiquid.Net/
-- Examples: `Examples/ai-friendly/`
-- AI quick map: `docs/ai-api-map.md`
-- Source interfaces: `HyperLiquid.Net/Interfaces/Clients/**`
-- Source: https://github.com/JKorf/HyperLiquid.Net
-- NuGet: https://www.nuget.org/packages/HyperLiquid.Net
-- Discord: https://discord.gg/MSpeEtSY8t
+- [SKILL.md](.claude/skills/hyperliquid-net/SKILL.md) owns consumer conventions and routes to detailed skill references.
+- [API surfaces](.claude/skills/hyperliquid-net/references/api-surfaces.md) owns endpoint routing; [usage](.claude/skills/hyperliquid-net/references/usage.md) owns snippets.
+- Link to those files instead of repeating API guides here or in tool-specific instructions.
+- Keep skill links relative. References outside the skill are checkout-only; packaged guidance must remain usable without repository sources.
+- The project packs [.claude/skills](.claude/skills/) into `skills/` in NuGet. After changing its layout, inspect package entries and verify referenced resources are included.

@@ -1,20 +1,10 @@
-# HyperLiquid.Net AI API Quick Map
+# HyperLiquid.Net API surfaces
 
-Use this file to route common user intents to the correct HyperLiquid.Net client member. If a method name or parameter is not listed here, inspect `HyperLiquid.Net/Interfaces/Clients/**` before generating code.
+## Client roots
 
-## Client Roots
+`HyperLiquidRestClient` / `IHyperLiquidRestClient` and `HyperLiquidSocketClient` / `IHyperLiquidSocketClient` expose `SpotApi` and `FuturesApi`, each with `ExchangeData`, `Account`, and `Trading`. Socket request APIs mirror the corresponding REST groups and also expose streams. `IHyperLiquidTrackerFactory` provides trackers.
 
-| Intent | Use |
-|---|---|
-| REST calls | `new HyperLiquidRestClient()` |
-| WebSocket streams and socket API requests | `new HyperLiquidSocketClient()` |
-| API key authentication | `options.ApiCredentials = new HyperLiquidCredentials("public address", "private key")` |
-| Live environment | `HyperLiquidEnvironment.Live` |
-| Testnet environment | `HyperLiquidEnvironment.Testnet` |
-| Dependency injection | `services.AddHyperLiquid(options => { ... })` |
-| Disable builder fee | `options.BuilderFeePercentage = 0` |
-| Format spot symbol | `HyperLiquidExchange.FormatSymbol("HYPE", "USDC", TradingMode.Spot)` |
-| Format futures symbol | `HyperLiquidExchange.FormatSymbol("ETH", "USDC", TradingMode.PerpetualLinear)` |
+Account and trading interfaces inherit shared base operations: either API root can access portfolio history, abstraction state, ledger, staking, vaults, transfers, order management, TWAP, and builder approvals. Choose the root matching the product and symbol. `Account.SendAssetAsync(...)` supports explicit source/destination DEX, token name/id, and optional subaccount. Check the method-specific parameters rather than assuming every account call accepts `dex`.
 
 ## Spot REST
 
@@ -41,6 +31,8 @@ Use this file to route common user intents to the correct HyperLiquid.Net client
 | Get extended subaccounts with spot balances and per-DEX futures state | `client.SpotApi.Account.GetSubAccounts2Async()` |
 | Get user portfolio history | `client.SpotApi.Account.GetUserPortfolioAsync()` or `client.FuturesApi.Account.GetUserPortfolioAsync()` |
 | Get user role | `client.SpotApi.Account.GetUserRoleAsync()` |
+| Approve an agent | `client.SpotApi.Account.ApproveAgentAsync(...)` |
+| Remove an agent | `client.SpotApi.Account.RemoveAgentAsync(...)` |
 | Get extra agents | `client.SpotApi.Account.GetExtraAgentsAsync()` |
 | Get staking delegations | `client.SpotApi.Account.GetStakingDelegationsAsync()` |
 | Get staking summary | `client.SpotApi.Account.GetStakingSummaryAsync()` |
@@ -66,6 +58,10 @@ Use this file to route common user intents to the correct HyperLiquid.Net client
 | Edit multiple orders | `client.SpotApi.Trading.EditOrdersAsync(requests)` |
 | Place TWAP order | `client.SpotApi.Trading.PlaceTwapOrderAsync(...)` |
 | Cancel TWAP order | `client.SpotApi.Trading.CancelTwapOrderAsync(symbol, twapId)` |
+
+### HIP-4 outcomes
+
+Use `client.SpotApi.ExchangeData.GetQuestionsAndOutcomesInfoAsync()` and `GetSettledOutcomeAsync(outcomeId)` for outcome metadata and settlement. `HyperLiquidUtils.GetOutcomeInfoAsync(client, outcomeId)` resolves outcome information; `socketClient.SpotApi.ExchangeData.SubscribeToOutcomeInfoUpdatesAsync(...)` streams updates.
 
 ## Futures REST
 
@@ -144,58 +140,27 @@ Use this file to route common user intents to the correct HyperLiquid.Net client
 | Subscribe order updates | `socketClient.FuturesApi.Trading.SubscribeToOrderUpdatesAsync(address, handler)` |
 | Subscribe user trade updates | `socketClient.FuturesApi.Trading.SubscribeToUserTradeUpdatesAsync(address, handler)` |
 
-## SharedApis
+## Shared API V2
 
-Use SharedApis for exchange-agnostic code across HyperLiquid, Binance, OKX, Bybit, Kraken, and other CryptoExchange.Net libraries.
+`IHyperLiquidSharedApiClient` exposes these aggregate properties. Each native surface also exposes the corresponding `.SharedApi`.
 
-| User intent | HyperLiquid.Net member or interface |
-|---|---|
-| Shared spot REST client | `new HyperLiquidRestClient().SpotApi.SharedApi` |
-| Shared futures REST client | `new HyperLiquidRestClient().FuturesApi.SharedApi` |
-| Shared spot socket client | `new HyperLiquidSocketClient().SpotApi.SharedApi` |
-| Shared futures socket client | `new HyperLiquidSocketClient().FuturesApi.SharedApi` |
-| Resolve a runtime-selected Shared API capability | `IHyperLiquidSharedApiClient.GetCapability(...)` |
-| Get shared spot symbols with catalog, filters, and asset classifications | `IGetSpotSymbolsRest.GetSpotSymbolsAsync(new GetSymbolsRequest(...))` |
-| Get shared futures symbols with catalog, filters, and asset classifications | `IGetFuturesSymbolsRest.GetFuturesSymbolsAsync(new GetSymbolsRequest(...))` |
-| Shared spot ticker REST | `IGetTickerRest.GetTickerAsync(new GetTickerRequest(symbol))` |
-| Shared futures ticker REST | `IGetTickerRest.GetTickerAsync(new GetTickerRequest(symbol))` |
-| Shared spot order REST | `IPlaceSpotOrderRest.PlaceSpotOrderAsync(...)` |
-| Shared futures order REST | `IPlaceFuturesOrderRest.PlaceFuturesOrderAsync(...)` |
-| Place/cancel shared spot order over WebSocket | `IPlaceSpotOrderSocket.PlaceSpotOrderAsync(...)` / `ICancelSpotOrderSocket.CancelSpotOrderAsync(...)` |
-| Place/cancel shared futures order over WebSocket | `IPlaceFuturesOrderSocket.PlaceFuturesOrderAsync(...)` / `ICancelFuturesOrderSocket.CancelFuturesOrderAsync(...)` |
-| Shared balances REST | `IGetBalancesRest.GetBalancesAsync(new GetBalancesRequest(...))` |
-| Shared position REST | `IGetPositionsRest.GetPositionsAsync(...)` |
-| Shared ticker socket | `ISubscribeTickerSocket.SubscribeToTickerUpdatesAsync(...)` |
-| Shared order book socket | `ISubscribeOrderBookSocket.SubscribeToOrderBookUpdatesAsync(...)` |
-| Shared trade socket | `ISubscribeTradesSocket.SubscribeToTradeUpdatesAsync(...)` |
+- `SpotRest` (`IHyperLiquidRestClientSpotSharedApi`): `IGetBalancesRest`, `IGetKlinesRest`, `IGetOrderBookRest`, `IGetTickerRest`, `IGetAllTickersRest`, `IGetSpotSymbolsRest`, `IPlaceSpotOrderRest`, `IGetSpotOrderRest`, `IGetOpenSpotOrdersRest`, `IGetClosedSpotOrdersRest`, `IGetSpotOrderTradesRest`, `IGetSpotUserTradeHistoryRest`, `ICancelSpotOrderRest`, `IGetAssetRest`, `IGetAllAssetsRest`, `IGetFeesRest`, `IWithdrawRest`, `IGetSpotOrderByClientOrderIdRest`, `ICancelSpotOrderByClientOrderIdRest`, `IGetBookTickerRest`, `ITransferRest`.
+- `FuturesRest` (`IHyperLiquidRestClientFuturesSharedApi`): `IGetBalancesRest`, `IGetKlinesRest`, `IGetOrderBookRest`, `IGetTickerRest`, `IGetAllTickersRest`, `IGetFeesRest`, `IGetFundingRateHistoryRest`, `IGetLeverageRest`, `ISetLeverageRest`, `IGetOpenInterestRest`, `IGetFuturesSymbolsRest`, `IPlaceFuturesOrderRest`, `IGetFuturesOrderRest`, `IGetOpenFuturesOrdersRest`, `IGetClosedFuturesOrdersRest`, `IGetFuturesOrderTradesRest`, `IGetFuturesUserTradeHistoryRest`, `ICancelFuturesOrderRest`, `IGetPositionsRest`, `IGetFuturesOrderByClientOrderIdRest`, `ICancelFuturesOrderByClientOrderIdRest`, `ISetFuturesTpSlRest`, `ICancelFuturesTpSlRest`, `IGetBookTickerRest`.
+- `SpotSocket` (`IHyperLiquidSocketClientSpotSharedApi`): `ISubscribeTickerSocket`, `ISubscribeTradesSocket`, `ISubscribeKlinesSocket`, `ISubscribeOrderBookSocket`, `ISubscribeSpotOrdersSocket`, `ISubscribeBalancesSocket`, `ISubscribeBookTickerSocket`, `ISubscribeUserTradesSocket`, `IPlaceSpotOrderSocket`, `ICancelSpotOrderSocket`.
+- `FuturesSocket` (`IHyperLiquidSocketClientFuturesSharedApi`): `ISubscribeTickerSocket`, `ISubscribeTradesSocket`, `ISubscribeKlinesSocket`, `ISubscribeOrderBookSocket`, `ISubscribeUserTradesSocket`, `ISubscribeFuturesOrdersSocket`, `ISubscribeBalancesSocket`, `ISubscribePositionsSocket`, `ISubscribeBookTickerSocket`, `IPlaceFuturesOrderSocket`, `ICancelFuturesOrderSocket`.
 
-Shared REST methods return `HttpResult<T>` / `HttpResult`; shared socket subscriptions return `WebSocketResult<UpdateSubscription>`; shared socket order requests return `QueryResult<SharedId>`; shared symbol/cache helpers such as `SupportsSpotSymbolAsync` and `SupportsFuturesSymbolAsync` can return `ExchangeCallResult<T>`.
+Use aggregate properties or inject a narrow capability for known operations. For runtime selection, call `aggregate.GetCapability(SharedCapabilities.Tickers.GetTicker.Rest, tradingMode: TradingMode.Spot)` and check for null before using the match's `Capability` and `Options`. Descriptors identify operations; they do not guarantee support. `GetCapabilities` returns all matches; `Discover` summarizes support. With several exchanges registered, inject `IEnumerable<TCapability>` and select by exchange and supported trading mode.
 
-For shared socket subscriptions, keep the concrete socket client and unsubscribe with `await socketClient.UnsubscribeAsync(subscription.Data)`.
+## Symbols, catalogs, and quantities
 
-## Result Handling
+Native spot symbols use `Base/Quote`, e.g. `HYPE/USDC`. Native perpetual symbols use the base name, e.g. `ETH`; preserve HIP-3 DEX prefixes from metadata. `HyperLiquidExchange.FormatSymbol` and `SharedSymbol` handle reusable spot/perpetual formatting. Shared adapters normalize aliases such as UBTC/UETH. Shared perpetual catalog names can use `ETH/USDC`, while native perpetual endpoints expect `ETH`; do not pass a Shared catalog name directly to native trading. Preserve DEX prefixes when mapping back to native symbols.
 
-| Situation | Pattern |
-|---|---|
-| REST success check | `if (!result.Success) { Console.WriteLine(result.Error); return; }` |
-| Socket subscription success check | `if (!sub.Success) { Console.WriteLine(sub.Error); return; }` where `sub` is `WebSocketResult<UpdateSubscription>` |
-| Socket request success check | `if (!query.Success) { Console.WriteLine(query.Error); return; }` where `query` is `QueryResult<T>` or `QueryResult` |
-| Read REST data | Read `result.Data` only after `result.Success` |
-| Read shared helper data | Read `ExchangeCallResult<T>.Data` only after `.Success` |
-| Retry decision | Retry only when `result.Error?.IsTransient == true` |
-| Cancellation | Pass `ct: cancellationToken` |
+Use `IGetSpotSymbolsRest.GetSpotSymbolsAsync(new GetSymbolsRequest())` or `IGetFuturesSymbolsRest.GetFuturesSymbolsAsync(new GetSymbolsRequest())` before reading `SpotSymbolCatalog` or `FuturesSymbolCatalog`. The futures symbols request accepts the optional `dex` exchange parameter; retrieve the unfiltered catalog when exploring all DEXes. Inspect request filters and catalog display names, base/quote asset types and subtypes: crypto, stablecoin, TradFi equity/commodity, and fiat classifications where populated. Resolve HIP-3 metadata and account/DEX abstraction for the selected market; do not assume every DEX uses the same collateral.
 
-## Common Routing Pitfalls
+Native order quantities are decimal base-asset amounts, including perpetual orders. Shared order support and order books use `SharedQuantityType.BaseAsset`; pass base quantity through `SharedOrderQuantity`, rather than contract counts or quote notional. Respect metadata quantity/price precision and minimum order constraints. Market orders still require a current reference `price` for slippage calculation.
 
-| Do not use | Use instead |
-|---|---|
-| Raw `HttpClient` to HyperLiquid endpoints | `HyperLiquidRestClient` / `HyperLiquidSocketClient` |
-| `ApiCredentials` | `HyperLiquidCredentials` |
-| `HYPEUSDC` spot symbol | `HYPE/USDC` |
-| `ETH/USDC` futures symbol | `ETH` |
-| `.Data` without `.Success` check | Check `.Success` first |
-| Market order without price | Pass `price` to `PlaceOrderAsync` |
-| Separate margin client | `FuturesApi.Trading.SetLeverageAsync` / `UpdateIsolatedMarginAsync` |
-| Separate staking client | `SpotApi.Account.GetStaking*` and staking action methods |
-| Unsubscribe from a shared subscription | Keep the concrete socket client and call `socketClient.UnsubscribeAsync(subscription.Data)` |
-| Invented `GetServerTimeAsync()` | Inspect interfaces; HyperLiquid.Net does not expose that method |
+## Checkout-only sources
+
+- [Public interfaces](../../../../HyperLiquid.Net/Interfaces/Clients/): exact signatures, optional addresses/DEX parameters, inheritance, and cancellation tokens.
+- [Shared adapters](../../../../HyperLiquid.Net/Clients/): supported options, quantity conversions, and symbol classification.
+- [Complete examples](../../../../Examples/ai-friendly/): independently compilable programs.

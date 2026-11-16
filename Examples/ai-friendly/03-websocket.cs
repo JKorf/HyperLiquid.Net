@@ -12,7 +12,7 @@ using CryptoExchange.Net.Web3;
 // ---- 1. PUBLIC SOCKET CLIENT ----
 // Reuse a single socket client instance across subscriptions.
 // Subscription methods return WebSocketResult<UpdateSubscription>.
-var publicSocket = new HyperLiquidSocketClient();
+using var publicSocket = new HyperLiquidSocketClient();
 
 var spotTickerSub = await publicSocket.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync(
     "HYPE/USDC",
@@ -60,7 +60,7 @@ if (!orderBookSub.Success)
 
 // ---- 2. AUTHENTICATED SOCKET CLIENT ----
 // Authenticated streams use the address from credentials when address is null.
-var authSocket = new HyperLiquidSocketClient(options =>
+using var authSocket = new HyperLiquidSocketClient(options =>
 {
     options.ApiCredentials = new HyperLiquidCredentials(new HyperLiquidCredential(EthKey.FromPrivateKey("<private key>")));
 });
