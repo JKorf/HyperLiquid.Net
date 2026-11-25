@@ -700,6 +700,15 @@ namespace HyperLiquid.Net.Utils
             return symbol.StartsWith("@") || symbol.EndsWith("/USDC");
         }
 
+        /// <summary>
+        /// Whether an asset id refers to a spot pair. Spot pairs use <c>10000 + index</c>, while builder-deployed (HIP-3)
+        /// perps use <c>100000 + perp_dex_index * 10000 + index_in_meta</c> and follow the perp price rules.
+        /// </summary>
+        internal static bool IsSpotAssetId(int assetId)
+        {
+            return assetId >= 10000 && assetId < 100000;
+        }
+
         internal static bool SymbolIsExchangeSpotSymbol(string symbol)
         {
             return symbol.EndsWith("/USDC") || symbol.EndsWith("/USDH") || symbol.EndsWith("/USDT0") || symbol.EndsWith("/USDE");
