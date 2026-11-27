@@ -109,7 +109,10 @@ namespace HyperLiquid.Net.Clients.SpotApi
             {
                 { "user", addressSub.ToLowerInvariant() }
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
     }

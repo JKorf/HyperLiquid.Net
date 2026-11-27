@@ -22,9 +22,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return WebSocketResult.Fail<UpdateSubscription>(_exchangeName, validationError);
 
-            var result = await _api.Account.SubscribeToUserUpdatesAsync(
+            var result = await _api.Trading.SubscribeToBalanceAndPositionUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedPosition[]>(update.Data.FuturesInfo.Positions.Select(x => 
+                null,
+                update => handler(update.ToType<SharedPosition[]>(update.Data.Data.AssetPositions.Select(x => 
                 new SharedPosition(
                     ExchangeSymbolCache.ParseSymbol(_topicId, _api.EnvironmentName, null, x.Position.Symbol),
                     x.Position.Symbol,

@@ -171,7 +171,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
                 { "coin", symbol },
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -204,7 +207,10 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 

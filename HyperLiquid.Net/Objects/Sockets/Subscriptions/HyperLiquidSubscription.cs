@@ -11,13 +11,20 @@ using CryptoExchange.Net.Sockets.Default.Routing;
 
 namespace HyperLiquid.Net.Objects.Sockets.Subscriptions
 {
+    internal interface IHyperLiquidSubscription
+    {
+        string? UserAddress { get; }
+    }
+
     /// <inheritdoc />
-    internal class HyperLiquidSubscription<T> : Subscription
+    internal class HyperLiquidSubscription<T> : Subscription, IHyperLiquidSubscription
     {
         private readonly SocketApiClient _client;
         private readonly string _topic;
         private readonly Dictionary<string, object> _parameters;
         private readonly Action<DateTime, string?, int, HyperLiquidSocketUpdate<T>> _handler;
+
+        public string? UserAddress { get; set; }
 
         /// <summary>
         /// ctor

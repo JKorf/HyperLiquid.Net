@@ -1038,7 +1038,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -1096,7 +1099,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
                 { "user", addressSub.ToLowerInvariant() },
                 { "dex", dex ?? "" },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -1149,7 +1155,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -1202,7 +1211,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -1255,7 +1267,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 

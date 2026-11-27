@@ -22,9 +22,9 @@ namespace HyperLiquid.Net.Clients.SpotApi
             if (validationError != null)
                 return WebSocketResult.Fail<UpdateSubscription>(_exchangeName, validationError);
 
-            var result = await _api.Account.SubscribeToUserUpdatesAsync(
+            var result = await _api.Account.SubscribeToBalanceUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedBalance[]>(update.Data.SpotBalances.Balances.Select(x => 
+                update => handler(update.ToType<SharedBalance[]>(update.Data.Orders.Balances.Select(x => 
                     new SharedBalance(
                         SupportedTradingModes, 
                         HyperLiquidExchange.AssetAliases.ExchangeToCommonName(x.Asset), 

@@ -217,7 +217,6 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
         #endregion
 
-
         #region Approve Agent
 
         /// <inheritdoc />
@@ -269,6 +268,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
         private const string ZeroAddress = "0x0000000000000000000000000000000000000000";
 
         #endregion
+
         #region Transfer Internal
 
         /// <inheritdoc />
@@ -598,36 +598,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
-            return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default)
-        {
-            if (address == null && _baseClient.AuthenticationProvider == null)
-                throw new ArgumentNullException(nameof(address), "Address needs to be provided if API credentials not set");
-
-            _baseClient.ValidateAddress(address);
-
-            var internalHandler = new Action<DateTime, string?, int, HyperLiquidSocketUpdate<HyperLiquidUserUpdate>>((receiveTime, originalData, invocation, data) =>
+            internalHandler, false)
             {
-                _baseClient.UpdateTimeOffset(data.Data.ServerTime);
-
-                onMessage(
-                    new DataEvent<HyperLiquidUserUpdate>(HyperLiquidExchange.ExchangeName, data.Data, receiveTime, originalData)
-                        .WithUpdateType(SocketUpdateType.Update)
-                        .WithStreamId(data.Channel)
-                        .WithDataTimestamp(data.Data.ServerTime, _baseClient.GetTimeOffset())
-                    );
-            });
-
-            var addressSub = address ?? _baseClient.AuthenticationProvider!.Key;
-            var subscription = new HyperLiquidSubscription<HyperLiquidUserUpdate>(_logger, _baseClient, "webData2", null, new Dictionary<string, object>
-            {
-                { "user", addressSub.ToLowerInvariant() },
-            },
-            internalHandler, false);
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -656,7 +630,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false);
+            internalHandler, false)
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
 
@@ -714,7 +691,10 @@ namespace HyperLiquid.Net.Clients.BaseApi
             {
                 { "user", addressSub.ToLowerInvariant() },
             },
-            internalHandler, false, "user");
+            internalHandler, false, "user")
+            {
+                UserAddress = addressSub.ToLowerInvariant()
+            };
             return await _baseClient.SubscribeInternalAsync(subscription, ct).ConfigureAwait(false);
         }
     }

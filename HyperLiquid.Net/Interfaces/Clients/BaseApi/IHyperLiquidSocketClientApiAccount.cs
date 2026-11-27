@@ -372,17 +372,6 @@ namespace HyperLiquid.Net.Interfaces.Clients.BaseApi
         Task<WebSocketResult<UpdateSubscription>> SubscribeToUserLedgerUpdatesAsync(string? address, Action<DataEvent<HyperLiquidAccountLedger>> onMessage, CancellationToken ct = default);
 
         /// <summary>
-        /// OBSOLETE: will soon be discontinued. Use <see cref="SubscribeToWebData3UpdatesAsync(string?, Action{DataEvent{HyperLiquidWebDataV3Update}}, CancellationToken)"/> instead.
-        /// <para>
-        /// Docs:<br />
-        /// <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/websocket/subscriptions" /><br />
-        /// Endpoint:<br />
-        /// WS /ws (type: webData2)
-        /// </para>
-        /// </summary>
-        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserUpdatesAsync(string? address, Action<DataEvent<HyperLiquidUserUpdate>> onMessage, CancellationToken ct = default);
-
-        /// <summary>
         /// Subscribe to webData3 updates
         /// <para>
         /// Docs:<br />

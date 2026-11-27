@@ -38,7 +38,6 @@ namespace HyperLiquid.Net.UnitTests
         [Test]
         public async Task TestSubscriptions()
         {
-            await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.Account.SubscribeToUserUpdatesAsync(default , default, default), false, true);
             await RunAndCheckUpdate<HyperLiquidTicker>((client, updateHandler) => client.SpotApi.ExchangeData.SubscribeToSymbolUpdatesAsync("HYPE/USDC", updateHandler, default), true, false);
         } 
     }

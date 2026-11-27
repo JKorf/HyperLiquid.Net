@@ -22,15 +22,18 @@ namespace HyperLiquid.Net.Clients.FuturesApi
             if (validationError != null)
                 return WebSocketResult.Fail<UpdateSubscription>(_exchangeName, validationError);
 
-            var result = await _api.Account.SubscribeToUserUpdatesAsync(
+            var result = await _api.Trading.SubscribeToBalanceAndPositionUpdatesAsync(
                 null,
-                update => handler(update.ToType<SharedBalance[]>([
-                    new SharedBalance(
+                null,
+                update => {
+                    handler(update.ToType<SharedBalance[]>([
+                        new SharedBalance(
                         SupportedTradingModes,
                         "USDC",
-                        update.Data.FuturesInfo.MarginSummary.AccountValue - update.Data.FuturesInfo.MarginSummary.TotalMarginUsed,
-                        update.Data.FuturesInfo.MarginSummary.AccountValue
-                        )])),
+                        update.Data.Data.MarginSummary.AccountValue - update.Data.Data.MarginSummary.TotalMarginUsed,
+                        update.Data.Data.MarginSummary.AccountValue
+                        )]));
+                    },
                 ct: ct).ConfigureAwait(false);
 
             return result;

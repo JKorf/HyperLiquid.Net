@@ -11,12 +11,15 @@ using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.SharedApis;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Sockets.Default;
+using CryptoExchange.Net.Sockets.Interfaces;
 using HyperLiquid.Net.Clients.MessageHandlers;
 using HyperLiquid.Net.Interfaces.Clients;
 using HyperLiquid.Net.Objects.Options;
 using HyperLiquid.Net.Objects.Sockets;
+using HyperLiquid.Net.Objects.Sockets.Subscriptions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,10 +106,25 @@ namespace HyperLiquid.Net.Clients.BaseApi
             => HyperLiquidExchange.FormatSymbol(baseAsset, quoteAsset, tradingMode, deliverDate);
 
         /// <inheritdoc />
-        protected override bool ConnectionCanBeUsedFor(SocketConnection connection, string address, bool authenticated, string? topic = null)
+        protected override bool ConnectionCanBeUsedFor(SocketConnection connection, string address, bool authenticated, IMessageProcessor processor, string? topic = null)
         {
             // Override to allow different API sub clients to use the same connection
-            return connection.ConnectionUriString.Equals(address.TrimEnd('/'), StringComparison.Ordinal);
+            if (!connection.ConnectionUriString.Equals(address.TrimEnd('/'), StringComparison.Ordinal))
+                return false;
+
+            // Check if this subscription is for a different user address than the other subscriptions on this connection, if so don't use the existing connection
+            if (processor is IHyperLiquidSubscription subscription && subscription.UserAddress != null)
+            {
+                var thisSubAddress = subscription.UserAddress;
+                if (connection.Subscriptions.Any(x =>
+                    x is IHyperLiquidSubscription sub
+                    && !string.Equals(sub.UserAddress, thisSubAddress, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
