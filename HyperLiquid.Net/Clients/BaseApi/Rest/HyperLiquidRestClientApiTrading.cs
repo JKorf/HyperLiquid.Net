@@ -381,7 +381,7 @@ namespace HyperLiquid.Net.Clients.BaseApi
 
                     // Price can be a max of 5 significant figures
                     // but no more than (Spot:8, Futures:6) - quantityDecimals decimal places for the symbol
-                    var decimalMax = symbolId.Data < 10000 ? 6 : 8; // Spot symbols have id >= 10000
+                    var decimalMax = HyperLiquidUtils.IsSpotAssetId(symbolId.Data) ? 8 : 6;
                     price = ExchangeHelpers.RoundToSignificantDigits(price, 5, RoundingType.Closest);
                     price = ExchangeHelpers.RoundDown(price, decimalMax - quantityDecimals.Data);
 
