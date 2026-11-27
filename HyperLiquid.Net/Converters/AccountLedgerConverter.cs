@@ -27,7 +27,7 @@ namespace HyperLiquid.Net.Converters
                     case "deposit":
                         deposits.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidDeposit>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidDeposit>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidDeposit>)))!);
                         break;
-                    case "withdrawal":
+                    case "withdraw":
                         withdrawals.Add(item.Deserialize<HyperLiquidUserLedger<HyperLiquidWithdrawal>>((JsonTypeInfo<HyperLiquidUserLedger<HyperLiquidWithdrawal>>)options.GetTypeInfo(typeof(HyperLiquidUserLedger<HyperLiquidWithdrawal>)))!);
                         break;
                     case "accountClassTransfer":
