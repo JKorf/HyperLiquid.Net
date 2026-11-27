@@ -244,6 +244,13 @@ Make a one time donation in a crypto currency of your choice. If you prefer to d
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.12.0 - 27 Nov 2026
+    * Updated CryptoExchange.Net to v13.4.0
+    * Fixed market orders using incorrect price decimal places for builder deployed perps orders
+    * Fixed user subscriptions routing issue when multiple users are combined on a single connection
+    * Fixed withdrawal parsing in userNonFundingLedgerUpdates updates
+    * Removed obsolete SubscribeToUserUpdatesAsync stream
+
 * Version 5.11.0 - 17 Nov 2026
     * Updated CryptoExchange.Net to v13.3.0
     * Added fast parameter for cancel operations
